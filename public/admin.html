@@ -1,15 +1,262 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZOMURUD Admin</title><style>
-body{margin:0;background:#f5f4ef;color:#15231c;font-family:Arial,sans-serif}.wrap{max-width:1200px;margin:auto;padding:35px 18px}.top{display:flex;justify-content:space-between;align-items:center}.brand{font:700 24px Georgia}.btn{border:0;background:#173128;color:white;padding:11px 16px;border-radius:4px;cursor:pointer}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:25px 0}.stat{background:white;padding:20px;border:1px solid #e5e1d8}.stat b{font-size:25px;display:block;margin-top:7px}.panel{background:white;border:1px solid #e5e1d8;padding:20px;margin-top:18px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid input,.grid textarea,.grid select{padding:11px;border:1px solid #ddd}.grid textarea{min-height:70px}.products{overflow:auto}.products table{width:100%;border-collapse:collapse}.products th,.products td{padding:12px;border-bottom:1px solid #eee;text-align:right;font-size:12px}.danger{background:#8d3030}.small{padding:7px 9px;font-size:11px}@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.top{display:block}}
-</style></head><body><div class="wrap"><div class="top"><div><div class="brand">ZOMURUD | الزمرد</div><small>لوحة الإدارة</small></div><a class="btn" href="/">فتح المتجر</a></div>
-<div class="stats" id="stats"></div>
-<div class="panel"><h2>إضافة منتج</h2><form id="addForm" class="grid"><input name="name_ar" required placeholder="اسم المنتج بالعربي"><input name="name_en" required placeholder="Product name"><input name="category" required placeholder="التصنيف"><input name="price" type="number" required placeholder="السعر AED"><input name="compare_price" type="number" placeholder="السعر قبل الخصم"><input name="stock" type="number" placeholder="المخزون"><input name="image" placeholder="رابط صورة المنتج"><textarea name="description_ar" placeholder="الوصف بالعربي"></textarea><textarea name="description_en" placeholder="Description"></textarea><button class="btn" type="submit">إضافة المنتج</button></form></div>
-<div class="panel products"><h2>المنتجات</h2><table><thead><tr><th>المنتج</th><th>التصنيف</th><th>السعر</th><th>المخزون</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
-<div class="panel products"><h2>الطلبات</h2><table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody id="orders"></tbody></table></div></div>
-<script>
-const $=s=>document.querySelector(s),money=n=>"AED "+Number(n).toLocaleString();
-async function refresh(){let [s,p,o]=await Promise.all([fetch("/api/stats").then(r=>r.json()),fetch("/api/products").then(r=>r.json()),fetch("/api/orders").then(r=>r.json())]);$("#stats").innerHTML=[["المبيعات",money(s.revenue)],["الطلبات",s.orders],["العملاء",s.customers],["المنتجات",s.products],["مخزون منخفض",s.low]].map(x=>`<div class=stat>${x[0]}<b>${x[1]}</b></div>`).join("");$("#tbody").innerHTML=p.map(x=>`<tr><td>${x.name_ar}</td><td>${x.category}</td><td>${money(x.price)}</td><td>${x.stock}</td><td><button class="btn danger small" onclick="del(${x.id})">حذف</button></td></tr>`).join("");$("#orders").innerHTML=o.map(x=>`<tr><td>${x.order_no}</td><td>${x.customer_name}</td><td>${x.phone}</td><td>${money(x.total)}</td><td><select onchange="status(${x.id},this.value)">${["NEW","CONFIRMED","PROCESSING","READY","SHIPPED","DELIVERED","CANCELLED"].map(z=>`<option ${x.status===z?"selected":""}>${z}</option>`).join("")}</select></td></tr>`).join("")}
-$("#addForm").onsubmit=async e=>{e.preventDefault();let o=Object.fromEntries(new FormData(e.target));await fetch("/api/products",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)});e.target.reset();refresh()};
-async function del(id){if(confirm("حذف المنتج؟")){await fetch("/api/products/"+id,{method:"DELETE"});refresh()}}
-async function status(id,status){await fetch("/api/orders/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({status})});refresh()}
-refresh();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة تحكم | ZOMURUD</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,Tahoma,sans-serif;
+  background:#f4f6f3;
+  color:#14211b;
+}
+
+header{
+  background:#0e1713;
+  color:white;
+  padding:18px 20px;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.header{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:bold;
+  letter-spacing:3px;
+}
+
+.admin{
+  opacity:.8;
+  font-size:14px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:25px 15px 60px;
+}
+
+h1{
+  margin:10px 0 25px;
+}
+
+h2{
+  margin-top:0;
+}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:22px;
+  box-shadow:0 4px 18px #00000010;
+}
+
+.form{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+input,textarea,select{
+  width:100%;
+  padding:13px;
+  border:1px solid #d5ddd8;
+  border-radius:10px;
+  font-size:16px;
+  background:#fff;
+}
+
+textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:13px 18px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.primary{
+  background:#14211b;
+  color:white;
+}
+
+.green{
+  background:#238636;
+  color:white;
+}
+
+.red{
+  background:#c62828;
+  color:white;
+}
+
+.gray{
+  background:#e9eeeb;
+  color:#14211b;
+}
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.product{
+  border:1px solid #e0e5e2;
+  border-radius:14px;
+  overflow:hidden;
+  background:white;
+}
+
+.product img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  background:#eef1ee;
+}
+
+.product-body{
+  padding:14px;
+}
+
+.product-name{
+  font-weight:bold;
+  font-size:18px;
+}
+
+.price{
+  margin:8px 0;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.actions button{
+  flex:1;
+  min-width:90px;
+  font-size:14px;
+  padding:10px;
+}
+
+.orders{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:750px;
+}
+
+th,td{
+  padding:13px 10px;
+  border-bottom:1px solid #e5e9e6;
+  text-align:right;
+}
+
+th{
+  background:#f1f4f2;
+}
+
+.status{
+  padding:7px 10px;
+  border-radius:20px;
+  background:#e9eeeb;
+}
+
+.message{
+  display:none;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:15px;
+  background:#e8f5e9;
+  color:#17652a;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.stat{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 4px 18px #00000008;
+}
+
+.stat b{
+  display:block;
+  font-size:30px;
+  margin-top:8px;
+}
+
+@media(max-width:700px){
+  .form{
+    grid-template-columns:1fr;
+  }
+
+  .products{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .full{
+    grid-column:auto;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header">
+    <div class="logo">ZOMURUD</div>
+    <div class="admin">لوحة تحكم المتجر</div>
+  </div>
+</header>
+
+<div class="container">
+
+<h1>لوحة التحكم</h1>
+
+<div id="message"
