@@ -3,245 +3,305 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>لوحة تحكم | ZOMURUD</title>
+<title>لوحة تحكم ZOMURUD</title>
 
 <style>
 *{box-sizing:border-box}
 
 body{
-  margin:0;
-  font-family:Arial,Tahoma,sans-serif;
-  background:#f4f6f3;
-  color:#14211b;
+margin:0;
+font-family:Arial,Tahoma,sans-serif;
+background:#f5f7f5;
+color:#14211b
 }
 
 header{
-  background:#0e1713;
-  color:white;
-  padding:18px 20px;
-  position:sticky;
-  top:0;
-  z-index:10;
+background:#0e1713;
+color:#fff;
+padding:18px 20px;
+position:sticky;
+top:0;
+z-index:20
 }
 
 .header{
-  max-width:1100px;
-  margin:auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+max-width:1200px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:space-between
 }
 
 .logo{
-  font-size:24px;
-  font-weight:bold;
-  letter-spacing:3px;
+font-size:24px;
+font-weight:bold;
+letter-spacing:3px
 }
 
-.admin{
-  opacity:.8;
-  font-size:14px;
+.logo span{
+display:block;
+font-size:12px;
+letter-spacing:0;
+color:#bdc8c1;
+margin-top:4px
 }
 
 .container{
-  max-width:1100px;
-  margin:auto;
-  padding:25px 15px 60px;
-}
-
-h1{
-  margin:10px 0 25px;
-}
-
-h2{
-  margin-top:0;
-}
-
-.card{
-  background:white;
-  border-radius:16px;
-  padding:20px;
-  margin-bottom:22px;
-  box-shadow:0 4px 18px #00000010;
-}
-
-.form{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-
-.full{
-  grid-column:1/-1;
-}
-
-label{
-  display:block;
-  font-weight:bold;
-  margin-bottom:6px;
-}
-
-input,textarea,select{
-  width:100%;
-  padding:13px;
-  border:1px solid #d5ddd8;
-  border-radius:10px;
-  font-size:16px;
-  background:#fff;
-}
-
-textarea{
-  min-height:100px;
-  resize:vertical;
-}
-
-button{
-  border:0;
-  border-radius:10px;
-  padding:13px 18px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-.primary{
-  background:#14211b;
-  color:white;
-}
-
-.green{
-  background:#238636;
-  color:white;
-}
-
-.red{
-  background:#c62828;
-  color:white;
-}
-
-.gray{
-  background:#e9eeeb;
-  color:#14211b;
-}
-
-.products{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-}
-
-.product{
-  border:1px solid #e0e5e2;
-  border-radius:14px;
-  overflow:hidden;
-  background:white;
-}
-
-.product img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
-  background:#eef1ee;
-}
-
-.product-body{
-  padding:14px;
-}
-
-.product-name{
-  font-weight:bold;
-  font-size:18px;
-}
-
-.price{
-  margin:8px 0;
-  font-size:18px;
-  font-weight:bold;
-}
-
-.actions{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-}
-
-.actions button{
-  flex:1;
-  min-width:90px;
-  font-size:14px;
-  padding:10px;
-}
-
-.orders{
-  overflow-x:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:750px;
-}
-
-th,td{
-  padding:13px 10px;
-  border-bottom:1px solid #e5e9e6;
-  text-align:right;
-}
-
-th{
-  background:#f1f4f2;
-}
-
-.status{
-  padding:7px 10px;
-  border-radius:20px;
-  background:#e9eeeb;
-}
-
-.message{
-  display:none;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:15px;
-  background:#e8f5e9;
-  color:#17652a;
+max-width:1200px;
+margin:auto;
+padding:25px 15px
 }
 
 .stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-  margin-bottom:22px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:25px
 }
 
 .stat{
-  background:white;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 4px 18px #00000008;
+background:#fff;
+border-radius:12px;
+padding:20px;
+box-shadow:0 3px 15px #0000000b;
+border:1px solid #e5e8e5
 }
 
 .stat b{
-  display:block;
-  font-size:30px;
-  margin-top:8px;
+display:block;
+font-size:28px;
+margin-top:8px
 }
 
-@media(max-width:700px){
-  .form{
-    grid-template-columns:1fr;
-  }
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+overflow:auto
+}
 
-  .products{
-    grid-template-columns:1fr;
-  }
+.tab{
+border:1px solid #d9dedb;
+background:#fff;
+padding:12px 22px;
+border-radius:8px;
+cursor:pointer;
+white-space:nowrap
+}
 
-  .stats{
-    grid-template-columns:1fr;
-  }
+.tab.active{
+background:#14211b;
+color:#fff
+}
 
-  .full{
-    grid-column:auto;
-  }
+.panel{
+display:none
+}
+
+.panel.active{
+display:block
+}
+
+.card{
+background:#fff;
+border-radius:12px;
+padding:20px;
+border:1px solid #e5e8e5;
+margin-bottom:20px
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-bottom:7px
+}
+
+input,textarea,select{
+width:100%;
+padding:13px;
+border:1px solid #d7ddd9;
+border-radius:7px;
+font:inherit;
+background:#fff
+}
+
+textarea{
+min-height:100px;
+resize:vertical
+}
+
+.full{
+grid-column:1/-1
+}
+
+.btn{
+border:0;
+border-radius:7px;
+padding:13px 20px;
+cursor:pointer;
+font-weight:bold
+}
+
+.primary{
+background:#14211b;
+color:#fff
+}
+
+.secondary{
+background:#e5ebe7;
+color:#14211b
+}
+
+.danger{
+background:#a83232;
+color:#fff
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:18px
+}
+
+.product{
+background:#fff;
+border:1px solid #e3e7e4;
+border-radius:12px;
+overflow:hidden
+}
+
+.product-img{
+height:180px;
+background:#edf1ee;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden
+}
+
+.product-img img{
+width:100%;
+height:100%;
+object-fit:cover
+}
+
+.product-info{
+padding:16px
+}
+
+.product-info h3{
+margin:0 0 8px
+}
+
+.price{
+font-size:20px;
+font-weight:bold;
+margin:12px 0
+}
+
+.actions{
+display:flex;
+gap:8px;
+margin-top:12px
+}
+
+.actions button{
+flex:1
+}
+
+.order{
+background:#fff;
+border:1px solid #e1e6e2;
+border-radius:12px;
+padding:18px;
+margin-bottom:15px
+}
+
+.order-head{
+display:flex;
+justify-content:space-between;
+gap:10px;
+flex-wrap:wrap
+}
+
+.order-items{
+background:#f6f8f6;
+padding:12px;
+border-radius:8px;
+margin:12px 0
+}
+
+.status{
+padding:6px 10px;
+border-radius:20px;
+font-size:13px;
+background:#e5ebe7
+}
+
+.empty{
+text-align:center;
+padding:40px;
+color:#69766e
+}
+
+.message{
+padding:12px;
+border-radius:7px;
+margin-top:15px;
+display:none
+}
+
+.success{
+background:#e0f3e7;
+color:#176b3a
+}
+
+.error{
+background:#fde5e5;
+color:#9b2020
+}
+
+.preview{
+width:150px;
+height:110px;
+object-fit:cover;
+border-radius:8px;
+margin-top:10px;
+display:none
+}
+
+@media(max-width:800px){
+.stats{
+grid-template-columns:repeat(2,1fr)
+}
+
+.products{
+grid-template-columns:repeat(2,1fr)
+}
+
+.form-grid{
+grid-template-columns:1fr
+}
+
+.full{
+grid-column:auto
+}
+}
+
+@media(max-width:550px){
+.products{
+grid-template-columns:1fr
+}
+
+.stats{
+grid-template-columns:1fr 1fr
+}
 }
 </style>
 </head>
@@ -249,14 +309,703 @@ th{
 <body>
 
 <header>
-  <div class="header">
-    <div class="logo">ZOMURUD</div>
-    <div class="admin">لوحة تحكم المتجر</div>
-  </div>
+<div class="header">
+<div class="logo">
+ZOMURUD
+<span>لوحة تحكم المتجر</span>
+</div>
+
+<button class="btn secondary"
+onclick="window.location.href='/'">
+عرض المتجر
+</button>
+</div>
 </header>
 
 <div class="container">
 
-<h1>لوحة التحكم</h1>
+<div class="stats">
 
-<div id="message"
+<div class="stat">
+المنتجات
+<b id="statProducts">0</b>
+</div>
+
+<div class="stat">
+الطلبات
+<b id="statOrders">0</b>
+</div>
+
+<div class="stat">
+طلبات جديدة
+<b id="statNew">0</b>
+</div>
+
+<div class="stat">
+إجمالي المبيعات
+<b id="statSales">0</b>
+</div>
+
+</div>
+
+
+<div class="tabs">
+
+<button class="tab active"
+onclick="showTab('products',this)">
+المنتجات
+</button>
+
+<button class="tab"
+onclick="showTab('add',this)">
+إضافة منتج
+</button>
+
+<button class="tab"
+onclick="showTab('orders',this)">
+الطلبات
+</button>
+
+</div>
+
+
+<!-- PRODUCTS -->
+
+<div id="productsPanel" class="panel active">
+
+<div class="card">
+
+<h2>المنتجات</h2>
+
+<div id="products" class="products">
+<div class="empty">جاري تحميل المنتجات...</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ADD PRODUCT -->
+
+<div id="addPanel" class="panel">
+
+<div class="card">
+
+<h2 id="formTitle">إضافة منتج جديد</h2>
+
+<form id="productForm">
+
+<input type="hidden" id="productId">
+
+<div class="form-grid">
+
+<div>
+<label>اسم المنتج</label>
+<input id="name" required>
+</div>
+
+<div>
+<label>السعر بالدرهم</label>
+<input id="price" type="number" min="0" step="0.01" required>
+</div>
+
+<div class="full">
+<label>وصف المنتج</label>
+<textarea id="description"></textarea>
+</div>
+
+<div class="full">
+<label>رابط صورة المنتج</label>
+<input id="image"
+placeholder="https://...">
+<img id="preview" class="preview">
+</div>
+
+</div>
+
+<br>
+
+<button class="btn primary" id="saveBtn">
+حفظ المنتج
+</button>
+
+<button type="button"
+class="btn secondary"
+onclick="resetForm()">
+إلغاء
+</button>
+
+<div id="formMessage" class="message"></div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- ORDERS -->
+
+<div id="ordersPanel" class="panel">
+
+<div class="card">
+
+<h2>طلبات العملاء</h2>
+
+<div id="orders">
+<div class="empty">جاري تحميل الطلبات...</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let products=[];
+let orders=[];
+
+
+/* TABS */
+
+function showTab(tab,button){
+
+document.querySelectorAll(".panel")
+.forEach(x=>x.classList.remove("active"));
+
+document.querySelectorAll(".tab")
+.forEach(x=>x.classList.remove("active"));
+
+document.getElementById(tab+"Panel")
+.classList.add("active");
+
+button.classList.add("active");
+
+if(tab==="products") loadProducts();
+if(tab==="orders") loadOrders();
+
+}
+
+
+/* PRODUCTS */
+
+async function loadProducts(){
+
+try{
+
+const r=await fetch("/api/products");
+
+if(!r.ok) throw new Error();
+
+products=await r.json();
+
+renderProducts();
+
+document.getElementById("statProducts")
+.textContent=products.length;
+
+}catch(e){
+
+document.getElementById("products").innerHTML=
+'<div class="empty">تعذر تحميل المنتجات</div>';
+
+}
+
+}
+
+
+function renderProducts(){
+
+const box=document.getElementById("products");
+
+if(!products.length){
+
+box.innerHTML=
+'<div class="empty">لا توجد منتجات</div>';
+
+return;
+}
+
+box.innerHTML=products.map(p=>{
+
+const image=p.image||p.image_url||"";
+
+return `
+<div class="product">
+
+<div class="product-img">
+
+${
+image
+?
+`<img src="${esc(image)}"
+onerror="this.style.display='none'">`
+:
+`🛍️`
+}
+
+</div>
+
+<div class="product-info">
+
+<h3>${esc(p.name||"منتج")}</h3>
+
+<div>
+${esc(p.description||"")}
+</div>
+
+<div class="price">
+${Number(p.price||0).toLocaleString("ar-AE")}
+ درهم
+</div>
+
+<div class="actions">
+
+<button class="btn secondary"
+onclick="editProduct(${p.id})">
+تعديل
+</button>
+
+<button class="btn danger"
+onclick="deleteProduct(${p.id})">
+حذف
+</button>
+
+</div>
+
+</div>
+
+</div>
+`;
+
+}).join("");
+
+}
+
+
+/* ADD / EDIT */
+
+document.getElementById("productForm")
+.addEventListener("submit",async function(e){
+
+e.preventDefault();
+
+const id=document.getElementById("productId").value;
+
+const data={
+name:document.getElementById("name").value.trim(),
+description:document.getElementById("description").value.trim(),
+price:Number(document.getElementById("price").value),
+image:document.getElementById("image").value.trim()
+};
+
+const btn=document.getElementById("saveBtn");
+
+btn.disabled=true;
+btn.textContent="جاري الحفظ...";
+
+try{
+
+let r;
+
+if(id){
+
+r=await fetch("/api/products/"+id,{
+method:"PUT",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(data)
+});
+
+}else{
+
+r=await fetch("/api/products",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(data)
+});
+
+}
+
+if(!r.ok){
+
+const result=await r.json().catch(()=>({}));
+
+throw new Error(result.error||"فشل الحفظ");
+
+}
+
+showMessage("تم حفظ المنتج بنجاح ✓",true);
+
+resetForm();
+
+await loadProducts();
+
+}catch(e){
+
+showMessage(e.message,false);
+
+}finally{
+
+btn.disabled=false;
+btn.textContent="حفظ المنتج";
+
+}
+
+});
+
+
+function editProduct(id){
+
+const p=products.find(x=>Number(x.id)===Number(id));
+
+if(!p)return;
+
+document.getElementById("productId").value=p.id;
+document.getElementById("name").value=p.name||"";
+document.getElementById("description").value=p.description||"";
+document.getElementById("price").value=p.price||"";
+document.getElementById("image").value=p.image||p.image_url||"";
+
+document.getElementById("formTitle")
+.textContent="تعديل المنتج";
+
+document.getElementById("saveBtn")
+.textContent="حفظ التعديل";
+
+showTab(
+"add",
+document.querySelectorAll(".tab")[1]
+);
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+async function deleteProduct(id){
+
+if(!confirm("هل تريد حذف هذا المنتج؟"))return;
+
+try{
+
+const r=await fetch("/api/products/"+id,{
+method:"DELETE"
+});
+
+if(!r.ok)throw new Error();
+
+await loadProducts();
+
+alert("تم حذف المنتج ✓");
+
+}catch(e){
+
+alert("تعذر حذف المنتج");
+
+}
+
+}
+
+
+function resetForm(){
+
+document.getElementById("productForm").reset();
+
+document.getElementById("productId").value="";
+
+document.getElementById("formTitle")
+.textContent="إضافة منتج جديد";
+
+document.getElementById("saveBtn")
+.textContent="حفظ المنتج";
+
+document.getElementById("preview").style.display="none";
+
+}
+
+
+/* IMAGE PREVIEW */
+
+document.getElementById("image")
+.addEventListener("input",function(){
+
+const img=document.getElementById("preview");
+
+if(this.value.trim()){
+
+img.src=this.value.trim();
+img.style.display="block";
+
+}else{
+
+img.style.display="none";
+
+}
+
+});
+
+
+/* ORDERS */
+
+async function loadOrders(){
+
+try{
+
+const r=await fetch("/api/orders");
+
+if(!r.ok)throw new Error();
+
+orders=await r.json();
+
+renderOrders();
+
+document.getElementById("statOrders")
+.textContent=orders.length;
+
+const newOrders=orders.filter(o=>
+String(o.status||"").includes("جديد") ||
+String(o.status||"").toLowerCase()==="new"
+).length;
+
+document.getElementById("statNew")
+.textContent=newOrders;
+
+const sales=orders.reduce(
+(sum,o)=>sum+Number(o.total||0),0
+);
+
+document.getElementById("statSales")
+.textContent=
+sales.toLocaleString("ar-AE")+" د.إ";
+
+}catch(e){
+
+document.getElementById("orders").innerHTML=
+'<div class="empty">تعذر تحميل الطلبات</div>';
+
+}
+
+}
+
+
+function renderOrders(){
+
+const box=document.getElementById("orders");
+
+if(!orders.length){
+
+box.innerHTML=
+'<div class="empty">لا توجد طلبات حتى الآن</div>';
+
+return;
+}
+
+box.innerHTML=orders.map(o=>{
+
+const items=
+o.items ||
+o.order_items ||
+[];
+
+let itemsHtml="";
+
+if(Array.isArray(items)&&items.length){
+
+itemsHtml=items.map(item=>`
+
+<div>
+${esc(item.name||"منتج")}
+ × ${Number(item.quantity||item.qty||1)}
+</div>
+
+`).join("");
+
+}else{
+
+itemsHtml="تفاصيل المنتجات محفوظة في الطلب";
+
+}
+
+const status=o.status||"طلب جديد";
+
+return `
+
+<div class="order">
+
+<div class="order-head">
+
+<div>
+
+<strong>
+طلب #${o.id}
+</strong>
+
+<br>
+
+العميل:
+${esc(o.customer_name||o.name||"غير محدد")}
+
+<br>
+
+الهاتف:
+${esc(o.customer_phone||o.phone||"")}
+
+</div>
+
+<div class="status">
+${esc(status)}
+</div>
+
+</div>
+
+<div class="order-items">
+${itemsHtml}
+</div>
+
+<strong>
+الإجمالي:
+${Number(o.total||0).toLocaleString("ar-AE")}
+ درهم
+</strong>
+
+<br><br>
+
+العنوان:
+${esc(o.customer_address||o.address||"")}
+
+<br><br>
+
+<label>تغيير حالة الطلب</label>
+
+<select
+onchange="changeOrderStatus(${o.id},this.value)">
+
+<option value="طلب جديد"
+${status==="طلب جديد"?"selected":""}>
+طلب جديد
+</option>
+
+<option value="قيد التصنيع"
+${status==="قيد التصنيع"?"selected":""}>
+قيد التصنيع
+</option>
+
+<option value="جاهزة للتسليم"
+${status==="جاهزة للتسليم"?"selected":""}>
+جاهزة للتسليم
+</option>
+
+<option value="تم التسليم"
+${status==="تم التسليم"?"selected":""}>
+تم التسليم
+</option>
+
+</select>
+
+<br><br>
+
+<button class="btn primary"
+onclick="openInvoice(${o.id})">
+🧾 فتح الفاتورة PDF
+</button>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+
+async function changeOrderStatus(id,status){
+
+try{
+
+const r=await fetch("/api/orders/"+id,{
+method:"PUT",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({status})
+});
+
+if(!r.ok)throw new Error();
+
+await loadOrders();
+
+}catch(e){
+
+alert("تعذر تغيير حالة الطلب");
+
+}
+
+}
+
+
+/* INVOICE */
+
+function openInvoice(id){
+
+window.open(
+"/api/invoice/"+id,
+"_blank"
+);
+
+}
+
+
+/* MESSAGE */
+
+function showMessage(text,success){
+
+const box=document.getElementById("formMessage");
+
+box.textContent=text;
+
+box.className=
+"message "+(success?"success":"error");
+
+box.style.display="block";
+
+setTimeout(()=>{
+box.style.display="none";
+},4000);
+
+}
+
+
+/* ESCAPE */
+
+function esc(value){
+
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* START */
+
+loadProducts();
+loadOrders();
+
+</script>
+
+</body>
+</html>
