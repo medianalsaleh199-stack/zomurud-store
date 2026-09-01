@@ -1,62 +1,165 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="ZOMURUD | الزمرد — حلول عرض وتجهيزات للعلامات التجارية.">
-<title>ZOMURUD | الزمرد</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#14211b;--muted:#69766e;--paper:#f7f6f2;--line:#e6e3db;--card:#fff}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Cairo,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
-.top{height:34px;background:#0e1713;color:#dfe6e1;display:flex;align-items:center;justify-content:center;font-size:11px}.header{height:78px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%;position:sticky;top:0;z-index:30}.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}.mark{width:40px;height:40px;border:1px solid #294035;border-radius:50%;display:grid;place-items:center;font:24px Georgia}.brand b{font:700 19px Georgia;letter-spacing:2px}.brand small{display:block;font-size:9px;letter-spacing:3px;color:#78847d}.nav{display:flex;gap:28px}.nav a{font-size:12px;text-decoration:none;color:#324139}.actions{display:flex;gap:8px}.actions button{width:40px;height:40px;border:0;border-radius:50%;background:#f2f2ee;position:relative}.actions i{position:absolute;right:0;top:0;background:var(--ink);color:#fff;border-radius:10px;font-size:9px;font-style:normal;padding:1px 5px}
-.hero{background:var(--ink);color:#fff;min-height:590px;padding:70px 8%;display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}.hero h1{font:600 clamp(46px,6vw,78px)/1.02 Georgia;margin:16px 0}.hero h1 em{color:#cbd5cd;font-style:normal}.hero p{max-width:610px;line-height:2;color:#c4cec7;font-size:14px}.eyebrow{font-size:10px;letter-spacing:3px;color:#8fa096;font-weight:700}.btn{border:1px solid transparent;padding:13px 22px;min-height:48px;font-weight:700;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;border-radius:4px}.primary{background:#dbe4dc;color:#14211b}.outline{border-color:#617168;color:#fff}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}.hero-art{display:grid;place-items:center}.hero-card{width:min(330px,80%);height:400px;background:linear-gradient(145deg,#dedbd0,#929087);color:#17241e;padding:32px;display:flex;flex-direction:column;justify-content:space-between;transform:rotate(3deg);box-shadow:28px 28px 0 #273930}.hero-card strong{letter-spacing:4px}.hero-card b{font:700 43px/1 Georgia}.hero-card small{letter-spacing:2px}
-.section{padding:78px 7%}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:30px}.section h2{font:600 38px Georgia;margin:10px 0}.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.cat{background:#fff;border:1px solid var(--line);padding:23px 14px;min-height:115px;text-align:center}.cat b{display:block;font:26px Georgia;margin-bottom:10px}.cat span{font-size:12px}
-.tools{display:flex;gap:8px}.tools input,.tools select{background:#fff;border:1px solid #ddd9d0;padding:11px 13px;outline:0}.tools input{min-width:250px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.product{background:#fff;border:1px solid var(--line);position:relative;overflow:hidden}.pic{height:300px;overflow:hidden;background:#e6e4dd}.pic img{width:100%;height:100%;object-fit:cover;transition:.4s}.product:hover img{transform:scale(1.04)}.badge{position:absolute;top:13px;right:13px;background:var(--ink);color:#fff;padding:5px 8px;font-size:9px;z-index:2}.wish{position:absolute;top:11px;left:11px;width:36px;height:36px;border:0;border-radius:50%;background:#fff;z-index:2;font-size:19px}.wish.on{background:var(--ink);color:#fff}.info{padding:19px}.info h3{font-size:15px;margin:0 0 7px}.info p{font-size:11px;color:var(--muted);line-height:1.8;min-height:42px}.price{font-weight:800}.old{text-decoration:line-through;color:#a0a7a3;font-size:11px;font-weight:400;margin-right:7px}.row{display:flex;gap:7px;margin-top:15px}.row button{flex:1;min-height:42px;border:1px solid var(--ink);font-size:11px;background:var(--ink);color:#fff}.row button:first-child{background:#fff;color:var(--ink)}
-.business{padding:80px 7%;background:#173128;color:#fff;display:flex;justify-content:space-between;gap:50px}.business h2{font:600 47px/1.05 Georgia;margin:14px 0}.business p{max-width:650px;color:#c5d0c9;line-height:2}.numbers{display:flex;gap:35px}.numbers b{font:35px Georgia}.numbers small{display:block;font:10px Cairo;color:#a5b4ab}
-footer{background:#0e1713;color:#b7c2bb;padding:35px 7%;display:flex;justify-content:space-between;align-items:center;font-size:10px}
-.backdrop{display:none;position:fixed;inset:0;background:#0008;z-index:50}.backdrop.on{display:block}.drawer{position:fixed;top:0;bottom:0;right:-450px;width:min(450px,93vw);background:#fff;z-index:60;padding:24px;transition:.3s;overflow:auto}.drawer.on{right:0}.drawer-head{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:15px}.close{border:0;background:none;font-size:27px}.line{display:grid;grid-template-columns:65px 1fr auto;gap:11px;align-items:center;border-bottom:1px solid #eee;padding:14px 0}.line img{width:65px;height:65px;object-fit:cover}.line h4{margin:0;font-size:12px}.line small{color:var(--muted)}.remove{border:0;background:none;color:#a55}.total{display:flex;justify-content:space-between;padding:18px 0}.full{width:100%}
-.modal{display:none;position:fixed;inset:0;background:#0009;z-index:70;place-items:center;padding:18px}.modal.on{display:grid}.box{background:#fff;width:min(900px,100%);max-height:92vh;overflow:auto;padding:28px;position:relative}.x{position:absolute;top:8px;left:12px;border:0;background:none;font-size:28px}.detail{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding-top:15px}.detail img{width:100%;height:430px;object-fit:cover}.detail h2{font:600 38px Georgia}.detail p{color:var(--muted);line-height:2}.options{display:flex;gap:7px;flex-wrap:wrap}.options button{padding:9px 14px;background:#fff;border:1px solid #ccc}.options button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
-form{display:grid;gap:11px}form input,form textarea{padding:13px;border:1px solid #ddd;outline:0}form textarea{min-height:100px}
-@media(max-width:900px){.nav{display:none}.hero{grid-template-columns:1fr}.hero-art{display:none}.cats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.business{display:block}.numbers{margin-top:30px}}
-@media(max-width:600px){.header{padding:0 4%}.hero{padding:55px 6%}.section{padding:58px 5%}.section-head{display:block}.tools{margin-top:18px}.tools input,.tools select{width:100%;min-width:0}.grid{grid-template-columns:1fr}.cats{grid-template-columns:repeat(2,1fr)}.business h2{font-size:40px}.detail{grid-template-columns:1fr}.detail img{height:300px}footer{display:block}.footer-brand{margin-bottom:12px}}
-</style></head>
-<body>
-<div class="top">تصنيع حسب الطلب • حلول للمتاجر والشركات والفعاليات</div>
-<header class="header"><a class="brand" href="#"><span class="mark">Z</span><span><b>ZOMURUD</b><small>الزمرد</small></span></a>
-<nav class="nav"><a href="#shop">المتجر</a><a href="#categories">التصنيفات</a><a href="#business">للشركات</a><a href="#about">عن الزمرد</a></nav>
-<div class="actions"><button onclick="openWish()">♡<i id="wc">0</i></button><button onclick="openCart()">🛒<i id="cc">0</i></button></div></header>
-<section class="hero"><div><span class="eyebrow">MADE FOR YOUR BRAND</span><h1>نصنع حضورك<br><em>بشكل استثنائي.</em></h1><p>حلول عرض وتجهيزات احترافية للمتاجر والشركات والمعارض والفعاليات — بتصميم يليق بعلامتك.</p><div class="hero-actions"><a class="btn primary" href="#shop">تسوق الآن</a><a class="btn outline" href="#business">اطلب تصميمًا خاصًا</a></div></div><div class="hero-art"><div class="hero-card"><strong>ZOMURUD</strong><b>YOUR<br>BRAND<br>MATTERS</b><small>DESIGN • BUILD • DELIVER</small></div></div></section>
-<section class="section" id="categories"><div class="section-head"><div><span class="eyebrow">EXPLORE</span><h2>تسوق حسب الفئة</h2></div></div><div class="cats" id="cats"></div></section>
-<section class="section" id="shop"><div class="section-head"><div><span class="eyebrow">COLLECTION</span><h2>منتجات مختارة</h2></div><div class="tools"><input id="search" placeholder="ابحث عن منتج..."><select id="sort"><option value="featured">مميزة</option><option value="low">السعر: الأقل</option><option value="high">السعر: الأعلى</option></select></div></div><div class="grid" id="products"></div></section>
-<section class="business" id="business"><div><span class="eyebrow">ZOMURUD BUSINESS</span><h2>تحتاج كمية؟<br>أو تصميمًا خاصًا؟</h2><p>نجهز حلولًا للشركات والفنادق والمطاعم والمعارض والفعاليات. أرسل فكرتك وسنساعدك في تحويلها إلى منتج جاهز.</p><a class="btn primary" href="https://wa.me/" target="_blank">تواصل معنا</a></div><div class="numbers"><b>01<small>Design</small></b><b>02<small>Build</small></b><b>03<small>Deliver</small></b></div></section>
-<section class="section" id="about"><span class="eyebrow">ZOMURUD</span><h2>نصمم. نصنع. نرفع قيمة علامتك.</h2><p style="max-width:700px;color:#69766e;line-height:2">الزمرد متخصص في تصنيع وتجهيز حلول العرض والطاولات والعربات والبوثات للعلامات التجارية والفعاليات.</p></section>
-<footer><div class="brand"><span class="mark">Z</span><span><b>ZOMURUD</b><small>الزمرد</small></span></div><div>© 2026 ZOMURUD</div></footer>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="متجر زمرد - منتجات وتجهيزات العرض والفعاليات">
+<title>زمرد | متجر الزمرد</title>
 
-<div class="backdrop" id="backdrop" onclick="closeAll()"></div>
-<aside class="drawer" id="cart"><div class="drawer-head"><h3>سلة المشتريات</h3><button class="close" onclick="closeAll()">×</button></div><div id="cartItems"></div><div class="total"><span>الإجمالي</span><b id="total">AED 0</b></div><button class="btn primary full" onclick="checkout()">إتمام الطلب</button></aside>
-<aside class="drawer" id="wish"><div class="drawer-head"><h3>المفضلة</h3><button class="close" onclick="closeAll()">×</button></div><div id="wishItems"></div></aside>
-<div class="modal" id="productModal"><div class="box"><button class="x" onclick="closeModals()">×</button><div id="detail"></div></div></div>
-<div class="modal" id="checkoutModal"><div class="box" style="width:min(560px,100%)"><button class="x" onclick="closeModals()">×</button><h2>إرسال الطلب</h2><p style="color:#69766e">الدفع والشحن غير مربوطين بعد. هذا النموذج يحفظ الطلب في النظام فقط.</p><form id="orderForm"><input name="name" required placeholder="الاسم"><input name="phone" required placeholder="رقم الهاتف"><input name="city" placeholder="المدينة"><textarea name="notes" placeholder="ملاحظات"></textarea><button class="btn primary full">تأكيد الطلب</button></form><div id="done"></div></div></div>
-<script>
-let products=[],cart=JSON.parse(localStorage.zcart||"[]"),wish=JSON.parse(localStorage.zwish||"[]"),cat="all";
-const $=s=>document.querySelector(s), money=n=>"AED "+Number(n).toLocaleString("en-US");
-async function load(){products=await fetch("/api/products").then(r=>r.json());renderCats();render();counts()}
-function renderCats(){let cs=[...new Set(products.map(p=>p.category))];$("#cats").innerHTML=`<button class="cat" onclick="cat='all';render()"><b>✦</b><span>كل المنتجات</span></button>`+cs.map((c,i)=>`<button class="cat" onclick="cat=${JSON.stringify(c)};render();location.hash='shop'"><b>${["▣","▤","◫","◇","✧"][i%5]}</b><span>${c}</span></button>`).join("")}
-function render(){let q=$("#search").value.toLowerCase(),list=products.filter(p=>(cat==="all"||p.category===cat)&&((p.name_ar+" "+p.name_en+" "+p.description_ar).toLowerCase().includes(q)));if($("#sort").value==="low")list.sort((a,b)=>a.price-b.price);if($("#sort").value==="high")list.sort((a,b)=>b.price-a.price);
-$("#products").innerHTML=list.map(p=>`<article class="product"><span class="badge">${p.stock<=3?"كمية محدودة":"مميز"}</span><button class="wish ${wish.includes(p.id)?"on":""}" onclick="toggleWish(${p.id})">${wish.includes(p.id)?"♥":"♡"}</button><div class="pic"><img src="${p.image}" alt="${p.name_en}" loading="lazy"></div><div class="info"><h3>${p.name_ar}</h3><p>${p.description_ar}</p><div class="price">${money(p.price)} ${p.compare_price?`<span class="old">${money(p.compare_price)}</span>`:""}</div><div class="row"><button onclick="openProduct(${p.id})">التفاصيل</button><button onclick="add(${p.id})">أضف للسلة</button></div></div></article>`).join("")||"<p>لا توجد نتائج.</p>"}
-function add(id){let x=cart.find(i=>i.id===id);x?x.qty++:cart.push({id,qty:1});save();openCart()}
-function toggleWish(id){wish.includes(id)?wish=wish.filter(x=>x!==id):wish.push(id);save();render()}
-function save(){localStorage.zcart=JSON.stringify(cart);localStorage.zwish=JSON.stringify(wish);counts();renderCart();renderWish()}
-function counts(){$("#cc").textContent=cart.reduce((s,x)=>s+x.qty,0);$("#wc").textContent=wish.length}
-function renderCart(){let total=0;$("#cartItems").innerHTML=cart.length?cart.map((x,i)=>{let p=products.find(y=>y.id===x.id);total+=p.price*x.qty;return `<div class="line"><img src="${p.image}"><div><h4>${p.name_ar}</h4><small>${x.qty} × ${money(p.price)}</small></div><button class="remove" onclick="cart.splice(${i},1);save()">×</button></div>`}).join(""):"<p>السلة فارغة.</p>";$("#total").textContent=money(total)}
-function renderWish(){let a=products.filter(p=>wish.includes(p.id));$("#wishItems").innerHTML=a.length?a.map(p=>`<div class="line"><img src="${p.image}"><div><h4>${p.name_ar}</h4><small>${money(p.price)}</small></div><button onclick="add(${p.id})">+</button></div>`).join(""):"<p>لا توجد منتجات في المفضلة.</p>"}
-function openCart(){$("#backdrop").classList.add("on");$("#cart").classList.add("on");renderCart()}
-function openWish(){$("#backdrop").classList.add("on");$("#wish").classList.add("on");renderWish()}
-function closeAll(){$("#backdrop").classList.remove("on");$("#cart").classList.remove("on");$("#wish").classList.remove("on")}
-function closeModals(){$("#productModal").classList.remove("on");$("#checkoutModal").classList.remove("on")}
-function openProduct(id){let p=products.find(x=>x.id===id);$("#detail").innerHTML=`<div class="detail"><img src="${p.image}"><div><span class="eyebrow">${p.category}</span><h2>${p.name_ar}</h2><div class="price">${money(p.price)} <span class="old">${money(p.compare_price)}</span></div><p>${p.description_ar}</p><p><b>المخزون:</b> ${p.stock}</p><button class="btn primary full" onclick="add(${p.id});closeModals()">أضف إلى السلة</button></div></div>`;$("#productModal").classList.add("on")}
-function checkout(){if(!cart.length)return alert("السلة فارغة");closeAll();$("#checkoutModal").classList.add("on")}
-$("#orderForm").onsubmit=async e=>{e.preventDefault();let fd=new FormData(e.target),items=cart.map(x=>{let p=products.find(y=>y.id===x.id);return {id:x.id,name:p.name_ar,qty:x.qty,price:p.price}}),total=items.reduce((s,x)=>s+x.price*x.qty,0);let r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customer_name:fd.get("name"),phone:fd.get("phone"),city:fd.get("city"),notes:fd.get("notes"),items,total})}).then(x=>x.json());if(r.order_no){cart=[];save();e.target.reset();$("#done").innerHTML="<b>تم استلام طلبك رقم "+r.order_no+"</b>"}else $("#done").textContent=r.error||"حدث خطأ"}
-$("#search").oninput=render;$("#sort").onchange=render;load();
-</script></body></html>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,"Tahoma",sans-serif;
+  background:#f6f7f5;
+  color:#14211b;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+
+.top{
+  background:#0e1713;
+  color:#fff;
+  text-align:center;
+  padding:11px;
+  font-size:14px;
+}
+
+header{
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 2px 12px #0001;
+}
+
+.nav{
+  max-width:1200px;
+  margin:auto;
+  min-height:82px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:12px 20px;
+}
+
+.logo{
+  font-size:29px;
+  font-weight:bold;
+  letter-spacing:5px;
+}
+
+.logo small{
+  display:block;
+  font-size:11px;
+  letter-spacing:1px;
+  color:#777;
+  text-align:center;
+  margin-top:3px;
+}
+
+.navBtns{
+  display:flex;
+  gap:10px;
+}
+
+.iconBtn{
+  border:0;
+  background:#f0f2ee;
+  border-radius:50%;
+  width:54px;
+  height:54px;
+  position:relative;
+  font-size:24px;
+}
+
+.badge{
+  position:absolute;
+  top:-3px;
+  left:-2px;
+  background:#14211b;
+  color:#fff;
+  min-width:22px;
+  height:22px;
+  border-radius:20px;
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.hero{
+  min-height:510px;
+  background:#102019;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:70px 20px;
+}
+
+.heroContent{max-width:850px}
+
+.english{
+  letter-spacing:6px;
+  color:#aeb9b2;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.hero h1{
+  font-size:58px;
+  margin:20px 0 15px;
+  line-height:1.2;
+}
+
+.hero p{
+  color:#d7ded9;
+  font-size:20px;
+  line-height:1.9;
+}
+
+.heroBtns{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-top:30px;
+  flex-wrap:wrap;
+}
+
+.primary,.secondary{
+  padding:16px 32px;
+  border-radius:7px;
+  font-weight:bold;
+  border:1px solid #fff;
+}
+
+.primary{
+  background:#dce5df;
+  color:#14211b;
+}
+
+.secondary{
+  background:transparent;
+  color:#fff;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:60px 20px;
+}
+
+.sectionTitle{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+.sectionTitle h2{
+  font-size:34px;
+  margin:0 0 8px;
+}
+
+.sectionTitle
