@@ -1,0 +1,68 @@
+[
+  {
+    "name_ar": "طاولة عرض فاخرة",
+    "name_en": "Premium Display Table",
+    "category": "طاولات العرض",
+    "price": 1450,
+    "compare_price": 1750,
+    "stock": 12,
+    "description_ar": "طاولة عرض احترافية قابلة للتخصيص للمتاجر والمعارض والفعاليات.",
+    "description_en": "A professional customizable display table for stores, exhibitions and events.",
+    "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "name_ar": "عربة ضيافة متنقلة",
+    "name_en": "Mobile Hospitality Cart",
+    "category": "العربات المتنقلة",
+    "price": 3200,
+    "compare_price": 3900,
+    "stock": 8,
+    "description_ar": "عربة خشبية متنقلة بتصميم فاخر مناسبة للضيافة والفعاليات والبيع المباشر.",
+    "description_en": "A premium mobile wooden cart for hospitality, events and direct selling.",
+    "image": "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "name_ar": "ستاند عطور وإكسسوارات",
+    "name_en": "Perfume & Accessories Stand",
+    "category": "العطور والإكسسوارات",
+    "price": 1850,
+    "compare_price": 2200,
+    "stock": 10,
+    "description_ar": "وحدة عرض أنيقة مع رفوف وإضاءة ومساحة مخصصة للهوية البصرية.",
+    "description_en": "Elegant display unit with shelves, lighting and branded presentation space.",
+    "image": "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "name_ar": "بوث فعاليات قابل للنقل",
+    "name_en": "Portable Event Booth",
+    "category": "البوثات",
+    "price": 4500,
+    "compare_price": 5200,
+    "stock": 5,
+    "description_ar": "بوث احترافي للمعارض والفعاليات قابل للتخصيص حسب المقاس والهوية.",
+    "description_en": "Professional exhibition booth customizable to your dimensions and brand identity.",
+    "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "name_ar": "طاولة استقبال للعلامات التجارية",
+    "name_en": "Branded Reception Counter",
+    "category": "طاولات العرض",
+    "price": 2100,
+    "compare_price": 2500,
+    "stock": 7,
+    "description_ar": "كاونتر استقبال أنيق للصالونات والمتاجر والمكاتب مع إمكانية إضافة شعار بارز.",
+    "description_en": "Elegant reception counter for salons, stores and offices with raised logo options.",
+    "image": "https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1200&q=85"
+  },
+  {
+    "name_ar": "طاولة حلويات بإضاءة",
+    "name_en": "Illuminated Dessert Table",
+    "category": "الفعاليات",
+    "price": 2400,
+    "compare_price": 2900,
+    "stock": 6,
+    "description_ar": "طاولة عرض للكيك والحلويات مع مساحة تجهيز وإضاءة ديكورية.",
+    "description_en": "Dessert and cake display table with preparation space and decorative lighting.",
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85"
+  }
+]
