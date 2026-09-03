@@ -9,9 +9,15 @@ const PORT = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
 
-const db = new Database(path.join(__dirname, "zomurud.db"));
+const db = new Database(
+  path.join(__dirname, "zomurud.db")
+);
 
 db.pragma("journal_mode=WAL");
+
+/* =====================================================
+   DATABASE
+===================================================== */
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS products(
@@ -19,14 +25,41 @@ CREATE TABLE IF NOT EXISTS products(
   name_ar TEXT,
   name_en TEXT,
   category TEXT,
-  price REAL,
-  compare_price REAL,
-  stock INTEGER,
+  price REAL DEFAULT 0,
+  compare_price REAL DEFAULT 0,
+  stock INTEGER DEFAULT 0,
   description_ar TEXT,
   description_en TEXT,
   image TEXT,
   active INTEGER DEFAULT 1,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS product_images(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  product_id INTEGER NOT NULL,
+  image_url TEXT NOT NULL,
+  sort_order INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS product_options(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  product_id INTEGER NOT NULL,
+  name_ar TEXT NOT NULL,
+  name_en TEXT NOT NULL,
+  type TEXT DEFAULT 'select',
+  required INTEGER DEFAULT 0,
+  sort_order INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS product_option_values(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  option_id INTEGER NOT NULL,
+  label_ar TEXT NOT NULL,
+  label_en TEXT NOT NULL,
+  value TEXT DEFAULT '',
+  price_delta REAL DEFAULT 0,
+  sort_order INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS orders(
@@ -37,7 +70,7 @@ CREATE TABLE IF NOT EXISTS orders(
   city TEXT,
   notes TEXT,
   items_json TEXT,
-  total REAL,
+  total REAL DEFAULT 0,
   status TEXT DEFAULT 'NEW',
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
@@ -48,68 +81,122 @@ CREATE TABLE IF NOT EXISTS admin_sessions(
 );
 `);
 
-/* =========================
+/* =====================================================
    ADMIN SETTINGS
-========================= */
+===================================================== */
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_EMAIL =
+  String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+
+const ADMIN_PASSWORD =
+  String(process.env.ADMIN_PASSWORD || "");
 
 if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   console.warn(
-    "WARNING: ADMIN_EMAIL and ADMIN_PASSWORD are not configured in Render."
+    "WARNING: ADMIN_EMAIL / ADMIN_PASSWORD are not configured."
   );
 }
 
-/* =========================
+/* =====================================================
    SEED PRODUCTS
-========================= */
+===================================================== */
 
-if (!db.prepare("SELECT COUNT(*) c FROM products").get().c) {
-  const seed = require("./seed.json");
+if (
+  !db
+    .prepare("SELECT COUNT(*) c FROM products")
+    .get().c
+) {
+  try {
+    const seed = require("./seed.json");
 
-  const q = db.prepare(`
-    INSERT INTO products(
-      name_ar,
-      name_en,
-      category,
-      price,
-      compare_price,
-      stock,
-      description_ar,
-      description_en,
-      image
-    )
-    VALUES(?,?,?,?,?,?,?,?,?)
-  `);
+    const insert = db.prepare(`
+      INSERT INTO products(
+        name_ar,
+        name_en,
+        category,
+        price,
+        compare_price,
+        stock,
+        description_ar,
+        description_en,
+        image
+      )
+      VALUES(?,?,?,?,?,?,?,?,?)
+    `);
 
-  seed.forEach((p) => {
-    q.run(
-      p[0],
-      p[1],
-      p[2],
-      p[3],
-      p[4],
-      p[5],
-      "حلول عرض احترافية من الزمرد.",
-      "Professional ZOMURUD display solution.",
-      ""
-    );
-  });
+    const transaction = db.transaction(() => {
+      for (const p of seed) {
+        insert.run(
+          p[0],
+          p[1],
+          p[2],
+          Number(p[3]) || 0,
+          Number(p[4]) || 0,
+          Number(p[5]) || 0,
+          "حلول عرض احترافية من الزمرد.",
+          "Professional ZOMURUD display solution.",
+          ""
+        );
+      }
+    });
+
+    transaction();
+  } catch (e) {
+    console.log("Seed skipped:", e.message);
+  }
 }
 
-/* =========================
-   MIDDLEWARE
-========================= */
+/* =====================================================
+   BODY
+===================================================== */
 
-app.use(express.json({ limit: "5mb" }));
+app.use(
+  express.json({
+    limit: "10mb"
+  })
+);
 
-/* =========================
-   SESSION FUNCTIONS
-========================= */
+/* =====================================================
+   COOKIE PARSER
+===================================================== */
 
-function createSession() {
-  const token = crypto.randomBytes(32).toString("hex");
+app.use((req, res, next) => {
+  req.cookies = {};
+
+  const cookieHeader =
+    req.headers.cookie || "";
+
+  cookieHeader
+    .split(";")
+    .forEach((part) => {
+      const index = part.indexOf("=");
+
+      if (index === -1) return;
+
+      const key =
+        part.slice(0, index).trim();
+
+      const value =
+        part.slice(index + 1).trim();
+
+      try {
+        req.cookies[key] =
+          decodeURIComponent(value);
+      } catch {
+        req.cookies[key] = value;
+      }
+    });
+
+  next();
+});
+
+/* =====================================================
+   ADMIN SESSION
+===================================================== */
+
+function createAdminSession() {
+  const token =
+    crypto.randomBytes(32).toString("hex");
 
   db.prepare(`
     INSERT INTO admin_sessions(token)
@@ -119,7 +206,7 @@ function createSession() {
   return token;
 }
 
-function deleteSession(token) {
+function deleteAdminSession(token) {
   if (!token) return;
 
   db.prepare(`
@@ -129,7 +216,8 @@ function deleteSession(token) {
 }
 
 function isAdmin(req) {
-  const token = req.cookies?.zomurud_admin;
+  const token =
+    req.cookies.zomurud_admin;
 
   if (!token) return false;
 
@@ -137,630 +225,1216 @@ function isAdmin(req) {
     SELECT token
     FROM admin_sessions
     WHERE token=?
-    AND datetime(created_at) > datetime('now','-7 days')
+    AND datetime(created_at)
+      > datetime('now','-7 days')
   `).get(token);
 
   return !!session;
 }
 
-/* =========================
-   COOKIE PARSER
-========================= */
-
-app.use((req, res, next) => {
-  req.cookies = {};
-
-  const header = req.headers.cookie || "";
-
-  header.split(";").forEach((part) => {
-    const index = part.indexOf("=");
-
-    if (index === -1) return;
-
-    const key = part.slice(0, index).trim();
-    const value = part.slice(index + 1).trim();
-
-    req.cookies[key] = decodeURIComponent(value);
-  });
+function requireAdmin(req, res, next) {
+  if (!isAdmin(req)) {
+    return res.status(401).json({
+      error: "Unauthorized"
+    });
+  }
 
   next();
-});
+}
 
-/* =========================
-   ADMIN LOGIN PAGE
-========================= */
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
 
-app.get("/admin-login.html", (req, res) => {
-  if (isAdmin(req)) {
-    return res.redirect("/admin.html");
-  }
+app.post(
+  "/api/admin/login",
+  (req, res) => {
+    const email =
+      String(req.body?.email || "")
+        .trim()
+        .toLowerCase();
 
-  res.sendFile(
-    path.join(__dirname, "public", "admin-login.html")
-  );
-});
+    const password =
+      String(req.body?.password || "");
 
-/* =========================
-   PROTECT ADMIN PAGE
-========================= */
-
-app.get("/admin.html", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.redirect("/admin-login.html");
-  }
-
-  res.sendFile(
-    path.join(__dirname, "public", "admin.html")
-  );
-});
-
-app.get("/admin", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.redirect("/admin-login.html");
-  }
-
-  res.sendFile(
-    path.join(__dirname, "public", "admin.html")
-  );
-});
-
-/* =========================
-   ADMIN LOGIN API
-========================= */
-
-app.post("/api/admin/login", (req, res) => {
-  const { email, password } = req.body || {};
-
-  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
-    return res.status(500).json({
-      error: "Admin login is not configured on the server."
-    });
-  }
-
-  if (
-    email !== ADMIN_EMAIL ||
-    password !== ADMIN_PASSWORD
-  ) {
-    return res.status(401).json({
-      error: "البريد الإلكتروني أو كلمة المرور غير صحيحة"
-    });
-  }
-
-  const token = createSession();
-
-  res.cookie("zomurud_admin", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: "/"
-  });
-
-  res.json({
-    ok: true
-  });
-});
-
-/* =========================
-   ADMIN LOGOUT
-========================= */
-
-app.post("/api/admin/logout", (req, res) => {
-  deleteSession(req.cookies?.zomurud_admin);
-
-  res.clearCookie("zomurud_admin", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/"
-  });
-
-  res.json({
-    ok: true
-  });
-});
-
-/* =========================
-   CHECK ADMIN LOGIN
-========================= */
-
-app.get("/api/admin/me", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      authenticated: false
-    });
-  }
-
-  res.json({
-    authenticated: true,
-    email: ADMIN_EMAIL
-  });
-});
-
-/* =========================
-   PUBLIC PRODUCTS
-========================= */
-
-app.get("/api/products", (req, res) => {
-  res.json(
-    db.prepare(`
-      SELECT *
-      FROM products
-      WHERE active=1
-      ORDER BY id DESC
-    `).all()
-  );
-});
-
-/* =========================
-   ADMIN STATS
-========================= */
-
-app.get("/api/stats", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
-  }
-
-  res.json({
-    revenue: db.prepare(`
-      SELECT COALESCE(SUM(total),0) x
-      FROM orders
-      WHERE status!='CANCELLED'
-    `).get().x,
-
-    orders: db.prepare(`
-      SELECT COUNT(*) x
-      FROM orders
-    `).get().x,
-
-    customers: db.prepare(`
-      SELECT COUNT(DISTINCT phone) x
-      FROM orders
-    `).get().x,
-
-    products: db.prepare(`
-      SELECT COUNT(*) x
-      FROM products
-      WHERE active=1
-    `).get().x,
-
-    low: db.prepare(`
-      SELECT COUNT(*) x
-      FROM products
-      WHERE active=1
-      AND stock<=3
-    `).get().x
-  });
-});
-
-/* =========================
-   ADD PRODUCT
-========================= */
-
-app.post("/api/products", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
-  }
-
-  const p = req.body || {};
-
-  if (
-    !p.name_ar ||
-    !p.name_en ||
-    !p.category ||
-    Number(p.price) < 0
-  ) {
-    return res.status(400).json({
-      error: "بيانات المنتج ناقصة"
-    });
-  }
-
-  const result = db.prepare(`
-    INSERT INTO products(
-      name_ar,
-      name_en,
-      category,
-      price,
-      compare_price,
-      stock,
-      description_ar,
-      description_en,
-      image
-    )
-    VALUES(?,?,?,?,?,?,?,?,?)
-  `).run(
-    p.name_ar,
-    p.name_en,
-    p.category,
-    Number(p.price),
-    Number(p.compare_price) || 0,
-    Number(p.stock) || 0,
-    p.description_ar || "",
-    p.description_en || "",
-    p.image || ""
-  );
-
-  res.json({
-    id: result.lastInsertRowid
-  });
-});
-
-/* =========================
-   UPDATE PRODUCT
-========================= */
-
-app.put("/api/products/:id", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
-  }
-
-  const p = req.body || {};
-
-  db.prepare(`
-    UPDATE products
-    SET
-      name_ar=?,
-      name_en=?,
-      category=?,
-      price=?,
-      compare_price=?,
-      stock=?,
-      description_ar=?,
-      description_en=?,
-      image=?
-    WHERE id=?
-  `).run(
-    p.name_ar,
-    p.name_en,
-    p.category,
-    Number(p.price),
-    Number(p.compare_price) || 0,
-    Number(p.stock) || 0,
-    p.description_ar || "",
-    p.description_en || "",
-    p.image || "",
-    req.params.id
-  );
-
-  res.json({
-    ok: true
-  });
-});
-
-/* =========================
-   DELETE PRODUCT
-========================= */
-
-app.delete("/api/products/:id", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
-  }
-
-  db.prepare(`
-    UPDATE products
-    SET active=0
-    WHERE id=?
-  `).run(req.params.id);
-
-  res.json({
-    ok: true
-  });
-});
-
-/* =========================
-   GET ORDERS - ADMIN
-========================= */
-
-app.get("/api/orders", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
-  }
-
-  res.json(
-    db.prepare(`
-      SELECT *
-      FROM orders
-      ORDER BY id DESC
-    `).all()
-  );
-});
-
-/* =========================
-   CREATE ORDER - PUBLIC
-========================= */
-
-app.post("/api/orders", (req, res) => {
-  const {
-    customer_name,
-    phone,
-    city,
-    notes,
-    items,
-    total
-  } = req.body || {};
-
-  if (
-    !customer_name ||
-    !phone ||
-    !items?.length
-  ) {
-    return res.status(400).json({
-      error: "البيانات ناقصة"
-    });
-  }
-
-  const orderNo =
-    "ZM-" +
-    Date.now()
-      .toString()
-      .slice(-9);
-
-  const transaction = db.transaction(() => {
-
-    for (const item of items) {
-      const product = db.prepare(`
-        SELECT stock
-        FROM products
-        WHERE id=?
-        AND active=1
-      `).get(item.id);
-
-      if (
-        !product ||
-        product.stock < Number(item.qty)
-      ) {
-        throw new Error(
-          "المخزون غير كاف"
-        );
-      }
+    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+      return res.status(500).json({
+        error:
+          "Admin login is not configured."
+      });
     }
 
-    for (const item of items) {
-      db.prepare(`
-        UPDATE products
-        SET stock=stock-?
-        WHERE id=?
-      `).run(
-        Number(item.qty),
-        item.id
+    if (
+      email !== ADMIN_EMAIL ||
+      password !== ADMIN_PASSWORD
+    ) {
+      return res.status(401).json({
+        error:
+          "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+      });
+    }
+
+    const token =
+      createAdminSession();
+
+    res.cookie(
+      "zomurud_admin",
+      token,
+      {
+        httpOnly: true,
+        secure: req.secure,
+        sameSite: "lax",
+        maxAge:
+          7 * 24 * 60 * 60 * 1000,
+        path: "/"
+      }
+    );
+
+    res.json({
+      ok: true
+    });
+  }
+);
+
+/* =====================================================
+   ADMIN LOGOUT
+===================================================== */
+
+app.post(
+  "/api/admin/logout",
+  (req, res) => {
+    deleteAdminSession(
+      req.cookies.zomurud_admin
+    );
+
+    res.clearCookie(
+      "zomurud_admin",
+      {
+        httpOnly: true,
+        secure: req.secure,
+        sameSite: "lax",
+        path: "/"
+      }
+    );
+
+    res.json({
+      ok: true
+    });
+  }
+);
+
+/* =====================================================
+   ADMIN CHECK
+===================================================== */
+
+app.get(
+  "/api/admin/me",
+  (req, res) => {
+    if (!isAdmin(req)) {
+      return res.status(401).json({
+        authenticated: false
+      });
+    }
+
+    res.json({
+      authenticated: true,
+      email: ADMIN_EMAIL
+    });
+  }
+);
+
+/* =====================================================
+   ADMIN PAGES
+===================================================== */
+
+app.get(
+  "/admin-login.html",
+  (req, res) => {
+    if (isAdmin(req)) {
+      return res.redirect(
+        "/admin.html"
       );
     }
 
-    return db.prepare(`
-      INSERT INTO orders(
-        order_no,
-        customer_name,
-        phone,
-        city,
-        notes,
-        items_json,
-        total
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "admin-login.html"
       )
-      VALUES(?,?,?,?,?,?,?)
-    `).run(
-      orderNo,
-      customer_name,
-      phone,
-      city || "",
-      notes || "",
-      JSON.stringify(items),
-      Number(total) || 0
     );
-  });
+  }
+);
 
-  try {
-    transaction();
+app.get(
+  "/admin.html",
+  (req, res) => {
+    if (!isAdmin(req)) {
+      return res.redirect(
+        "/admin-login.html"
+      );
+    }
+
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "admin.html"
+      )
+    );
+  }
+);
+
+app.get(
+  "/admin",
+  (req, res) => {
+    if (!isAdmin(req)) {
+      return res.redirect(
+        "/admin-login.html"
+      );
+    }
+
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "admin.html"
+      )
+    );
+  }
+);
+
+/* =====================================================
+   PRODUCT HELPERS
+===================================================== */
+
+function getProductImages(productId) {
+  return db.prepare(`
+    SELECT
+      id,
+      image_url,
+      sort_order
+    FROM product_images
+    WHERE product_id=?
+    ORDER BY sort_order ASC, id ASC
+  `).all(productId);
+}
+
+function getProductOptions(productId) {
+  const options =
+    db.prepare(`
+      SELECT
+        id,
+        name_ar,
+        name_en,
+        type,
+        required,
+        sort_order
+      FROM product_options
+      WHERE product_id=?
+      ORDER BY sort_order ASC, id ASC
+    `).all(productId);
+
+  for (const option of options) {
+    option.required =
+      Boolean(option.required);
+
+    option.values =
+      db.prepare(`
+        SELECT
+          id,
+          label_ar,
+          label_en,
+          value,
+          price_delta,
+          sort_order
+        FROM product_option_values
+        WHERE option_id=?
+        ORDER BY sort_order ASC, id ASC
+      `).all(option.id);
+  }
+
+  return options;
+}
+
+function getFullProduct(productId) {
+  const product =
+    db.prepare(`
+      SELECT *
+      FROM products
+      WHERE id=?
+    `).get(productId);
+
+  if (!product) return null;
+
+  product.images =
+    getProductImages(productId);
+
+  product.options =
+    getProductOptions(productId);
+
+  return product;
+}
+
+function getAllProducts(includeInactive = false) {
+  const products =
+    db.prepare(
+      includeInactive
+        ? `
+          SELECT *
+          FROM products
+          ORDER BY id DESC
+        `
+        : `
+          SELECT *
+          FROM products
+          WHERE active=1
+          ORDER BY id DESC
+        `
+    ).all();
+
+  for (const product of products) {
+    product.images =
+      getProductImages(product.id);
+
+    product.options =
+      getProductOptions(product.id);
+  }
+
+  return products;
+}
+
+/* =====================================================
+   PUBLIC PRODUCTS
+===================================================== */
+
+app.get(
+  "/api/products",
+  (req, res) => {
+    res.json(
+      getAllProducts(false)
+    );
+  }
+);
+
+app.get(
+  "/api/products/:id",
+  (req, res) => {
+    const product =
+      getFullProduct(
+        req.params.id
+      );
+
+    if (
+      !product ||
+      !product.active
+    ) {
+      return res.status(404).json({
+        error: "Product not found"
+      });
+    }
+
+    res.json(product);
+  }
+);
+
+/* =====================================================
+   ADMIN STATS
+===================================================== */
+
+app.get(
+  "/api/stats",
+  requireAdmin,
+  (req, res) => {
+    res.json({
+      revenue:
+        db.prepare(`
+          SELECT COALESCE(
+            SUM(total),0
+          ) x
+          FROM orders
+          WHERE status!='CANCELLED'
+        `).get().x,
+
+      orders:
+        db.prepare(`
+          SELECT COUNT(*) x
+          FROM orders
+        `).get().x,
+
+      customers:
+        db.prepare(`
+          SELECT COUNT(
+            DISTINCT phone
+          ) x
+          FROM orders
+        `).get().x,
+
+      products:
+        db.prepare(`
+          SELECT COUNT(*) x
+          FROM products
+          WHERE active=1
+        `).get().x,
+
+      low:
+        db.prepare(`
+          SELECT COUNT(*) x
+          FROM products
+          WHERE active=1
+          AND stock<=3
+        `).get().x
+    });
+  }
+);
+
+/* =====================================================
+   ADMIN GET ALL PRODUCTS
+===================================================== */
+
+app.get(
+  "/api/admin/products",
+  requireAdmin,
+  (req, res) => {
+    res.json(
+      getAllProducts(true)
+    );
+  }
+);
+
+/* =====================================================
+   ADD PRODUCT
+===================================================== */
+
+app.post(
+  "/api/products",
+  requireAdmin,
+  (req, res) => {
+
+    const p = req.body || {};
+
+    if (
+      !p.name_ar ||
+      !p.name_en ||
+      !p.category ||
+      Number(p.price) < 0
+    ) {
+      return res.status(400).json({
+        error:
+          "بيانات المنتج ناقصة"
+      });
+    }
+
+    const transaction =
+      db.transaction(() => {
+
+        const result =
+          db.prepare(`
+            INSERT INTO products(
+              name_ar,
+              name_en,
+              category,
+              price,
+              compare_price,
+              stock,
+              description_ar,
+              description_en,
+              image
+            )
+            VALUES(?,?,?,?,?,?,?,?,?)
+          `).run(
+            p.name_ar,
+            p.name_en,
+            p.category,
+            Number(p.price) || 0,
+            Number(p.compare_price) || 0,
+            Number(p.stock) || 0,
+            p.description_ar || "",
+            p.description_en || "",
+            p.image || ""
+          );
+
+        const productId =
+          Number(result.lastInsertRowid);
+
+        saveProductImages(
+          productId,
+          p.images || []
+        );
+
+        saveProductOptions(
+          productId,
+          p.options || []
+        );
+
+        return productId;
+      });
+
+    try {
+      const id = transaction();
+
+      res.json({
+        ok: true,
+        id
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(400).json({
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/* =====================================================
+   UPDATE PRODUCT
+===================================================== */
+
+app.put(
+  "/api/products/:id",
+  requireAdmin,
+  (req, res) => {
+
+    const p = req.body || {};
+    const id = req.params.id;
+
+    const transaction =
+      db.transaction(() => {
+
+        db.prepare(`
+          UPDATE products
+          SET
+            name_ar=?,
+            name_en=?,
+            category=?,
+            price=?,
+            compare_price=?,
+            stock=?,
+            description_ar=?,
+            description_en=?,
+            image=?
+          WHERE id=?
+        `).run(
+          p.name_ar || "",
+          p.name_en || "",
+          p.category || "",
+          Number(p.price) || 0,
+          Number(p.compare_price) || 0,
+          Number(p.stock) || 0,
+          p.description_ar || "",
+          p.description_en || "",
+          p.image || "",
+          id
+        );
+
+        if (
+          Array.isArray(p.images)
+        ) {
+          db.prepare(`
+            DELETE FROM product_images
+            WHERE product_id=?
+          `).run(id);
+
+          saveProductImages(
+            id,
+            p.images
+          );
+        }
+
+        if (
+          Array.isArray(p.options)
+        ) {
+          deleteProductOptions(id);
+
+          saveProductOptions(
+            id,
+            p.options
+          );
+        }
+      });
+
+    try {
+      transaction();
+
+      res.json({
+        ok: true
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(400).json({
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/* =====================================================
+   DELETE PRODUCT
+===================================================== */
+
+app.delete(
+  "/api/products/:id",
+  requireAdmin,
+  (req, res) => {
+
+    db.prepare(`
+      UPDATE products
+      SET active=0
+      WHERE id=?
+    `).run(req.params.id);
 
     res.json({
-      order_no: orderNo
-    });
-
-  } catch (error) {
-    res.status(400).json({
-      error: error.message
+      ok: true
     });
   }
-});
+);
 
-/* =========================
-   UPDATE ORDER STATUS - ADMIN
-========================= */
+/* =====================================================
+   SAVE PRODUCT IMAGES
+===================================================== */
 
-app.patch("/api/orders/:id", (req, res) => {
-  if (!isAdmin(req)) {
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
+function saveProductImages(
+  productId,
+  images
+) {
+  if (!Array.isArray(images)) {
+    return;
   }
 
-  const allowedStatuses = [
-    "NEW",
-    "CONFIRMED",
-    "PROCESSING",
-    "READY",
-    "SHIPPED",
-    "DELIVERED",
-    "CANCELLED"
-  ];
+  const insert =
+    db.prepare(`
+      INSERT INTO product_images(
+        product_id,
+        image_url,
+        sort_order
+      )
+      VALUES(?,?,?)
+    `);
 
-  if (
-    !allowedStatuses.includes(
-      req.body.status
-    )
-  ) {
-    return res.status(400).json({
-      error: "invalid status"
-    });
+  images.forEach(
+    (image, index) => {
+
+      let url = "";
+
+      if (
+        typeof image === "string"
+      ) {
+        url = image;
+      } else if (
+        image &&
+        image.image_url
+      ) {
+        url = image.image_url;
+      } else if (
+        image &&
+        image.url
+      ) {
+        url = image.url;
+      }
+
+      url = String(url).trim();
+
+      if (!url) return;
+
+      insert.run(
+        productId,
+        url,
+        index
+      );
+    }
+  );
+}
+
+/* =====================================================
+   SAVE PRODUCT OPTIONS
+===================================================== */
+
+function saveProductOptions(
+  productId,
+  options
+) {
+  if (!Array.isArray(options)) {
+    return;
+  }
+
+  const insertOption =
+    db.prepare(`
+      INSERT INTO product_options(
+        product_id,
+        name_ar,
+        name_en,
+        type,
+        required,
+        sort_order
+      )
+      VALUES(?,?,?,?,?,?)
+    `);
+
+  const insertValue =
+    db.prepare(`
+      INSERT INTO product_option_values(
+        option_id,
+        label_ar,
+        label_en,
+        value,
+        price_delta,
+        sort_order
+      )
+      VALUES(?,?,?,?,?,?)
+    `);
+
+  options.forEach(
+    (option, optionIndex) => {
+
+      if (!option) return;
+
+      const nameAr =
+        String(
+          option.name_ar || ""
+        ).trim();
+
+      const nameEn =
+        String(
+          option.name_en || ""
+        ).trim();
+
+      if (!nameAr && !nameEn) {
+        return;
+      }
+
+      const result =
+        insertOption.run(
+          productId,
+          nameAr || nameEn,
+          nameEn || nameAr,
+          option.type || "select",
+          option.required ? 1 : 0,
+          optionIndex
+        );
+
+      const optionId =
+        Number(result.lastInsertRowid);
+
+      const values =
+        Array.isArray(
+          option.values
+        )
+          ? option.values
+          : [];
+
+      values.forEach(
+        (value, valueIndex) => {
+
+          if (!value) return;
+
+          insertValue.run(
+            optionId,
+            String(
+              value.label_ar ||
+              value.label_en ||
+              ""
+            ),
+            String(
+              value.label_en ||
+              value.label_ar ||
+              ""
+            ),
+            String(
+              value.value || ""
+            ),
+            Number(
+              value.price_delta
+            ) || 0,
+            valueIndex
+          );
+        }
+      );
+    }
+  );
+}
+
+function deleteProductOptions(
+  productId
+) {
+  const options =
+    db.prepare(`
+      SELECT id
+      FROM product_options
+      WHERE product_id=?
+    `).all(productId);
+
+  for (const option of options) {
+    db.prepare(`
+      DELETE FROM product_option_values
+      WHERE option_id=?
+    `).run(option.id);
   }
 
   db.prepare(`
-    UPDATE orders
-    SET status=?
-    WHERE id=?
-  `).run(
-    req.body.status,
-    req.params.id
-  );
+    DELETE FROM product_options
+    WHERE product_id=?
+  `).run(productId);
+}
 
-  res.json({
-    ok: true
-  });
-});
+/* =====================================================
+   PRODUCT OPTIONS API
+===================================================== */
 
-/* =========================
-   PDF INVOICE
-========================= */
+app.get(
+  "/api/products/:id/options",
+  (req, res) => {
 
-app.get("/api/invoice/:id", (req, res) => {
+    const product =
+      db.prepare(`
+        SELECT id, active
+        FROM products
+        WHERE id=?
+      `).get(req.params.id);
 
-  const order = db.prepare(`
-    SELECT *
-    FROM orders
-    WHERE id=?
-  `).get(req.params.id);
+    if (
+      !product ||
+      !product.active
+    ) {
+      return res.status(404).json({
+        error:
+          "Product not found"
+      });
+    }
 
-  if (!order) {
-    return res.status(404).send("Not found");
+    res.json(
+      getProductOptions(
+        req.params.id
+      )
+    );
   }
+);
 
-  const doc = new PDFDocument({
-    size: "A4",
-    margin: 45
-  });
+/* =====================================================
+   ORDERS - ADMIN
+===================================================== */
 
-  res.setHeader(
-    "Content-Type",
-    "application/pdf"
-  );
+app.get(
+  "/api/orders",
+  requireAdmin,
+  (req, res) => {
 
-  res.setHeader(
-    "Content-Disposition",
-    `inline; filename="${order.order_no}.pdf"`
-  );
+    res.json(
+      db.prepare(`
+        SELECT *
+        FROM orders
+        ORDER BY id DESC
+      `).all()
+    );
+  }
+);
 
-  doc.pipe(res);
+/* =====================================================
+   CREATE ORDER - PUBLIC
+===================================================== */
 
-  doc
-    .fontSize(25)
-    .text("ZOMURUD");
+app.post(
+  "/api/orders",
+  (req, res) => {
 
-  doc
-    .fontSize(11)
-    .fillColor("#555")
-    .text("الزمرد | Sales Invoice");
+    const {
+      customer_name,
+      phone,
+      city,
+      notes,
+      items,
+      total
+    } = req.body || {};
 
-  doc
-    .fillColor("#111")
-    .text(`Invoice: ${order.order_no}`)
-    .text(
-      `Date: ${new Date(
-        order.created_at
-      ).toLocaleDateString("en-GB")}`
-    )
-    .moveDown();
+    if (
+      !customer_name ||
+      !phone ||
+      !Array.isArray(items) ||
+      !items.length
+    ) {
+      return res.status(400).json({
+        error:
+          "البيانات ناقصة"
+      });
+    }
 
-  doc
-    .text(`Customer: ${order.customer_name}`)
-    .text(`Phone: ${order.phone}`)
-    .text(`City: ${order.city || ""}`)
-    .moveDown();
+    const orderNo =
+      "ZM-" +
+      Date.now()
+        .toString()
+        .slice(-9);
 
-  let y = doc.y + 15;
+    try {
 
-  doc
-    .text("Product", 55, y)
-    .text("Qty", 350, y)
-    .text("Unit", 405, y)
-    .text("Total", 480, y);
+      const transaction =
+        db.transaction(() => {
 
-  y += 25;
+          let calculatedTotal = 0;
 
-  for (
-    const item of JSON.parse(
-      order.items_json
-    )
-  ) {
+          for (
+            const item of items
+          ) {
+
+            const product =
+              db.prepare(`
+                SELECT
+                  id,
+                  name_ar,
+                  name_en,
+                  price,
+                  stock
+                FROM products
+                WHERE id=?
+                AND active=1
+              `).get(item.id);
+
+            if (
+              !product ||
+              Number(product.stock) <
+                Number(item.qty)
+            ) {
+              throw new Error(
+                "المخزون غير كاف"
+              );
+            }
+
+            const quantity =
+              Math.max(
+                1,
+                Number(item.qty) || 1
+              );
+
+            const unitPrice =
+              Number(
+                item.price ??
+                product.price
+              ) || 0;
+
+            calculatedTotal +=
+              unitPrice * quantity;
+          }
+
+          for (
+            const item of items
+          ) {
+
+            const quantity =
+              Math.max(
+                1,
+                Number(item.qty) || 1
+              );
+
+            db.prepare(`
+              UPDATE products
+              SET stock=stock-?
+              WHERE id=?
+            `).run(
+              quantity,
+              item.id
+            );
+          }
+
+          return db.prepare(`
+            INSERT INTO orders(
+              order_no,
+              customer_name,
+              phone,
+              city,
+              notes,
+              items_json,
+              total
+            )
+            VALUES(?,?,?,?,?,?,?)
+          `).run(
+            orderNo,
+            customer_name,
+            phone,
+            city || "",
+            notes || "",
+            JSON.stringify(items),
+            calculatedTotal
+          );
+        });
+
+      transaction();
+
+      res.json({
+        ok: true,
+        order_no: orderNo
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(400).json({
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/* =====================================================
+   UPDATE ORDER STATUS
+===================================================== */
+
+app.patch(
+  "/api/orders/:id",
+  requireAdmin,
+  (req, res) => {
+
+    const allowedStatuses = [
+      "NEW",
+      "CONFIRMED",
+      "PROCESSING",
+      "READY",
+      "SHIPPED",
+      "DELIVERED",
+      "CANCELLED"
+    ];
+
+    if (
+      !allowedStatuses.includes(
+        req.body?.status
+      )
+    ) {
+      return res.status(400).json({
+        error:
+          "invalid status"
+      });
+    }
+
+    db.prepare(`
+      UPDATE orders
+      SET status=?
+      WHERE id=?
+    `).run(
+      req.body.status,
+      req.params.id
+    );
+
+    res.json({
+      ok: true
+    });
+  }
+);
+
+/* =====================================================
+   PDF INVOICE
+===================================================== */
+
+app.get(
+  "/api/invoice/:id",
+  (req, res) => {
+
+    const order =
+      db.prepare(`
+        SELECT *
+        FROM orders
+        WHERE id=?
+      `).get(req.params.id);
+
+    if (!order) {
+      return res
+        .status(404)
+        .send("Not found");
+    }
+
+    const doc =
+      new PDFDocument({
+        size: "A4",
+        margin: 45
+      });
+
+    res.setHeader(
+      "Content-Type",
+      "application/pdf"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${order.order_no}.pdf"`
+    );
+
+    doc.pipe(res);
+
+    doc
+      .fontSize(25)
+      .text("ZOMURUD");
+
+    doc
+      .fontSize(11)
+      .fillColor("#555")
+      .text(
+        "الزمرد | Sales Invoice"
+      );
+
+    doc
+      .fillColor("#111")
+      .text(
+        `Invoice: ${order.order_no}`
+      )
+      .text(
+        `Date: ${new Date(
+          order.created_at
+        ).toLocaleDateString(
+          "en-GB"
+        )}`
+      )
+      .moveDown();
 
     doc
       .text(
-        String(item.name).slice(0, 38),
+        `Customer: ${order.customer_name}`
+      )
+      .text(
+        `Phone: ${order.phone}`
+      )
+      .text(
+        `City: ${order.city || ""}`
+      )
+      .moveDown();
+
+    let y = doc.y + 15;
+
+    doc
+      .text(
+        "Product",
         55,
         y
       )
       .text(
-        String(item.qty),
+        "Qty",
         350,
         y
       )
       .text(
-        `AED ${Number(item.price).toFixed(2)}`,
+        "Unit",
         405,
         y
       )
       .text(
-        `AED ${(Number(item.price) * Number(item.qty)).toFixed(2)}`,
+        "Total",
         480,
         y
       );
 
     y += 25;
+
+    let items = [];
+
+    try {
+      items =
+        JSON.parse(
+          order.items_json
+        );
+    } catch {
+      items = [];
+    }
+
+    for (
+      const item of items
+    ) {
+
+      const qty =
+        Number(item.qty) || 1;
+
+      const price =
+        Number(item.price) || 0;
+
+      doc
+        .text(
+          String(
+            item.name ||
+            item.name_en ||
+            item.name_ar ||
+            ""
+          ).slice(0, 38),
+          55,
+          y
+        )
+        .text(
+          String(qty),
+          350,
+          y
+        )
+        .text(
+          `AED ${price.toFixed(2)}`,
+          405,
+          y
+        )
+        .text(
+          `AED ${(price * qty).toFixed(2)}`,
+          480,
+          y
+        );
+
+      y += 25;
+    }
+
+    doc
+      .moveDown(2)
+      .fontSize(15)
+      .text(
+        `TOTAL: AED ${Number(
+          order.total
+        ).toFixed(2)}`,
+        370,
+        doc.y,
+        {
+          align: "right"
+        }
+      );
+
+    doc.end();
   }
+);
 
-  doc
-    .moveDown(2)
-    .fontSize(15)
-    .text(
-      `TOTAL: AED ${Number(order.total).toFixed(2)}`,
-      370,
-      doc.y,
-      {
-        align: "right"
-      }
-    );
-
-  doc.end();
-});
-
-/* =========================
+/* =====================================================
    STATIC FILES
-========================= */
+===================================================== */
 
 app.use(
   express.static(
-    path.join(__dirname, "public")
+    path.join(
+      __dirname,
+      "public"
+    )
   )
 );
 
-/* =========================
+/* =====================================================
    HOME
-========================= */
+===================================================== */
 
-app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(
-      __dirname,
-      "public",
-      "index.html"
-    )
-  );
-});
+app.get(
+  "*",
+  (req, res) => {
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "index.html"
+      )
+    );
+  }
+);
 
-/* =========================
+/* =====================================================
    START
-========================= */
+===================================================== */
 
-app.listen(PORT, () => {
-  console.log(
-    `ZOMURUD STORE running on port ${PORT}`
-  );
-});
+app.listen(
+  PORT,
+  () => {
+    console.log(
+      `ZOMURUD STORE running on port ${PORT}`
+    );
+  }
+);
