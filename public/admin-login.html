@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZOMURUD Admin Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 35px 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      color: #222;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 18px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #222;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 12px;
+      background: #111;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    #message {
+      margin-top: 18px;
+      text-align: center;
+      color: #d00;
+      min-height: 22px;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+
+    <div class="logo">ZOMURUD</div>
+
+    <div class="subtitle">
+      تسجيل الدخول إلى لوحة الإدارة
+    </div>
+
+    <form id="loginForm">
+
+      <label for="email">البريد الإلكتروني</label>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="أدخل بريد الإدارة"
+        required
+        autocomplete="username"
+      >
+
+      <label for="password">كلمة المرور</label>
+
+      <input
+        id="password"
+        type="password"
+        placeholder="أدخل كلمة المرور"
+        required
+        autocomplete="current-password"
+      >
+
+      <button id="loginButton" type="submit">
+        تسجيل الدخول
+      </button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <a class="back" href="/">
+      العودة إلى المتجر
+    </a>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      message.textContent = "";
+      button.disabled = true;
+      button.textContent = "جاري تسجيل الدخول...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+
+        const response = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || "بيانات الدخول غير صحيحة"
+          );
+        }
+
+        window.location.href = "/admin.html";
+
+      } catch (error) {
+
+        message.textContent = error.message;
+
+        button.disabled = false;
+        button.textContent = "تسجيل الدخول";
+      }
+    });
+  </script>
+
+</body>
+</html>
