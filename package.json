@@ -1,13 +1,16 @@
 {
-  "name": "zomurud-shop",
-  "version": "3.0.0",
-  "private": true,
+  "name": "zomurud-store",
+  "version": "1.0.0",
+  "description": "ZOMURUD Store",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.21.1",
-    "better-sqlite3": "^11.3.0",
-    "pdfkit": "^0.15.0"
+    "better-sqlite3": "^11.10.0",
+    "cloudinary": "^2.7.0",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "pdfkit": "^0.17.2"
   }
 }
