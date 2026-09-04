@@ -1,1473 +1,1704 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ZOMURUD Admin</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZOMURUD STORE - لوحة التحكم</title>
 
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f5f3;color:#171717}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-header{background:#111;color:#fff;padding:18px}
-.header{max-width:1200px;margin:auto;display:flex;justify-content:space-between;align-items:center}
-.brand{font-size:24px;font-weight:900;letter-spacing:2px}
-.brand small{display:block;font-size:9px;color:#aaa;letter-spacing:4px}
-.logout{background:transparent;color:#fff;border:1px solid #555;border-radius:7px;padding:9px 15px}
-.container{max-width:1200px;margin:auto;padding:25px 15px 60px}
-h1{margin-bottom:5px}.subtitle{color:#777}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:25px 0}
-.stat,.card{background:#fff;border:1px solid #e5e5e5;border-radius:13px}
-.stat{padding:20px}.stat span{color:#777;font-size:13px}.stat strong{display:block;font-size:28px;margin-top:5px}
-.card{padding:22px;margin-bottom:20px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.full{grid-column:1/-1}
-label{display:block;font-size:12px;font-weight:bold;margin-bottom:6px}
-input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;background:#fff;outline:none}
-textarea{min-height:90px;resize:vertical}
-.btn{border:0;border-radius:8px;padding:11px 16px;font-weight:bold}
-.dark{background:#111;color:#fff}.light{background:#eee}.danger{background:#b42318;color:#fff}.green{background:#16803c;color:#fff}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.image-upload{
-border:2px dashed #ccc;
-border-radius:12px;
-padding:20px;
-text-align:center;
-background:#fafafa;
-margin-bottom:12px
-}
-.image-upload input{border:0;padding:10px}
-.preview{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-margin-top:15px
-}
-.preview-item{position:relative}
-.preview img{width:100%;height:130px;object-fit:cover;border-radius:8px;border:1px solid #ddd}
-.preview button{
-position:absolute;top:5px;left:5px;
-width:28px;height:28px;border:0;border-radius:50%;
-background:#b42318;color:#fff
-}
+    body {
+      margin: 0;
+      font-family: Arial, Tahoma, sans-serif;
+      background: #f5f6f8;
+      color: #222;
+    }
 
-.image-row{display:flex;gap:7px;margin-bottom:7px}
-.image-row input{flex:1}
-.image-row button{width:42px;border:0;border-radius:7px;background:#eee}
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
 
-.option-box{border:1px solid #ddd;border-radius:10px;padding:15px;background:#fafafa;margin:12px 0}
-.option-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.value-row{display:grid;grid-template-columns:1fr 1fr 120px 42px;gap:7px;margin:7px 0}
+    header .top {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
 
-.product,.order{border:1px solid #ddd;border-radius:10px;padding:13px;margin-bottom:10px;background:#fff}
-.product{display:flex;justify-content:space-between;gap:15px;align-items:center}
-.product-info{display:flex;gap:12px;align-items:center}
-.product-info img{width:70px;height:70px;object-fit:cover;border-radius:8px;background:#eee}
-.product-info h3{margin:0 0 5px;font-size:15px}
-.product-info p,.meta{margin:0;color:#777;font-size:12px;line-height:1.8}
-.product-actions{display:flex;gap:7px;flex-wrap:wrap}
-.status{width:auto}
+    header h1 {
+      margin: 0;
+      font-size: 21px;
+    }
 
-.message{
-position:fixed;bottom:20px;left:20px;
-background:#111;color:#fff;padding:13px 18px;
-border-radius:8px;opacity:0;transform:translateY(20px);
-transition:.25s;z-index:9999
-}
-.message.show{opacity:1;transform:translateY(0)}
-.loading{text-align:center;padding:30px;color:#777}
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 14px 50px;
+    }
 
-@media(max-width:800px){
-.stats{grid-template-columns:1fr 1fr}
-.form-grid,.option-grid{grid-template-columns:1fr}
-.full{grid-column:auto}
-.product{flex-direction:column;align-items:flex-start}
-.product-actions{width:100%}
-.preview{grid-template-columns:1fr 1fr}
-.value-row{grid-template-columns:1fr 1fr}
-}
-</style>
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.06);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    h3 {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 12px 0 6px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 15px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .primary {
+      background: #111827;
+      color: white;
+    }
+
+    .green {
+      background: #16834a;
+      color: white;
+    }
+
+    .danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .gray {
+      background: #e5e7eb;
+      color: #111;
+    }
+
+    .upload-box {
+      border: 3px dashed #c9cdd3;
+      border-radius: 18px;
+      padding: 25px;
+      text-align: center;
+      margin-top: 15px;
+      background: #fafafa;
+    }
+
+    .upload-box .big {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .upload-button {
+      display: inline-block;
+      background: #111827;
+      color: white;
+      padding: 13px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    #imageFiles {
+      display: none;
+    }
+
+    #uploadStatus {
+      margin-top: 15px;
+      font-weight: bold;
+      line-height: 1.7;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .image-card {
+      position: relative;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-info {
+      padding: 8px;
+      font-size: 11px;
+      direction: ltr;
+      word-break: break-all;
+    }
+
+    .image-actions {
+      display: flex;
+      gap: 5px;
+      padding: 7px;
+    }
+
+    .image-actions button {
+      flex: 1;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .main-badge {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      background: #16834a;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      z-index: 2;
+    }
+
+    .url-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .url-row input {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .product {
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: white;
+    }
+
+    .product-row {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .product-row img {
+      width: 90px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 9px;
+      background: #eee;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-info strong {
+      font-size: 17px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      background: #f3f4f6;
+    }
+
+    .order {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: white;
+    }
+
+    .order strong {
+      font-size: 17px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #777;
+      padding: 30px;
+    }
+
+    .option {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 12px;
+      background: #fafafa;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .images-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .product-row {
+        align-items: flex-start;
+      }
+
+      .product-row img {
+        width: 75px;
+        height: 65px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-<div class="header">
-<div class="brand">
-ZOMURUD
-<small>ADMIN PANEL</small>
-</div>
-<button class="logout" onclick="logout()">تسجيل الخروج</button>
-</div>
+  <div class="top">
+    <h1>💎 ZOMURUD STORE</h1>
+    <button class="gray" onclick="logout()">تسجيل الخروج</button>
+  </div>
 </header>
 
 <div class="container">
 
-<h1>لوحة إدارة المتجر</h1>
-<p class="subtitle">إدارة المنتجات والصور والخيارات والطلبات</p>
+  <!-- المنتجات -->
+  <div class="card">
+    <h2>🛍️ المنتجات</h2>
 
-<div class="stats">
-<div class="stat"><span>المنتجات</span><strong id="statProducts">0</strong></div>
-<div class="stat"><span>الطلبات</span><strong id="statOrders">0</strong></div>
-<div class="stat"><span>طلبات جديدة</span><strong id="statNew">0</strong></div>
-<div class="stat"><span>المبيعات</span><strong id="statSales">0 AED</strong></div>
-</div>
+    <button class="green" onclick="newProduct()">
+      ＋ إضافة منتج جديد
+    </button>
 
-<!-- PRODUCT -->
-
-<div class="card">
-
-<h2 id="formTitle">إضافة منتج جديد</h2>
-
-<form id="productForm">
-
-<input type="hidden" id="productId">
-
-<div class="form-grid">
-
-<div>
-<label>اسم المنتج بالعربي *</label>
-<input id="nameAr" required placeholder="طاولة عرض">
-</div>
-
-<div>
-<label>اسم المنتج بالإنجليزي</label>
-<input id="nameEn" placeholder="Display Table">
-</div>
-
-<div>
-<label>التصنيف *</label>
-<select id="category" required>
-<option value="">اختر</option>
-<option value="tables">الطاولات</option>
-<option value="stands">منصات العرض</option>
-<option value="carts">العربات</option>
-<option value="booths">الأكشاك</option>
-<option value="custom">تصميم خاص</option>
-</select>
-</div>
-
-<div>
-<label>المخزون</label>
-<input id="stock" type="number" value="1" min="0">
-</div>
-
-<div>
-<label>السعر AED *</label>
-<input id="price" type="number" min="0" step=".01" required>
-</div>
-
-<div>
-<label>السعر السابق AED</label>
-<input id="comparePrice" type="number" min="0" step=".01">
-</div>
-
-<div class="full">
-<label>الوصف بالعربي</label>
-<textarea id="descriptionAr"></textarea>
-</div>
-
-<div class="full">
-<label>الوصف بالإنجليزي</label>
-<textarea id="descriptionEn"></textarea>
-</div>
-
-</div>
-
-<hr>
-
-<h3>📷 صور المنتج</h3>
-
-<div class="image-upload">
-
-<strong>اختر الصور من الهاتف</strong>
-
-<p style="color:#777;font-size:12px">
-يمكنك اختيار عدة صور دفعة واحدة.
-</p>
-
-<input
-id="imageFiles"
-type="file"
-accept="image/jpeg,image/png,image/webp"
-multiple
-onchange="uploadImages()"
->
-
-<div id="uploadStatus" style="margin-top:10px;color:#777"></div>
-
-</div>
-
-<div id="preview" class="preview"></div>
-
-<h4>روابط الصور المرفوعة</h4>
-
-<div id="imagesContainer"></div>
-
-<button
-type="button"
-class="btn light"
-onclick="addImageRow()"
->
-+ إضافة رابط صورة
-</button>
-
-<hr>
-
-<h3>⚙️ خيارات المنتج</h3>
-
-<p style="font-size:12px;color:#777">
-مثال: اللون، المقاس، نوع الشعار، LED، عجلات، رف إضافي.
-</p>
-
-<div id="optionsContainer"></div>
-
-<button
-type="button"
-class="btn light"
-onclick="addOption()"
->
-+ إضافة خيار
-</button>
-
-<br>
-
-<label style="margin-top:20px">
-<input id="active" type="checkbox" checked style="width:auto">
- المنتج ظاهر في المتجر
-</label>
-
-<div class="actions">
-
-<button class="btn dark" type="submit">
-💾 حفظ المنتج
-</button>
-
-<button
-type="button"
-class="btn light"
-onclick="resetForm()"
->
-منتج جديد
-</button>
-
-</div>
-
-</form>
-</div>
+    <div id="productsList" style="margin-top:18px;"></div>
+  </div>
 
 
-<!-- PRODUCTS -->
+  <!-- نموذج المنتج -->
+  <div class="card" id="productForm">
 
-<div class="card">
+    <h2 id="formTitle">➕ إضافة منتج</h2>
 
-<h2>المنتجات</h2>
+    <input type="hidden" id="productId">
 
-<div id="productsList">
-<div class="loading">جاري التحميل...</div>
-</div>
+    <div class="grid">
+
+      <div>
+        <label>اسم المنتج بالعربي</label>
+        <input id="nameAr" placeholder="مثال: طاولة عرض">
+      </div>
+
+      <div>
+        <label>اسم المنتج بالإنجليزي</label>
+        <input id="nameEn" placeholder="Display Table">
+      </div>
+
+      <div>
+        <label>التصنيف</label>
+        <input id="category" placeholder="Tables / Booths / Carts">
+      </div>
+
+      <div>
+        <label>المخزون</label>
+        <input id="stock" type="number" value="0">
+      </div>
+
+      <div>
+        <label>السعر</label>
+        <input id="price" type="number" step="0.01" placeholder="2500">
+      </div>
+
+      <div>
+        <label>السعر قبل الخصم</label>
+        <input id="comparePrice" type="number" step="0.01">
+      </div>
+
+    </div>
+
+    <label>الوصف بالعربي</label>
+    <textarea id="descriptionAr"></textarea>
+
+    <label>الوصف بالإنجليزي</label>
+    <textarea id="descriptionEn"></textarea>
+
+
+    <!-- الصور -->
+    <hr style="margin:25px 0">
+
+    <h2>📸 صور المنتج</h2>
+
+    <div class="upload-box">
+
+      <div class="big">
+        اختر عدة صور من الهاتف
+      </div>
+
+      <div>
+        يمكنك اختيار عدة صور دفعة واحدة
+      </div>
+
+      <label for="imageFiles" class="upload-button">
+        📷 اختيار الصور
+      </label>
+
+      <input
+        id="imageFiles"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+      >
+
+      <div id="uploadStatus"></div>
+
+    </div>
+
+    <div id="imagesGrid" class="images-grid"></div>
+
+
+    <!-- روابط يدوية -->
+    <div style="margin-top:25px">
+
+      <h3>🔗 روابط الصور المرفوعة</h3>
+
+      <div id="manualUrls"></div>
+
+      <button class="gray" onclick="addManualUrl()">
+        ＋ إضافة رابط صورة
+      </button>
+
+    </div>
+
+
+    <!-- الخيارات -->
+    <hr style="margin:25px 0">
+
+    <h2>⚙️ خيارات المنتج</h2>
+
+    <div id="optionsList"></div>
+
+    <button class="gray" onclick="addOption()">
+      ＋ إضافة خيار
+    </button>
+
+
+    <!-- حفظ -->
+    <hr style="margin:25px 0">
+
+    <div class="actions">
+
+      <button class="green" onclick="saveProduct()">
+        💾 حفظ المنتج
+      </button>
+
+      <button class="gray" onclick="newProduct()">
+        إلغاء
+      </button>
+
+    </div>
+
+    <div id="saveStatus" class="status hidden"></div>
+
+  </div>
+
+
+  <!-- الطلبات -->
+  <div class="card">
+
+    <h2>📦 الطلبات</h2>
+
+    <div id="ordersList"></div>
+
+  </div>
 
 </div>
-
-
-<!-- ORDERS -->
-
-<div class="card">
-
-<h2>الطلبات</h2>
-
-<div id="ordersList">
-<div class="loading">جاري التحميل...</div>
-</div>
-
-</div>
-
-</div>
-
-<div id="message" class="message"></div>
 
 
 <script>
 
-/* ==========================
-   CLOUDINARY
-========================== */
-
 const CLOUD_NAME = "kdksxxgu";
 const UPLOAD_PRESET = "zomurud_store";
 
-let products = [];
-let orders = [];
-let optionCounter = 0;
+let uploadedImages = [];
+let productOptions = [];
 
 
-/* ==========================
-   AUTH
-========================== */
+// ==========================================
+// التحقق من تسجيل الدخول
+// ==========================================
 
-async function checkAuth(){
+async function checkAuth() {
 
-try{
+  try {
 
-const r = await fetch("/api/admin/me");
+    const res = await fetch("/api/admin/me", {
+      credentials: "include"
+    });
 
-if(!r.ok){
-location.href="/admin-login.html";
-return false;
-}
+    if (!res.ok) {
+      window.location.href = "/admin-login.html";
+      return false;
+    }
 
-return true;
+    return true;
 
-}catch(e){
+  } catch (err) {
 
-location.href="/admin-login.html";
-return false;
-
-}
-
-}
-
-async function logout(){
-
-await fetch("/api/admin/logout",{method:"POST"});
-location.href="/admin-login.html";
-
+    window.location.href = "/admin-login.html";
+    return false;
+  }
 }
 
 
-/* ==========================
-   CLOUDINARY UPLOAD
-========================== */
+// ==========================================
+// تسجيل الخروج
+// ==========================================
 
-async function uploadImages(){
+async function logout() {
 
-const files =
-document.getElementById("imageFiles").files;
+  try {
+    await fetch("/api/admin/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+  } catch (e) {}
 
-if(!files.length) return;
-
-const status =
-document.getElementById("uploadStatus");
-
-status.textContent =
-"جاري رفع الصور...";
-
-for(const file of files){
-
-try{
-
-const formData = new FormData();
-
-formData.append("file",file);
-formData.append("upload_preset",UPLOAD_PRESET);
-formData.append("folder","zomurud");
-
-const response =
-await fetch(
-`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-{
-method:"POST",
-body:formData
-}
-);
-
-const data = await response.json();
-
-if(!response.ok){
-throw new Error(
-data.error?.message || "فشل رفع الصورة"
-);
-}
-
-addUploadedImage(data.secure_url);
-
-}catch(error){
-
-console.error(error);
-
-showMessage(
-"تعذر رفع صورة: "+file.name
-);
-
-}
-
-}
-
-status.textContent =
-"✅ تم رفع الصور بنجاح";
-
-document.getElementById(
-"imageFiles"
-).value="";
-
+  window.location.href = "/admin-login.html";
 }
 
 
-function addUploadedImage(url){
+// ==========================================
+// تحميل المنتجات
+// ==========================================
 
-addImageRow(url);
+async function loadProducts() {
 
-const preview =
-document.getElementById("preview");
+  const box = document.getElementById("productsList");
 
-const div =
-document.createElement("div");
+  box.innerHTML = "جاري تحميل المنتجات...";
 
-div.className="preview-item";
+  try {
 
-div.innerHTML=`
+    const res = await fetch("/api/admin/products", {
+      credentials: "include"
+    });
 
-<img src="${escapeHtml(url)}">
+    if (!res.ok) {
+      box.innerHTML = "تعذر تحميل المنتجات";
+      return;
+    }
 
-<button
-type="button"
-onclick="this.parentElement.remove();removeImageUrl('${escapeHtml(url)}')"
->
-×
-</button>
+    const products = await res.json();
 
-`;
+    if (!products.length) {
 
-preview.appendChild(div);
+      box.innerHTML = `
+        <div class="empty">
+          لا توجد منتجات حتى الآن
+        </div>
+      `;
 
+      return;
+    }
+
+    box.innerHTML = products.map(product => {
+
+      const image =
+        product.image ||
+        (product.images && product.images[0] && product.images[0].url) ||
+        "";
+
+      return `
+        <div class="product">
+
+          <div class="product-row">
+
+            ${
+              image
+              ? `<img src="${escapeHtml(image)}" onerror="this.style.display='none'">`
+              : `<div style="width:90px;height:70px;background:#eee;border-radius:9px"></div>`
+            }
+
+            <div class="product-info">
+
+              <strong>
+                ${escapeHtml(product.name_ar || product.name_en || "بدون اسم")}
+              </strong>
+
+              <div>
+                ${Number(product.price || 0).toFixed(2)}
+              </div>
+
+              <small>
+                المخزون: ${product.stock ?? 0}
+              </small>
+
+            </div>
+
+          </div>
+
+          <div class="actions">
+
+            <button class="primary"
+              onclick='editProduct(${JSON.stringify(product)})'>
+              ✏️ تعديل
+            </button>
+
+            <button class="danger"
+              onclick="deleteProduct(${product.id})">
+              🗑️ حذف
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  } catch (err) {
+
+    console.error(err);
+
+    box.innerHTML = `
+      <div class="status">
+        حدث خطأ أثناء تحميل المنتجات
+      </div>
+    `;
+  }
 }
 
 
-function removeImageUrl(url){
+// ==========================================
+// منتج جديد
+// ==========================================
 
-document
-.querySelectorAll(".image-url")
-.forEach(input=>{
+function newProduct() {
 
-if(input.value===url){
+  document.getElementById("formTitle").textContent =
+    "➕ إضافة منتج";
 
-input.parentElement.remove();
+  document.getElementById("productId").value = "";
 
-}
+  document.getElementById("nameAr").value = "";
+  document.getElementById("nameEn").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("stock").value = "0";
+  document.getElementById("price").value = "";
+  document.getElementById("comparePrice").value = "";
+  document.getElementById("descriptionAr").value = "";
+  document.getElementById("descriptionEn").value = "";
 
-});
+  uploadedImages = [];
+  productOptions = [];
 
-}
+  renderImages();
+  renderOptions();
 
+  document.getElementById("manualUrls").innerHTML = "";
 
-/* ==========================
-   IMAGES
-========================== */
+  document.getElementById("saveStatus").classList.add("hidden");
 
-function addImageRow(url=""){
-
-const container =
-document.getElementById(
-"imagesContainer"
-);
-
-const row =
-document.createElement("div");
-
-row.className="image-row";
-
-row.innerHTML=`
-
-<input
-class="image-url"
-value="${escapeHtml(url)}"
-placeholder="رابط الصورة"
->
-
-<button
-type="button"
-onclick="removeImageRow(this)"
->
-×
-</button>
-
-`;
-
-container.appendChild(row);
-
+  window.scrollTo({
+    top: document.getElementById("productForm").offsetTop - 70,
+    behavior: "smooth"
+  });
 }
 
 
-function removeImageRow(button){
+// ==========================================
+// اختيار الصور
+// ==========================================
 
-const rows =
-document.querySelectorAll(
-".image-row"
-);
-
-if(rows.length===1){
-
-rows[0].querySelector(
-"input"
-).value="";
-
-return;
-
-}
-
-button.parentElement.remove();
-
-}
-
-
-/* ==========================
-   PRODUCTS
-========================== */
-
-async function loadProducts(){
-
-try{
-
-const r =
-await fetch("/api/admin/products");
-
-if(r.status===401){
-location.href="/admin-login.html";
-return;
-}
-
-products=await r.json();
-
-renderProducts();
-
-}catch(e){
-
-document.getElementById(
-"productsList"
-).innerHTML=
-'<div class="loading">تعذر تحميل المنتجات</div>';
-
-}
-
-}
-
-
-function renderProducts(){
-
-const box =
-document.getElementById(
-"productsList"
-);
-
-if(!products.length){
-
-box.innerHTML=
-'<div class="loading">لا توجد منتجات</div>';
-
-return;
-
-}
-
-box.innerHTML =
-products.map(p=>{
-
-const image =
-p.image ||
-p.images?.[0]?.url ||
-"https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=500&q=80";
-
-return `
-
-<div class="product">
-
-<div class="product-info">
-
-<img
-src="${escapeHtml(image)}"
-onerror="this.style.display='none'"
->
-
-<div>
-
-<h3>
-${escapeHtml(
-p.name_ar || p.name_en || "منتج"
-)}
-</h3>
-
-<p>
-${escapeHtml(p.category||"")}
- ·
-${money(p.price)} AED
- ·
-المخزون: ${p.stock??0}
-</p>
-
-</div>
-
-</div>
-
-<div class="product-actions">
-
-<button
-class="btn light"
-onclick="editProduct(${p.id})"
->
-تعديل
-</button>
-
-<button
-class="btn danger"
-onclick="deleteProduct(${p.id})"
->
-حذف
-</button>
-
-</div>
-
-</div>
-
-`;
-
-}).join("");
-
-}
-
-
-/* ==========================
-   SAVE PRODUCT
-========================== */
-
-document
-.getElementById("productForm")
-.addEventListener(
-"submit",
-saveProduct
+document.getElementById("imageFiles").addEventListener(
+  "change",
+  uploadImages
 );
 
 
-async function saveProduct(e){
+// ==========================================
+// رفع عدة صور إلى Cloudinary
+// ==========================================
 
-e.preventDefault();
+async function uploadImages() {
 
-const id =
-document.getElementById("productId").value;
+  const input = document.getElementById("imageFiles");
+  const status = document.getElementById("uploadStatus");
 
-const imageUrls =
-Array.from(
-document.querySelectorAll(
-".image-url"
-)
-)
-.map(x=>x.value.trim())
-.filter(Boolean);
+  const files = Array.from(input.files || []);
 
-const product={
+  if (!files.length) {
 
-name_ar:
-document.getElementById("nameAr").value.trim(),
+    status.innerHTML =
+      "⚠️ لم يتم اختيار أي ملف.";
 
-name_en:
-document.getElementById("nameEn").value.trim(),
+    return;
+  }
 
-category:
-document.getElementById("category").value,
+  status.innerHTML =
+    `⏳ جاري رفع ${files.length} صورة...`;
 
-price:
-Number(
-document.getElementById("price").value
-),
+  let successCount = 0;
+  let failCount = 0;
 
-compare_price:
-Number(
-document.getElementById("comparePrice").value
-)||0,
+  for (let i = 0; i < files.length; i++) {
 
-stock:
-Number(
-document.getElementById("stock").value
-)||0,
+    const file = files[i];
 
-description_ar:
-document.getElementById("descriptionAr").value.trim(),
+    try {
 
-description_en:
-document.getElementById("descriptionEn").value.trim(),
+      status.innerHTML =
+        `⏳ جاري رفع الصورة ${i + 1} من ${files.length}...`;
 
-image:
-imageUrls[0]||"",
+      const formData = new FormData();
 
-images:
-imageUrls.map(url=>({url})),
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET);
+      formData.append("folder", "zomurud");
 
-options:
-collectOptions(),
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData
+        }
+      );
 
-active:
-document.getElementById("active").checked?1:0
+      const data = await response.json();
 
-};
+      console.log("Cloudinary:", data);
 
-try{
+      if (!response.ok || !data.secure_url) {
 
-const r =
-await fetch(
-id
-? `/api/products/${id}`
-: "/api/products",
-{
-method:id?"PUT":"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify(product)
-}
-);
+        console.error("Upload failed:", data);
 
-const data=await r.json();
+        failCount++;
 
-if(!r.ok){
-throw new Error(
-data.error||"تعذر حفظ المنتج"
-);
-}
+        continue;
+      }
 
-showMessage(
-id
-?"✅ تم تحديث المنتج"
-:"✅ تمت إضافة المنتج"
-);
+      uploadedImages.push({
+        url: data.secure_url,
+        public_id: data.public_id || "",
+        original_name: file.name
+      });
 
-resetForm();
+      successCount++;
 
-await loadProducts();
-await loadStats();
+      renderImages();
 
-}catch(error){
+    } catch (error) {
 
-console.error(error);
-showMessage(error.message);
+      console.error(error);
 
-}
+      failCount++;
+    }
+  }
 
+  input.value = "";
+
+  if (successCount > 0 && failCount === 0) {
+
+    status.innerHTML =
+      `✅ تم رفع ${successCount} صورة بنجاح`;
+
+  } else if (successCount > 0 && failCount > 0) {
+
+    status.innerHTML =
+      `⚠️ تم رفع ${successCount} صور، وفشل رفع ${failCount} صور`;
+
+  } else {
+
+    status.innerHTML =
+      `❌ فشل رفع الصور. تحقق من Cloudinary Upload Preset.`;
+  }
 }
 
 
-/* ==========================
-   EDIT
-========================== */
+// ==========================================
+// عرض الصور
+// ==========================================
 
-function editProduct(id){
+function renderImages() {
 
-const p =
-products.find(
-x=>Number(x.id)===Number(id)
-);
+  const grid = document.getElementById("imagesGrid");
 
-if(!p)return;
+  if (!uploadedImages.length) {
 
-document.getElementById(
-"formTitle"
-).textContent="تعديل المنتج";
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;color:#777;padding:20px">
+        لم تتم إضافة صور بعد
+      </div>
+    `;
 
-document.getElementById(
-"productId"
-).value=p.id;
+    return;
+  }
 
-document.getElementById(
-"nameAr"
-).value=p.name_ar||"";
+  grid.innerHTML = uploadedImages.map((image, index) => {
 
-document.getElementById(
-"nameEn"
-).value=p.name_en||"";
+    return `
 
-document.getElementById(
-"category"
-).value=normalizeCategory(
-p.category
-);
+      <div class="image-card">
 
-document.getElementById(
-"stock"
-).value=p.stock??0;
+        ${
+          index === 0
+          ? `<div class="main-badge">الصورة الرئيسية</div>`
+          : ""
+        }
 
-document.getElementById(
-"price"
-).value=p.price??0;
+        <img
+          src="${escapeHtml(image.url)}"
+          onerror="this.style.opacity='.3'"
+        >
 
-document.getElementById(
-"comparePrice"
-).value=p.compare_price??"";
+        <div class="image-info">
+          ${escapeHtml(image.url)}
+        </div>
 
-document.getElementById(
-"descriptionAr"
-).value=p.description_ar||"";
+        <div class="image-actions">
 
-document.getElementById(
-"descriptionEn"
-).value=p.description_en||"";
+          ${
+            index !== 0
+            ? `
+              <button
+                class="green"
+                onclick="makeMainImage(${index})">
+                الرئيسية
+              </button>
+            `
+            : ""
+          }
 
-document.getElementById(
-"active"
-).checked=p.active!==0;
+          <button
+            class="danger"
+            onclick="removeImage(${index})">
+            حذف
+          </button>
 
+        </div>
 
-/* images */
+      </div>
+    `;
 
-document.getElementById(
-"imagesContainer"
-).innerHTML="";
-
-document.getElementById(
-"preview"
-).innerHTML="";
-
-let urls=[];
-
-if(p.images?.length){
-urls=p.images
-.map(x=>x.url)
-.filter(Boolean);
-}
-
-if(!urls.length&&p.image){
-urls=[p.image];
-}
-
-if(!urls.length)urls=[""];
-
-urls.forEach(url=>{
-addImageRow(url);
-
-if(url){
-const preview =
-document.getElementById("preview");
-
-const div =
-document.createElement("div");
-
-div.className="preview-item";
-
-div.innerHTML=`
-
-<img src="${escapeHtml(url)}">
-
-<button
-type="button"
-onclick="this.parentElement.remove();removeImageUrl('${escapeHtml(url)}')"
->
-×
-</button>
-
-`;
-
-preview.appendChild(div);
-}
-
-});
-
-
-/* options */
-
-document.getElementById(
-"optionsContainer"
-).innerHTML="";
-
-optionCounter=0;
-
-(p.options||[]).forEach(
-option=>addOption(option)
-);
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
+  }).join("");
 }
 
 
-/* ==========================
-   DELETE
-========================== */
+// ==========================================
+// جعل صورة رئيسية
+// ==========================================
 
-async function deleteProduct(id){
+function makeMainImage(index) {
 
-if(!confirm(
-"هل تريد حذف المنتج؟"
-))return;
+  const selected = uploadedImages[index];
 
-try{
+  uploadedImages.splice(index, 1);
 
-const r =
-await fetch(
-`/api/products/${id}`,
-{
-method:"DELETE"
-}
-);
+  uploadedImages.unshift(selected);
 
-const data=await r.json();
-
-if(!r.ok){
-throw new Error(
-data.error||"تعذر الحذف"
-);
-}
-
-showMessage("تم حذف المنتج");
-
-await loadProducts();
-await loadStats();
-
-}catch(e){
-
-showMessage(e.message);
-
-}
-
+  renderImages();
 }
 
 
-/* ==========================
-   OPTIONS
-========================== */
+// ==========================================
+// حذف صورة
+// ==========================================
 
-function addOption(existing=null){
+function removeImage(index) {
 
-const index=optionCounter++;
+  if (!confirm("هل تريد حذف هذه الصورة من المنتج؟")) {
+    return;
+  }
 
-const box =
-document.createElement("div");
+  uploadedImages.splice(index, 1);
 
-box.className="option-box";
-
-box.innerHTML=`
-
-<div class="option-head">
-
-<strong>خيار المنتج</strong>
-
-<button
-type="button"
-class="btn danger"
-onclick="this.closest('.option-box').remove()"
->
-حذف
-</button>
-
-</div>
-
-<div class="option-grid">
-
-<div>
-
-<label>اسم الخيار بالعربي</label>
-
-<input
-class="option-name-ar"
-value="${escapeHtml(
-existing?.name_ar||""
-)}"
-placeholder="اللون"
->
-
-</div>
-
-<div>
-
-<label>Option Name English</label>
-
-<input
-class="option-name-en"
-value="${escapeHtml(
-existing?.name_en||""
-)}"
-placeholder="Color"
->
-
-</div>
-
-</div>
-
-<label style="margin-top:12px">
-
-<input
-type="checkbox"
-class="option-required"
-style="width:auto"
-${existing?.required?"checked":""}
->
-
- خيار إجباري
-
-</label>
-
-<h4>القيم</h4>
-
-<div class="value-list"></div>
-
-<button
-type="button"
-class="btn light"
-onclick="addValue(this)"
->
-+ إضافة قيمة
-</button>
-
-`;
-
-document
-.getElementById(
-"optionsContainer"
-)
-.appendChild(box);
-
-const addButton =
-box.querySelector(
-".value-list + button"
-);
-
-if(existing?.values?.length){
-
-existing.values.forEach(
-v=>addValue(addButton,v)
-);
-
-}else{
-
-addValue(addButton);
-
-}
-
+  renderImages();
 }
 
 
-function addValue(button,existing=null){
+// ==========================================
+// إضافة رابط صورة يدوي
+// ==========================================
 
-const list =
-button
-.parentElement
-.querySelector(
-".value-list"
-);
+function addManualUrl(value = "") {
 
-const row =
-document.createElement("div");
+  const box = document.getElementById("manualUrls");
 
-row.className="value-row";
+  const row = document.createElement("div");
 
-row.innerHTML=`
+  row.className = "url-row";
 
-<input
-class="value-ar"
-value="${escapeHtml(
-existing?.label_ar||""
-)}"
-placeholder="أبيض"
->
+  row.innerHTML = `
 
-<input
-class="value-en"
-value="${escapeHtml(
-existing?.label_en||""
-)}"
-placeholder="White"
->
+    <input
+      class="manual-url"
+      placeholder="https://..."
+      value="${escapeHtml(value)}"
+    >
 
-<input
-class="value-price"
-type="number"
-step=".01"
-value="${existing?.price_delta??0}"
-placeholder="+ السعر"
->
+    <button
+      class="danger"
+      onclick="this.parentElement.remove()">
+      ×
+    </button>
 
-<button
-type="button"
-class="btn light"
-onclick="this.parentElement.remove()"
->
-×
-</button>
+  `;
 
-`;
-
-list.appendChild(row);
-
+  box.appendChild(row);
 }
 
 
-function collectOptions(){
+// ==========================================
+// الخيارات
+// ==========================================
 
-return Array.from(
-document.querySelectorAll(
-".option-box"
-)
-)
-.map(box=>{
+function addOption(option = null) {
 
-const values =
-Array.from(
-box.querySelectorAll(
-".value-row"
-)
-)
-.map(row=>({
+  const item = option || {
 
-label_ar:
-row.querySelector(".value-ar").value.trim(),
+    name_ar: "",
+    name_en: "",
+    type: "select",
+    required: false,
+    values: []
 
-label_en:
-row.querySelector(".value-en").value.trim(),
+  };
 
-price_delta:
-Number(
-row.querySelector(".value-price").value
-)||0
+  productOptions.push(item);
 
-}))
-.filter(
-x=>x.label_ar||x.label_en
-);
-
-return{
-
-name_ar:
-box.querySelector(
-".option-name-ar"
-).value.trim(),
-
-name_en:
-box.querySelector(
-".option-name-en"
-).value.trim(),
-
-required:
-box.querySelector(
-".option-required"
-).checked?1:0,
-
-values
-
-};
-
-})
-.filter(
-x=>x.name_ar||x.name_en
-);
-
+  renderOptions();
 }
 
 
-/* ==========================
-   ORDERS
-========================== */
+function renderOptions() {
 
-async function loadOrders(){
+  const box = document.getElementById("optionsList");
 
-try{
+  box.innerHTML = "";
 
-const r =
-await fetch("/api/orders");
+  productOptions.forEach((option, index) => {
 
-if(!r.ok)return;
+    const div = document.createElement("div");
 
-orders=await r.json();
+    div.className = "option";
 
-renderOrders();
+    div.innerHTML = `
 
-}catch(e){
+      <h3>الخيار ${index + 1}</h3>
 
-console.error(e);
+      <label>اسم الخيار بالعربي</label>
 
-}
+      <input
+        class="option-ar"
+        value="${escapeHtml(option.name_ar || "")}"
+        placeholder="اللون">
 
-}
+      <label>اسم الخيار بالإنجليزي</label>
 
+      <input
+        class="option-en"
+        value="${escapeHtml(option.name_en || "")}"
+        placeholder="Color">
 
-function renderOrders(){
+      <label>نوع الخيار</label>
 
-const box =
-document.getElementById(
-"ordersList"
-);
+      <select class="option-type">
 
-if(!orders.length){
+        <option value="select"
+          ${option.type === "select" ? "selected" : ""}>
+          قائمة اختيار
+        </option>
 
-box.innerHTML=
-'<div class="loading">لا توجد طلبات</div>';
+        <option value="radio"
+          ${option.type === "radio" ? "selected" : ""}>
+          اختيار واحد
+        </option>
 
-return;
+      </select>
 
-}
+      <label style="display:flex;gap:8px;align-items:center">
 
-box.innerHTML =
-orders.map(o=>`
+        <input
+          type="checkbox"
+          class="option-required"
+          ${option.required ? "checked" : ""}
+          style="width:auto">
 
-<div class="order">
+        خيار إلزامي
 
-<strong>
-${escapeHtml(
-o.order_no||"#"+o.id
-)}
-</strong>
+      </label>
 
-<div class="meta">
+      <div class="option-values">
 
-العميل:
-${escapeHtml(o.customer_name||"")}
+        <h4>قيم الخيار</h4>
 
-<br>
+        <div class="values-container"></div>
 
-الهاتف:
-${escapeHtml(o.phone||"")}
+        <button
+          class="gray"
+          onclick="addOptionValue(${index})">
+          ＋ إضافة قيمة
+        </button>
 
-<br>
+      </div>
 
-المدينة:
-${escapeHtml(o.city||"")}
+      <button
+        class="danger"
+        style="margin-top:12px"
+        onclick="removeOption(${index})">
+        حذف الخيار
+      </button>
+    `;
 
-<br>
+    box.appendChild(div);
 
-الإجمالي:
-<strong>${money(o.total)} AED</strong>
+    const valuesBox =
+      div.querySelector(".values-container");
 
-</div>
+    (option.values || []).forEach((value, valueIndex) => {
 
-<br>
+      addOptionValue(index, value, valuesBox);
+    });
 
-<select
-class="status"
-onchange="updateOrderStatus(${o.id},this.value)"
->
-
-<option value="new" ${o.status==="new"?"selected":""}>
-طلب جديد
-</option>
-
-<option value="processing" ${o.status==="processing"?"selected":""}>
-قيد التجهيز
-</option>
-
-<option value="ready" ${o.status==="ready"?"selected":""}>
-جاهز للتسليم
-</option>
-
-<option value="delivered" ${o.status==="delivered"?"selected":""}>
-تم التسليم
-</option>
-
-<option value="cancelled" ${o.status==="cancelled"?"selected":""}>
-ملغي
-</option>
-
-</select>
-
-<a
-href="/api/invoice/${o.id}"
-target="_blank"
-class="btn light"
-style="display:inline-block;margin-top:8px"
->
-الفاتورة
-</a>
-
-</div>
-
-`).join("");
-
+  });
 }
 
 
-async function updateOrderStatus(id,status){
+function addOptionValue(optionIndex, value = null, target = null) {
 
-const r =
-await fetch(
-`/api/orders/${id}`,
-{
-method:"PATCH",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({status})
-}
-);
+  const option = productOptions[optionIndex];
 
-if(r.ok){
+  if (!option.values) {
+    option.values = [];
+  }
 
-showMessage("تم تحديث الطلب");
-await loadOrders();
-await loadStats();
+  if (!value) {
 
-}
+    value = {
+      label_ar: "",
+      label_en: "",
+      price_delta: 0
+    };
 
-}
+    option.values.push(value);
+  }
 
+  const box =
+    target ||
+    document.querySelectorAll(".values-container")[optionIndex];
 
-/* ==========================
-   STATS
-========================== */
+  if (!box) return;
 
-async function loadStats(){
+  const row = document.createElement("div");
 
-try{
+  row.style.cssText =
+    "border:1px solid #ddd;padding:10px;border-radius:10px;margin-top:8px;background:white";
 
-const r =
-await fetch("/api/stats");
+  row.innerHTML = `
 
-if(!r.ok)return;
+    <label>القيمة بالعربي</label>
 
-const d=await r.json();
+    <input
+      class="value-ar"
+      value="${escapeHtml(value.label_ar || "")}"
+      placeholder="بيج">
 
-document.getElementById(
-"statProducts"
-).textContent=
-d.products??d.productCount??0;
+    <label>القيمة بالإنجليزي</label>
 
-document.getElementById(
-"statOrders"
-).textContent=
-d.orders??d.orderCount??0;
+    <input
+      class="value-en"
+      value="${escapeHtml(value.label_en || "")}"
+      placeholder="Beige">
 
-document.getElementById(
-"statNew"
-).textContent=
-d.newOrders??0;
+    <label>فرق السعر</label>
 
-document.getElementById(
-"statSales"
-).textContent=
-money(
-d.sales??d.totalSales??0
-)+" AED";
+    <input
+      class="value-price"
+      type="number"
+      step="0.01"
+      value="${Number(value.price_delta || 0)}">
 
-}catch(e){
+    <button
+      class="danger"
+      style="margin-top:8px"
+      onclick="removeOptionValue(${optionIndex}, this)">
+      حذف القيمة
+    </button>
 
-console.error(e);
+  `;
 
-}
-
+  box.appendChild(row);
 }
 
 
-/* ==========================
-   RESET
-========================== */
+function removeOptionValue(optionIndex, button) {
 
-function resetForm(){
+  const row = button.parentElement;
 
-document.getElementById(
-"productForm"
-).reset();
+  const box = row.parentElement;
 
-document.getElementById(
-"productId"
-).value="";
+  const rows = Array.from(box.children);
 
-document.getElementById(
-"stock"
-).value=1;
+  const index = rows.indexOf(row);
 
-document.getElementById(
-"active"
-).checked=true;
+  if (index >= 0) {
 
-document.getElementById(
-"formTitle"
-).textContent=
-"إضافة منتج جديد";
+    productOptions[optionIndex].values.splice(index, 1);
+  }
 
-document.getElementById(
-"imagesContainer"
-).innerHTML="";
-
-document.getElementById(
-"preview"
-).innerHTML="";
-
-document.getElementById(
-"optionsContainer"
-).innerHTML="";
-
-document.getElementById(
-"uploadStatus"
-).textContent="";
-
-optionCounter=0;
-
-addImageRow();
-
+  row.remove();
 }
 
 
-/* ==========================
-   HELPERS
-========================== */
+function removeOption(index) {
 
-function normalizeCategory(v){
+  productOptions.splice(index, 1);
 
-if(!v)return"";
-
-v=String(v).toLowerCase();
-
-if(v.includes("table")||v.includes("طاول"))return"tables";
-if(v.includes("stand")||v.includes("display")||v.includes("عرض"))return"stands";
-if(v.includes("cart")||v.includes("عرب"))return"carts";
-if(v.includes("booth")||v.includes("كشك"))return"booths";
-
-return"custom";
-
-}
-
-function money(v){
-
-return Number(v||0).toLocaleString(
-"en-AE",
-{
-minimumFractionDigits:0,
-maximumFractionDigits:2
-}
-);
-
-}
-
-function escapeHtml(v){
-
-return String(v??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-
-}
-
-function showMessage(text){
-
-const box =
-document.getElementById("message");
-
-box.textContent=text;
-box.classList.add("show");
-
-setTimeout(
-()=>box.classList.remove("show"),
-3000
-);
-
+  renderOptions();
 }
 
 
-/* ==========================
-   START
-========================== */
+// ==========================================
+// جمع الخيارات
+// ==========================================
 
-(async()=>{
+function collectOptions() {
 
-if(!await checkAuth())return;
+  const optionCards =
+    document.querySelectorAll(".option");
 
-addImageRow();
+  const result = [];
 
-await loadStats();
-await loadProducts();
-await loadOrders();
+  optionCards.forEach((card, index) => {
 
-})();
+    const option = {
+
+      name_ar:
+        card.querySelector(".option-ar").value.trim(),
+
+      name_en:
+        card.querySelector(".option-en").value.trim(),
+
+      type:
+        card.querySelector(".option-type").value,
+
+      required:
+        card.querySelector(".option-required").checked,
+
+      values: []
+
+    };
+
+    card.querySelectorAll(".values-container > div")
+      .forEach(row => {
+
+        option.values.push({
+
+          label_ar:
+            row.querySelector(".value-ar").value.trim(),
+
+          label_en:
+            row.querySelector(".value-en").value.trim(),
+
+          price_delta:
+            Number(
+              row.querySelector(".value-price").value || 0
+            )
+
+        });
+
+      });
+
+    if (
+      option.name_ar ||
+      option.name_en ||
+      option.values.length
+    ) {
+
+      result.push(option);
+    }
+
+  });
+
+  return result;
+}
+
+
+// ==========================================
+// حفظ المنتج
+// ==========================================
+
+async function saveProduct() {
+
+  const status =
+    document.getElementById("saveStatus");
+
+  status.classList.remove("hidden");
+
+  status.innerHTML =
+    "⏳ جاري حفظ المنتج...";
+
+  const id =
+    document.getElementById("productId").value;
+
+  const manualUrls =
+    Array.from(
+      document.querySelectorAll(".manual-url")
+    )
+    .map(input => input.value.trim())
+    .filter(Boolean);
+
+  const allImages = [
+    ...uploadedImages.map(image => ({
+      url: image.url
+    })),
+
+    ...manualUrls.map(url => ({
+      url
+    }))
+  ];
+
+  if (!allImages.length) {
+
+    status.innerHTML =
+      "⚠️ أضف صورة واحدة على الأقل للمنتج.";
+
+    return;
+  }
+
+  const payload = {
+
+    name_ar:
+      document.getElementById("nameAr").value.trim(),
+
+    name_en:
+      document.getElementById("nameEn").value.trim(),
+
+    category:
+      document.getElementById("category").value.trim(),
+
+    stock:
+      Number(document.getElementById("stock").value || 0),
+
+    price:
+      Number(document.getElementById("price").value || 0),
+
+    compare_price:
+      Number(
+        document.getElementById("comparePrice").value || 0
+      ),
+
+    description_ar:
+      document.getElementById("descriptionAr").value.trim(),
+
+    description_en:
+      document.getElementById("descriptionEn").value.trim(),
+
+    image:
+      allImages[0]?.url || "",
+
+    images:
+      allImages,
+
+    options:
+      collectOptions(),
+
+    active: 1
+
+  };
+
+
+  if (!payload.name_ar && !payload.name_en) {
+
+    status.innerHTML =
+      "⚠️ اكتب اسم المنتج.";
+
+    return;
+  }
+
+
+  try {
+
+    const url = id
+      ? `/api/products/${id}`
+      : `/api/products`;
+
+    const method = id
+      ? "PUT"
+      : "POST";
+
+    const response = await fetch(url, {
+
+      method,
+
+      credentials: "include",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify(payload)
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+      console.error(data);
+
+      status.innerHTML =
+        "❌ فشل حفظ المنتج: " +
+        (data.error || "خطأ غير معروف");
+
+      return;
+    }
+
+    status.innerHTML =
+      "✅ تم حفظ المنتج وجميع الصور بنجاح.";
+
+    await loadProducts();
+
+    setTimeout(() => {
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }, 500);
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.innerHTML =
+      "❌ حدث خطأ أثناء الاتصال بالسيرفر.";
+  }
+}
+
+
+// ==========================================
+// تعديل المنتج
+// ==========================================
+
+function editProduct(product) {
+
+  document.getElementById("formTitle").textContent =
+    "✏️ تعديل المنتج";
+
+  document.getElementById("productId").value =
+    product.id || "";
+
+  document.getElementById("nameAr").value =
+    product.name_ar || "";
+
+  document.getElementById("nameEn").value =
+    product.name_en || "";
+
+  document.getElementById("category").value =
+    product.category || "";
+
+  document.getElementById("stock").value =
+    product.stock || 0;
+
+  document.getElementById("price").value =
+    product.price || 0;
+
+  document.getElementById("comparePrice").value =
+    product.compare_price || 0;
+
+  document.getElementById("descriptionAr").value =
+    product.description_ar || "";
+
+  document.getElementById("descriptionEn").value =
+    product.description_en || "";
+
+
+  uploadedImages = [];
+
+  if (Array.isArray(product.images)) {
+
+    uploadedImages = product.images
+      .map(image => {
+
+        if (typeof image === "string") {
+
+          return {
+            url: image
+          };
+
+        }
+
+        return {
+          url: image.url
+        };
+
+      })
+      .filter(image => image.url);
+
+  }
+
+
+  if (
+    !uploadedImages.length &&
+    product.image
+  ) {
+
+    uploadedImages = [{
+      url: product.image
+    }];
+  }
+
+
+  productOptions =
+    Array.isArray(product.options)
+      ? JSON.parse(JSON.stringify(product.options))
+      : [];
+
+
+  renderImages();
+
+  renderOptions();
+
+  document.getElementById("manualUrls").innerHTML =
+    "";
+
+
+  window.scrollTo({
+
+    top:
+      document.getElementById("productForm").offsetTop - 70,
+
+    behavior: "smooth"
+
+  });
+}
+
+
+// ==========================================
+// حذف المنتج
+// ==========================================
+
+async function deleteProduct(id) {
+
+  if (!confirm("هل أنت متأكد من حذف المنتج؟")) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `/api/products/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include"
+      }
+    );
+
+    if (!response.ok) {
+
+      alert("فشل حذف المنتج");
+
+      return;
+    }
+
+    await loadProducts();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("حدث خطأ أثناء الحذف");
+  }
+}
+
+
+// ==========================================
+// الطلبات
+// ==========================================
+
+async function loadOrders() {
+
+  const box =
+    document.getElementById("ordersList");
+
+  try {
+
+    const response = await fetch(
+      "/api/orders",
+      {
+        credentials: "include"
+      }
+    );
+
+    if (!response.ok) {
+
+      box.innerHTML =
+        "تعذر تحميل الطلبات";
+
+      return;
+    }
+
+    const orders =
+      await response.json();
+
+    if (!orders.length) {
+
+      box.innerHTML = `
+        <div class="empty">
+          لا توجد طلبات حتى الآن
+        </div>
+      `;
+
+      return;
+    }
+
+    box.innerHTML =
+      orders.map(order => `
+
+        <div class="order">
+
+          <strong>
+            #${escapeHtml(
+              String(order.order_no || order.id)
+            )}
+          </strong>
+
+          <p>
+            العميل:
+            ${escapeHtml(order.customer_name || "")}
+          </p>
+
+          <p>
+            الهاتف:
+            ${escapeHtml(order.phone || "")}
+          </p>
+
+          <p>
+            المدينة:
+            ${escapeHtml(order.city || "")}
+          </p>
+
+          <p>
+            الإجمالي:
+            ${Number(order.total || 0).toFixed(2)}
+          </p>
+
+          <label>حالة الطلب</label>
+
+          <select
+            onchange="updateOrderStatus(${order.id}, this.value)">
+
+            <option
+              value="new"
+              ${order.status === "new" ? "selected" : ""}>
+              طلب جديد
+            </option>
+
+            <option
+              value="processing"
+              ${order.status === "processing" ? "selected" : ""}>
+              قيد التجهيز
+            </option>
+
+            <option
+              value="ready"
+              ${order.status === "ready" ? "selected" : ""}>
+              جاهز للتسليم
+            </option>
+
+            <option
+              value="delivered"
+              ${order.status === "delivered" ? "selected" : ""}>
+              تم التسليم
+            </option>
+
+            <option
+              value="cancelled"
+              ${order.status === "cancelled" ? "selected" : ""}>
+              ملغي
+            </option>
+
+          </select>
+
+          <div class="actions">
+
+            <button
+              class="primary"
+              onclick="openInvoice(${order.id})">
+              🧾 الفاتورة
+            </button>
+
+          </div>
+
+        </div>
+
+      `).join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    box.innerHTML =
+      "حدث خطأ أثناء تحميل الطلبات";
+  }
+}
+
+
+// ==========================================
+// تحديث حالة الطلب
+// ==========================================
+
+async function updateOrderStatus(id, status) {
+
+  try {
+
+    const response = await fetch(
+      `/api/orders/${id}`,
+      {
+        method: "PATCH",
+
+        credentials: "include",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          status
+        })
+      }
+    );
+
+    if (!response.ok) {
+
+      alert("فشل تحديث حالة الطلب");
+
+      return;
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("حدث خطأ");
+  }
+}
+
+
+// ==========================================
+// الفاتورة
+// ==========================================
+
+function openInvoice(id) {
+
+  window.open(
+    `/api/invoice/${id}`,
+    "_blank"
+  );
+}
+
+
+// ==========================================
+// حماية النصوص
+// ==========================================
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+// ==========================================
+// تشغيل الصفحة
+// ==========================================
+
+async function init() {
+
+  const authenticated =
+    await checkAuth();
+
+  if (!authenticated) {
+    return;
+  }
+
+  await loadProducts();
+
+  await loadOrders();
+
+  newProduct();
+}
+
+
+init();
 
 </script>
 
