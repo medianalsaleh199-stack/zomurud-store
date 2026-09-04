@@ -3,11 +3,30 @@ const path = require("path");
 const Database = require("better-sqlite3");
 const PDFDocument = require("pdfkit");
 const crypto = require("crypto");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
+
+/* =========================
+   CLOUDINARY
+========================= */
+
+cloudinary.config({
+  secure: true
+});
+
+console.log(
+  "Cloudinary configured:",
+  process.env.CLOUDINARY_URL ? "YES" : "NO"
+);
+
+/* =========================
+   DATABASE
+========================= */
 
 const db = new Database(
   path.join(__dirname, "zomurud.db")
@@ -16,7 +35,7 @@ const db = new Database(
 db.pragma("journal_mode=WAL");
 
 /* =========================
-   DATABASE
+   DATABASE TABLES
 ========================= */
 
 db.exec(`
@@ -155,7 +174,9 @@ app.use(
   })
 );
 
-/* Cookie parser without package */
+/* =========================
+   COOKIE PARSER
+========================= */
 
 app.use((req, res, next) => {
   req.cookies = {};
@@ -344,7 +365,7 @@ app.get(
 );
 
 /* =========================
-   ADMIN PAGE
+   ADMIN PAGES
 ========================= */
 
 app.get(
@@ -404,6 +425,115 @@ app.get(
         "admin.html"
       )
     );
+  }
+);
+
+/* =========================
+   CLOUDINARY IMAGE UPLOAD
+========================= */
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  },
+  fileFilter: (req, file, cb) => {
+
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+    if (!allowed.includes(file.mimetype)) {
+      return cb(
+        new Error(
+          "يسمح فقط بصور JPG و PNG و WEBP"
+        )
+      );
+    }
+
+    cb(null, true);
+  }
+});
+
+/*
+  Upload image from admin phone
+  POST /api/admin/upload-image
+*/
+
+app.post(
+  "/api/admin/upload-image",
+  requireAdmin,
+  upload.single("file"),
+  async (req, res) => {
+
+    try {
+
+      if (!process.env.CLOUDINARY_URL) {
+        return res.status(500).json({
+          error:
+            "CLOUDINARY_URL غير موجود في Render"
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          error:
+            "لم يتم اختيار صورة"
+        });
+      }
+
+      const result =
+        await new Promise(
+          (resolve, reject) => {
+
+            const stream =
+              cloudinary.uploader.upload_stream(
+                {
+                  folder:
+                    "zomurud/products",
+                  resource_type:
+                    "image"
+                },
+                (error, result) => {
+
+                  if (error) {
+                    return reject(
+                      error
+                    );
+                  }
+
+                  resolve(result);
+                }
+              );
+
+            stream.end(
+              req.file.buffer
+            );
+          }
+        );
+
+      res.json({
+        ok: true,
+        url: result.secure_url,
+        secure_url: result.secure_url,
+        public_id: result.public_id
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Cloudinary upload error:",
+        error
+      );
+
+      res.status(500).json({
+        error:
+          error.message ||
+          "فشل رفع الصورة إلى Cloudinary"
+      });
+    }
   }
 );
 
@@ -501,6 +631,7 @@ function allProducts(activeOnly = true) {
     ).all();
 
   for (const product of products) {
+
     product.images =
       getImages(product.id);
 
@@ -657,6 +788,7 @@ function saveImages(
         url =
           item.image_url ||
           item.url ||
+          item.secure_url ||
           "";
       }
 
