@@ -15,22 +15,22 @@ const db = new Database(
 
 db.pragma("journal_mode=WAL");
 
-/* =====================================================
+/* =========================
    DATABASE
-===================================================== */
+========================= */
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS products(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name_ar TEXT,
-  name_en TEXT,
-  category TEXT,
+  name_ar TEXT NOT NULL,
+  name_en TEXT NOT NULL,
+  category TEXT NOT NULL,
   price REAL DEFAULT 0,
   compare_price REAL DEFAULT 0,
   stock INTEGER DEFAULT 0,
-  description_ar TEXT,
-  description_en TEXT,
-  image TEXT,
+  description_ar TEXT DEFAULT '',
+  description_en TEXT DEFAULT '',
+  image TEXT DEFAULT '',
   active INTEGER DEFAULT 1,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
@@ -81,31 +81,34 @@ CREATE TABLE IF NOT EXISTS admin_sessions(
 );
 `);
 
-/* =====================================================
-   ADMIN SETTINGS
-===================================================== */
+/* =========================
+   ADMIN
+========================= */
 
 const ADMIN_EMAIL =
-  String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  String(process.env.ADMIN_EMAIL || "")
+    .trim()
+    .toLowerCase();
 
 const ADMIN_PASSWORD =
   String(process.env.ADMIN_PASSWORD || "");
 
 if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   console.warn(
-    "WARNING: ADMIN_EMAIL / ADMIN_PASSWORD are not configured."
+    "ADMIN_EMAIL / ADMIN_PASSWORD are missing."
   );
 }
 
-/* =====================================================
-   SEED PRODUCTS
-===================================================== */
+/* =========================
+   SEED
+========================= */
 
-if (
-  !db
-    .prepare("SELECT COUNT(*) c FROM products")
-    .get().c
-) {
+const productCount =
+  db.prepare(
+    "SELECT COUNT(*) c FROM products"
+  ).get().c;
+
+if (!productCount) {
   try {
     const seed = require("./seed.json");
 
@@ -124,31 +127,27 @@ if (
       VALUES(?,?,?,?,?,?,?,?,?)
     `);
 
-    const transaction = db.transaction(() => {
-      for (const p of seed) {
-        insert.run(
-          p[0],
-          p[1],
-          p[2],
-          Number(p[3]) || 0,
-          Number(p[4]) || 0,
-          Number(p[5]) || 0,
-          "حلول عرض احترافية من الزمرد.",
-          "Professional ZOMURUD display solution.",
-          ""
-        );
-      }
-    });
-
-    transaction();
+    for (const p of seed) {
+      insert.run(
+        p[0] || "منتج",
+        p[1] || "Product",
+        p[2] || "General",
+        Number(p[3]) || 0,
+        Number(p[4]) || 0,
+        Number(p[5]) || 0,
+        "حلول عرض احترافية من الزمرد.",
+        "Professional ZOMURUD display solution.",
+        ""
+      );
+    }
   } catch (e) {
-    console.log("Seed skipped:", e.message);
+    console.log("Seed error:", e.message);
   }
 }
 
-/* =====================================================
-   BODY
-===================================================== */
+/* =========================
+   MIDDLEWARE
+========================= */
 
 app.use(
   express.json({
@@ -156,45 +155,41 @@ app.use(
   })
 );
 
-/* =====================================================
-   COOKIE PARSER
-===================================================== */
+/* Cookie parser without package */
 
 app.use((req, res, next) => {
   req.cookies = {};
 
-  const cookieHeader =
+  const header =
     req.headers.cookie || "";
 
-  cookieHeader
-    .split(";")
-    .forEach((part) => {
-      const index = part.indexOf("=");
+  header.split(";").forEach((part) => {
+    const index = part.indexOf("=");
 
-      if (index === -1) return;
+    if (index === -1) return;
 
-      const key =
-        part.slice(0, index).trim();
+    const key =
+      part.slice(0, index).trim();
 
-      const value =
-        part.slice(index + 1).trim();
+    const value =
+      part.slice(index + 1).trim();
 
-      try {
-        req.cookies[key] =
-          decodeURIComponent(value);
-      } catch {
-        req.cookies[key] = value;
-      }
-    });
+    try {
+      req.cookies[key] =
+        decodeURIComponent(value);
+    } catch {
+      req.cookies[key] = value;
+    }
+  });
 
   next();
 });
 
-/* =====================================================
-   ADMIN SESSION
-===================================================== */
+/* =========================
+   AUTH
+========================= */
 
-function createAdminSession() {
+function createSession() {
   const token =
     crypto.randomBytes(32).toString("hex");
 
@@ -206,7 +201,7 @@ function createAdminSession() {
   return token;
 }
 
-function deleteAdminSession(token) {
+function removeSession(token) {
   if (!token) return;
 
   db.prepare(`
@@ -221,13 +216,14 @@ function isAdmin(req) {
 
   if (!token) return false;
 
-  const session = db.prepare(`
-    SELECT token
-    FROM admin_sessions
-    WHERE token=?
-    AND datetime(created_at)
+  const session =
+    db.prepare(`
+      SELECT token
+      FROM admin_sessions
+      WHERE token=?
+      AND datetime(created_at)
       > datetime('now','-7 days')
-  `).get(token);
+    `).get(token);
 
   return !!session;
 }
@@ -242,13 +238,14 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-/* =====================================================
-   ADMIN LOGIN
-===================================================== */
+/* =========================
+   LOGIN
+========================= */
 
 app.post(
   "/api/admin/login",
   (req, res) => {
+
     const email =
       String(req.body?.email || "")
         .trim()
@@ -257,7 +254,10 @@ app.post(
     const password =
       String(req.body?.password || "");
 
-    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    if (
+      !ADMIN_EMAIL ||
+      !ADMIN_PASSWORD
+    ) {
       return res.status(500).json({
         error:
           "Admin login is not configured."
@@ -275,19 +275,22 @@ app.post(
     }
 
     const token =
-      createAdminSession();
+      createSession();
 
-    res.cookie(
-      "zomurud_admin",
-      token,
-      {
-        httpOnly: true,
-        secure: req.secure,
-        sameSite: "lax",
-        maxAge:
-          7 * 24 * 60 * 60 * 1000,
-        path: "/"
-      }
+    const secure =
+      req.protocol === "https";
+
+    res.setHeader(
+      "Set-Cookie",
+      [
+        `zomurud_admin=${encodeURIComponent(token)}`,
+        "Path=/",
+        "HttpOnly",
+        "SameSite=Lax",
+        secure ? "Secure" : ""
+      ]
+        .filter(Boolean)
+        .join("; ")
     );
 
     res.json({
@@ -296,25 +299,21 @@ app.post(
   }
 );
 
-/* =====================================================
-   ADMIN LOGOUT
-===================================================== */
+/* =========================
+   LOGOUT
+========================= */
 
 app.post(
   "/api/admin/logout",
   (req, res) => {
-    deleteAdminSession(
+
+    removeSession(
       req.cookies.zomurud_admin
     );
 
-    res.clearCookie(
-      "zomurud_admin",
-      {
-        httpOnly: true,
-        secure: req.secure,
-        sameSite: "lax",
-        path: "/"
-      }
+    res.setHeader(
+      "Set-Cookie",
+      "zomurud_admin=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax"
     );
 
     res.json({
@@ -323,13 +322,14 @@ app.post(
   }
 );
 
-/* =====================================================
-   ADMIN CHECK
-===================================================== */
+/* =========================
+   CHECK LOGIN
+========================= */
 
 app.get(
   "/api/admin/me",
   (req, res) => {
+
     if (!isAdmin(req)) {
       return res.status(401).json({
         authenticated: false
@@ -343,13 +343,14 @@ app.get(
   }
 );
 
-/* =====================================================
-   ADMIN PAGES
-===================================================== */
+/* =========================
+   ADMIN PAGE
+========================= */
 
 app.get(
   "/admin-login.html",
   (req, res) => {
+
     if (isAdmin(req)) {
       return res.redirect(
         "/admin.html"
@@ -369,6 +370,7 @@ app.get(
 app.get(
   "/admin.html",
   (req, res) => {
+
     if (!isAdmin(req)) {
       return res.redirect(
         "/admin-login.html"
@@ -388,6 +390,7 @@ app.get(
 app.get(
   "/admin",
   (req, res) => {
+
     if (!isAdmin(req)) {
       return res.redirect(
         "/admin-login.html"
@@ -404,11 +407,11 @@ app.get(
   }
 );
 
-/* =====================================================
+/* =========================
    PRODUCT HELPERS
-===================================================== */
+========================= */
 
-function getProductImages(productId) {
+function getImages(productId) {
   return db.prepare(`
     SELECT
       id,
@@ -416,11 +419,12 @@ function getProductImages(productId) {
       sort_order
     FROM product_images
     WHERE product_id=?
-    ORDER BY sort_order ASC, id ASC
+    ORDER BY sort_order ASC,id ASC
   `).all(productId);
 }
 
-function getProductOptions(productId) {
+function getOptions(productId) {
+
   const options =
     db.prepare(`
       SELECT
@@ -432,10 +436,11 @@ function getProductOptions(productId) {
         sort_order
       FROM product_options
       WHERE product_id=?
-      ORDER BY sort_order ASC, id ASC
+      ORDER BY sort_order ASC,id ASC
     `).all(productId);
 
   for (const option of options) {
+
     option.required =
       Boolean(option.required);
 
@@ -450,69 +455,71 @@ function getProductOptions(productId) {
           sort_order
         FROM product_option_values
         WHERE option_id=?
-        ORDER BY sort_order ASC, id ASC
+        ORDER BY sort_order ASC,id ASC
       `).all(option.id);
   }
 
   return options;
 }
 
-function getFullProduct(productId) {
+function fullProduct(id) {
+
   const product =
     db.prepare(`
       SELECT *
       FROM products
       WHERE id=?
-    `).get(productId);
+    `).get(id);
 
   if (!product) return null;
 
   product.images =
-    getProductImages(productId);
+    getImages(id);
 
   product.options =
-    getProductOptions(productId);
+    getOptions(id);
 
   return product;
 }
 
-function getAllProducts(includeInactive = false) {
+function allProducts(activeOnly = true) {
+
   const products =
     db.prepare(
-      includeInactive
+      activeOnly
         ? `
           SELECT *
           FROM products
+          WHERE active=1
           ORDER BY id DESC
         `
         : `
           SELECT *
           FROM products
-          WHERE active=1
           ORDER BY id DESC
         `
     ).all();
 
   for (const product of products) {
     product.images =
-      getProductImages(product.id);
+      getImages(product.id);
 
     product.options =
-      getProductOptions(product.id);
+      getOptions(product.id);
   }
 
   return products;
 }
 
-/* =====================================================
+/* =========================
    PUBLIC PRODUCTS
-===================================================== */
+========================= */
 
 app.get(
   "/api/products",
   (req, res) => {
     res.json(
-      getAllProducts(false)
+      allProducts(true)
     );
   }
 );
@@ -520,17 +527,17 @@ app.get(
 app.get(
   "/api/products/:id",
   (req, res) => {
+
     const product =
-      getFullProduct(
-        req.params.id
-      );
+      fullProduct(req.params.id);
 
     if (
       !product ||
       !product.active
     ) {
       return res.status(404).json({
-        error: "Product not found"
+        error:
+          "Product not found"
       });
     }
 
@@ -538,271 +545,86 @@ app.get(
   }
 );
 
-/* =====================================================
-   ADMIN STATS
-===================================================== */
-
-app.get(
-  "/api/stats",
-  requireAdmin,
-  (req, res) => {
-    res.json({
-      revenue:
-        db.prepare(`
-          SELECT COALESCE(
-            SUM(total),0
-          ) x
-          FROM orders
-          WHERE status!='CANCELLED'
-        `).get().x,
-
-      orders:
-        db.prepare(`
-          SELECT COUNT(*) x
-          FROM orders
-        `).get().x,
-
-      customers:
-        db.prepare(`
-          SELECT COUNT(
-            DISTINCT phone
-          ) x
-          FROM orders
-        `).get().x,
-
-      products:
-        db.prepare(`
-          SELECT COUNT(*) x
-          FROM products
-          WHERE active=1
-        `).get().x,
-
-      low:
-        db.prepare(`
-          SELECT COUNT(*) x
-          FROM products
-          WHERE active=1
-          AND stock<=3
-        `).get().x
-    });
-  }
-);
-
-/* =====================================================
-   ADMIN GET ALL PRODUCTS
-===================================================== */
+/* =========================
+   ADMIN PRODUCTS
+========================= */
 
 app.get(
   "/api/admin/products",
   requireAdmin,
   (req, res) => {
     res.json(
-      getAllProducts(true)
+      allProducts(false)
     );
   }
 );
 
-/* =====================================================
-   ADD PRODUCT
-===================================================== */
+/* =========================
+   STATS
+========================= */
 
-app.post(
-  "/api/products",
+app.get(
+  "/api/stats",
   requireAdmin,
   (req, res) => {
 
-    const p = req.body || {};
+    const revenue =
+      db.prepare(`
+        SELECT COALESCE(
+          SUM(total),0
+        ) x
+        FROM orders
+        WHERE status!='CANCELLED'
+      `).get().x;
 
-    if (
-      !p.name_ar ||
-      !p.name_en ||
-      !p.category ||
-      Number(p.price) < 0
-    ) {
-      return res.status(400).json({
-        error:
-          "بيانات المنتج ناقصة"
-      });
-    }
+    const orders =
+      db.prepare(`
+        SELECT COUNT(*) x
+        FROM orders
+      `).get().x;
 
-    const transaction =
-      db.transaction(() => {
+    const customers =
+      db.prepare(`
+        SELECT COUNT(
+          DISTINCT phone
+        ) x
+        FROM orders
+      `).get().x;
 
-        const result =
-          db.prepare(`
-            INSERT INTO products(
-              name_ar,
-              name_en,
-              category,
-              price,
-              compare_price,
-              stock,
-              description_ar,
-              description_en,
-              image
-            )
-            VALUES(?,?,?,?,?,?,?,?,?)
-          `).run(
-            p.name_ar,
-            p.name_en,
-            p.category,
-            Number(p.price) || 0,
-            Number(p.compare_price) || 0,
-            Number(p.stock) || 0,
-            p.description_ar || "",
-            p.description_en || "",
-            p.image || ""
-          );
+    const products =
+      db.prepare(`
+        SELECT COUNT(*) x
+        FROM products
+        WHERE active=1
+      `).get().x;
 
-        const productId =
-          Number(result.lastInsertRowid);
-
-        saveProductImages(
-          productId,
-          p.images || []
-        );
-
-        saveProductOptions(
-          productId,
-          p.options || []
-        );
-
-        return productId;
-      });
-
-    try {
-      const id = transaction();
-
-      res.json({
-        ok: true,
-        id
-      });
-
-    } catch (error) {
-      console.error(error);
-
-      res.status(400).json({
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/* =====================================================
-   UPDATE PRODUCT
-===================================================== */
-
-app.put(
-  "/api/products/:id",
-  requireAdmin,
-  (req, res) => {
-
-    const p = req.body || {};
-    const id = req.params.id;
-
-    const transaction =
-      db.transaction(() => {
-
-        db.prepare(`
-          UPDATE products
-          SET
-            name_ar=?,
-            name_en=?,
-            category=?,
-            price=?,
-            compare_price=?,
-            stock=?,
-            description_ar=?,
-            description_en=?,
-            image=?
-          WHERE id=?
-        `).run(
-          p.name_ar || "",
-          p.name_en || "",
-          p.category || "",
-          Number(p.price) || 0,
-          Number(p.compare_price) || 0,
-          Number(p.stock) || 0,
-          p.description_ar || "",
-          p.description_en || "",
-          p.image || "",
-          id
-        );
-
-        if (
-          Array.isArray(p.images)
-        ) {
-          db.prepare(`
-            DELETE FROM product_images
-            WHERE product_id=?
-          `).run(id);
-
-          saveProductImages(
-            id,
-            p.images
-          );
-        }
-
-        if (
-          Array.isArray(p.options)
-        ) {
-          deleteProductOptions(id);
-
-          saveProductOptions(
-            id,
-            p.options
-          );
-        }
-      });
-
-    try {
-      transaction();
-
-      res.json({
-        ok: true
-      });
-
-    } catch (error) {
-      console.error(error);
-
-      res.status(400).json({
-        error:
-          error.message
-      });
-    }
-  }
-);
-
-/* =====================================================
-   DELETE PRODUCT
-===================================================== */
-
-app.delete(
-  "/api/products/:id",
-  requireAdmin,
-  (req, res) => {
-
-    db.prepare(`
-      UPDATE products
-      SET active=0
-      WHERE id=?
-    `).run(req.params.id);
+    const low =
+      db.prepare(`
+        SELECT COUNT(*) x
+        FROM products
+        WHERE active=1
+        AND stock<=3
+      `).get().x;
 
     res.json({
-      ok: true
+      revenue,
+      orders,
+      customers,
+      products,
+      low
     });
   }
 );
 
-/* =====================================================
-   SAVE PRODUCT IMAGES
-===================================================== */
+/* =========================
+   SAVE IMAGES
+========================= */
 
-function saveProductImages(
+function saveImages(
   productId,
   images
 ) {
+
   if (!Array.isArray(images)) {
     return;
   }
@@ -818,27 +640,28 @@ function saveProductImages(
     `);
 
   images.forEach(
-    (image, index) => {
+    (item, index) => {
 
       let url = "";
 
       if (
-        typeof image === "string"
+        typeof item === "string"
       ) {
-        url = image;
-      } else if (
-        image &&
-        image.image_url
-      ) {
-        url = image.image_url;
-      } else if (
-        image &&
-        image.url
-      ) {
-        url = image.url;
+        url = item;
       }
 
-      url = String(url).trim();
+      if (
+        item &&
+        typeof item === "object"
+      ) {
+        url =
+          item.image_url ||
+          item.url ||
+          "";
+      }
+
+      url =
+        String(url).trim();
 
       if (!url) return;
 
@@ -851,14 +674,15 @@ function saveProductImages(
   );
 }
 
-/* =====================================================
-   SAVE PRODUCT OPTIONS
-===================================================== */
+/* =========================
+   SAVE OPTIONS
+========================= */
 
-function saveProductOptions(
+function saveOptions(
   productId,
   options
 ) {
+
   if (!Array.isArray(options)) {
     return;
   }
@@ -896,12 +720,14 @@ function saveProductOptions(
 
       const nameAr =
         String(
-          option.name_ar || ""
+          option.name_ar ||
+          ""
         ).trim();
 
       const nameEn =
         String(
-          option.name_en || ""
+          option.name_en ||
+          ""
         ).trim();
 
       if (!nameAr && !nameEn) {
@@ -913,13 +739,16 @@ function saveProductOptions(
           productId,
           nameAr || nameEn,
           nameEn || nameAr,
-          option.type || "select",
+          option.type ||
+            "select",
           option.required ? 1 : 0,
           optionIndex
         );
 
       const optionId =
-        Number(result.lastInsertRowid);
+        Number(
+          result.lastInsertRowid
+        );
 
       const values =
         Array.isArray(
@@ -933,18 +762,28 @@ function saveProductOptions(
 
           if (!value) return;
 
+          const ar =
+            String(
+              value.label_ar ||
+              value.label_en ||
+              ""
+            );
+
+          const en =
+            String(
+              value.label_en ||
+              value.label_ar ||
+              ""
+            );
+
+          if (!ar && !en) {
+            return;
+          }
+
           insertValue.run(
             optionId,
-            String(
-              value.label_ar ||
-              value.label_en ||
-              ""
-            ),
-            String(
-              value.label_en ||
-              value.label_ar ||
-              ""
-            ),
+            ar,
+            en,
             String(
               value.value || ""
             ),
@@ -959,9 +798,8 @@ function saveProductOptions(
   );
 }
 
-function deleteProductOptions(
-  productId
-) {
+function deleteOptions(productId) {
+
   const options =
     db.prepare(`
       SELECT id
@@ -970,6 +808,7 @@ function deleteProductOptions(
     `).all(productId);
 
   for (const option of options) {
+
     db.prepare(`
       DELETE FROM product_option_values
       WHERE option_id=?
@@ -982,42 +821,216 @@ function deleteProductOptions(
   `).run(productId);
 }
 
-/* =====================================================
-   PRODUCT OPTIONS API
-===================================================== */
+/* =========================
+   ADD PRODUCT
+========================= */
 
-app.get(
-  "/api/products/:id/options",
+app.post(
+  "/api/products",
+  requireAdmin,
   (req, res) => {
 
-    const product =
-      db.prepare(`
-        SELECT id, active
-        FROM products
-        WHERE id=?
-      `).get(req.params.id);
+    const p =
+      req.body || {};
 
     if (
-      !product ||
-      !product.active
+      !p.name_ar ||
+      !p.name_en ||
+      !p.category
     ) {
-      return res.status(404).json({
+      return res.status(400).json({
         error:
-          "Product not found"
+          "اسم المنتج والتصنيف مطلوبان"
       });
     }
 
-    res.json(
-      getProductOptions(
-        req.params.id
-      )
-    );
+    try {
+
+      const transaction =
+        db.transaction(() => {
+
+          const result =
+            db.prepare(`
+              INSERT INTO products(
+                name_ar,
+                name_en,
+                category,
+                price,
+                compare_price,
+                stock,
+                description_ar,
+                description_en,
+                image
+              )
+              VALUES(?,?,?,?,?,?,?,?,?)
+            `).run(
+              p.name_ar,
+              p.name_en,
+              p.category,
+              Number(p.price) || 0,
+              Number(p.compare_price) || 0,
+              Number(p.stock) || 0,
+              p.description_ar || "",
+              p.description_en || "",
+              p.image || ""
+            );
+
+          const id =
+            Number(
+              result.lastInsertRowid
+            );
+
+          saveImages(
+            id,
+            p.images || []
+          );
+
+          saveOptions(
+            id,
+            p.options || []
+          );
+
+          return id;
+        });
+
+      const id =
+        transaction();
+
+      res.json({
+        ok: true,
+        id
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(400).json({
+        error:
+          error.message
+      });
+    }
   }
 );
 
-/* =====================================================
-   ORDERS - ADMIN
-===================================================== */
+/* =========================
+   UPDATE PRODUCT
+========================= */
+
+app.put(
+  "/api/products/:id",
+  requireAdmin,
+  (req, res) => {
+
+    const p =
+      req.body || {};
+
+    const id =
+      req.params.id;
+
+    try {
+
+      const transaction =
+        db.transaction(() => {
+
+          db.prepare(`
+            UPDATE products
+            SET
+              name_ar=?,
+              name_en=?,
+              category=?,
+              price=?,
+              compare_price=?,
+              stock=?,
+              description_ar=?,
+              description_en=?,
+              image=?
+            WHERE id=?
+          `).run(
+            p.name_ar || "",
+            p.name_en || "",
+            p.category || "",
+            Number(p.price) || 0,
+            Number(
+              p.compare_price
+            ) || 0,
+            Number(p.stock) || 0,
+            p.description_ar || "",
+            p.description_en || "",
+            p.image || "",
+            id
+          );
+
+          if (
+            Array.isArray(p.images)
+          ) {
+
+            db.prepare(`
+              DELETE FROM product_images
+              WHERE product_id=?
+            `).run(id);
+
+            saveImages(
+              id,
+              p.images
+            );
+          }
+
+          if (
+            Array.isArray(p.options)
+          ) {
+
+            deleteOptions(id);
+
+            saveOptions(
+              id,
+              p.options
+            );
+          }
+        });
+
+      transaction();
+
+      res.json({
+        ok: true
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(400).json({
+        error:
+          error.message
+      });
+    }
+  }
+);
+
+/* =========================
+   DELETE PRODUCT
+========================= */
+
+app.delete(
+  "/api/products/:id",
+  requireAdmin,
+  (req, res) => {
+
+    db.prepare(`
+      UPDATE products
+      SET active=0
+      WHERE id=?
+    `).run(req.params.id);
+
+    res.json({
+      ok: true
+    });
+  }
+);
+
+/* =========================
+   ORDERS
+========================= */
 
 app.get(
   "/api/orders",
@@ -1034,9 +1047,9 @@ app.get(
   }
 );
 
-/* =====================================================
-   CREATE ORDER - PUBLIC
-===================================================== */
+/* =========================
+   CREATE ORDER
+========================= */
 
 app.post(
   "/api/orders",
@@ -1047,8 +1060,7 @@ app.post(
       phone,
       city,
       notes,
-      items,
-      total
+      items
     } = req.body || {};
 
     if (
@@ -1084,46 +1096,49 @@ app.post(
               db.prepare(`
                 SELECT
                   id,
-                  name_ar,
-                  name_en,
                   price,
-                  stock
+                  stock,
+                  name_ar,
+                  name_en
                 FROM products
                 WHERE id=?
                 AND active=1
               `).get(item.id);
 
+            if (!product) {
+              throw new Error(
+                "المنتج غير موجود"
+              );
+            }
+
+            const qty =
+              Math.max(
+                1,
+                Number(item.qty) || 1
+              );
+
             if (
-              !product ||
-              Number(product.stock) <
-                Number(item.qty)
+              product.stock < qty
             ) {
               throw new Error(
                 "المخزون غير كاف"
               );
             }
 
-            const quantity =
-              Math.max(
-                1,
-                Number(item.qty) || 1
-              );
-
-            const unitPrice =
-              Number(
-                item.price ??
-                product.price
-              ) || 0;
-
             calculatedTotal +=
-              unitPrice * quantity;
+              (
+                Number(
+                  item.price ??
+                  product.price
+                ) || 0
+              ) * qty;
           }
 
           for (
             const item of items
           ) {
 
-            const quantity =
+            const qty =
               Math.max(
                 1,
                 Number(item.qty) || 1
@@ -1134,12 +1149,12 @@ app.post(
               SET stock=stock-?
               WHERE id=?
             `).run(
-              quantity,
+              qty,
               item.id
             );
           }
 
-          return db.prepare(`
+          db.prepare(`
             INSERT INTO orders(
               order_no,
               customer_name,
@@ -1180,16 +1195,16 @@ app.post(
   }
 );
 
-/* =====================================================
-   UPDATE ORDER STATUS
-===================================================== */
+/* =========================
+   ORDER STATUS
+========================= */
 
 app.patch(
   "/api/orders/:id",
   requireAdmin,
   (req, res) => {
 
-    const allowedStatuses = [
+    const statuses = [
       "NEW",
       "CONFIRMED",
       "PROCESSING",
@@ -1200,7 +1215,7 @@ app.patch(
     ];
 
     if (
-      !allowedStatuses.includes(
+      !statuses.includes(
         req.body?.status
       )
     ) {
@@ -1225,9 +1240,9 @@ app.patch(
   }
 );
 
-/* =====================================================
-   PDF INVOICE
-===================================================== */
+/* =========================
+   INVOICE
+========================= */
 
 app.get(
   "/api/invoice/:id",
@@ -1266,6 +1281,7 @@ app.get(
 
     doc
       .fontSize(25)
+      .fillColor("#111")
       .text("ZOMURUD");
 
     doc
@@ -1301,29 +1317,14 @@ app.get(
       )
       .moveDown();
 
-    let y = doc.y + 15;
+    let y =
+      doc.y + 15;
 
     doc
-      .text(
-        "Product",
-        55,
-        y
-      )
-      .text(
-        "Qty",
-        350,
-        y
-      )
-      .text(
-        "Unit",
-        405,
-        y
-      )
-      .text(
-        "Total",
-        480,
-        y
-      );
+      .text("Product",55,y)
+      .text("Qty",350,y)
+      .text("Unit",405,y)
+      .text("Total",480,y);
 
     y += 25;
 
@@ -1355,7 +1356,7 @@ app.get(
             item.name_en ||
             item.name_ar ||
             ""
-          ).slice(0, 38),
+          ).slice(0,38),
           55,
           y
         )
@@ -1388,7 +1389,7 @@ app.get(
         370,
         doc.y,
         {
-          align: "right"
+          align:"right"
         }
       );
 
@@ -1396,9 +1397,9 @@ app.get(
   }
 );
 
-/* =====================================================
-   STATIC FILES
-===================================================== */
+/* =========================
+   STATIC
+========================= */
 
 app.use(
   express.static(
@@ -1409,13 +1410,14 @@ app.use(
   )
 );
 
-/* =====================================================
+/* =========================
    HOME
-===================================================== */
+========================= */
 
 app.get(
   "*",
   (req, res) => {
+
     res.sendFile(
       path.join(
         __dirname,
@@ -1426,9 +1428,9 @@ app.get(
   }
 );
 
-/* =====================================================
+/* =========================
    START
-===================================================== */
+========================= */
 
 app.listen(
   PORT,
