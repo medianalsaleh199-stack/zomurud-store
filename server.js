@@ -8,7 +8,14 @@ const cloudinary = require("cloudinary").v2;
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const db = new Database(path.join(__dirname, "zomurud.db"));
+/* =========================
+   DATABASE
+========================= */
+
+const db = new Database(
+  path.join(__dirname, "zomurud.db")
+);
+
 db.pragma("journal_mode=WAL");
 
 db.exec(`
@@ -41,18 +48,35 @@ CREATE TABLE IF NOT EXISTS orders(
 );
 `);
 
-if (!db.prepare("SELECT COUNT(*) c FROM products").get().c) {
-  const a = require("./seed.json");
+/* =========================
+   SEED PRODUCTS
+========================= */
 
-  const q = db.prepare(`
+if (
+  !db.prepare(
+    "SELECT COUNT(*) c FROM products"
+  ).get().c
+) {
+  const products = require("./seed.json");
+
+  const insert = db.prepare(`
     INSERT INTO products
-    (name_ar,name_en,category,price,compare_price,stock,
-     description_ar,description_en,image)
-    VALUES(?,?,?,?,?,?,?,?,?)
+    (
+      name_ar,
+      name_en,
+      category,
+      price,
+      compare_price,
+      stock,
+      description_ar,
+      description_en,
+      image
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  a.forEach(p =>
-    q.run(
+  products.forEach(p => {
+    insert.run(
       p[0],
       p[1],
       p[2],
@@ -62,33 +86,93 @@ if (!db.prepare("SELECT COUNT(*) c FROM products").get().c) {
       "حلول عرض احترافية من الزمرد.",
       "Professional ZOMURUD display solution.",
       ""
-    )
-  );
+    );
+  });
 }
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-app.use(express.static(path.join(__dirname, "public")));
+/* =========================
+   MIDDLEWARE
+========================= */
+
+app.use(
+  express.json({
+    limit: "10mb"
+  })
+);
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: "10mb"
+  })
+);
+
+app.use(
+  express.static(
+    path.join(__dirname, "public")
+  )
+);
 
 /* =========================
    CLOUDINARY
 ========================= */
 
-const cloudinaryReady =
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET;
+const hasCloudinaryURL =
+  !!process.env.CLOUDINARY_URL;
 
-if (cloudinaryReady) {
+const hasSeparateCloudinary =
+  !!process.env.CLOUDINARY_CLOUD_NAME &&
+  !!process.env.CLOUDINARY_API_KEY &&
+  !!process.env.CLOUDINARY_API_SECRET;
+
+const cloudinaryReady =
+  hasCloudinaryURL ||
+  hasSeparateCloudinary;
+
+if (hasCloudinaryURL) {
+
   cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    secure: true
   });
 
-  console.log("Cloudinary connected");
+  console.log(
+    "Cloudinary connected using CLOUDINARY_URL"
+  );
+
+} else if (hasSeparateCloudinary) {
+
+  cloudinary.config({
+    cloud_name:
+      process.env.CLOUDINARY_CLOUD_NAME,
+
+    api_key:
+      process.env.CLOUDINARY_API_KEY,
+
+    api_secret:
+      process.env.CLOUDINARY_API_SECRET,
+
+    secure: true
+  });
+
+  console.log(
+    "Cloudinary connected using separate variables"
+  );
+
 } else {
-  console.log("WARNING: Cloudinary environment variables are missing.");
+
+  console.log(
+    "WARNING: Cloudinary configuration is missing"
+  );
+
+  console.log(
+    "Cloudinary status:",
+    {
+      url: !!process.env.CLOUDINARY_URL,
+      cloud: !!process.env.CLOUDINARY_CLOUD_NAME,
+      key: !!process.env.CLOUDINARY_API_KEY,
+      secret: !!process.env.CLOUDINARY_API_SECRET
+    }
+  );
 }
 
 /* =========================
@@ -96,77 +180,146 @@ if (cloudinaryReady) {
 ========================= */
 
 const upload = multer({
-  storage: multer.memoryStorage(),
+
+  storage:
+    multer.memoryStorage(),
+
   limits: {
-    fileSize: 15 * 1024 * 1024
+    fileSize:
+      15 * 1024 * 1024
   },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype && file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image files are allowed"));
+
+  fileFilter:
+    (req, file, cb) => {
+
+      if (
+        file.mimetype &&
+        file.mimetype.startsWith("image/")
+      ) {
+        cb(null, true);
+      } else {
+        cb(
+          new Error(
+            "Only image files are allowed"
+          )
+        );
+      }
     }
-  }
 });
 
 function uploadToCloudinary(buffer) {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder: "zomurud-store/products",
-        resource_type: "image"
-      },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
 
-    stream.end(buffer);
-  });
+  return new Promise(
+    (resolve, reject) => {
+
+      const stream =
+        cloudinary.uploader.upload_stream(
+          {
+            folder:
+              "zomurud-store/products",
+
+            resource_type:
+              "image"
+          },
+
+          (error, result) => {
+
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+
+      stream.end(buffer);
+    }
+  );
 }
 
 app.post(
   "/api/admin/upload-image",
-  upload.array("images", 10),
+
+  upload.array(
+    "images",
+    10
+  ),
+
   async (req, res) => {
+
     try {
+
       if (!cloudinaryReady) {
-        return res.status(500).json({
-          error: "Cloudinary غير مربوط. أضف متغيرات Cloudinary في Render."
-        });
+
+        return res
+          .status(500)
+          .json({
+            error:
+              "Cloudinary غير مربوط في Render."
+          });
       }
 
-      if (!req.files || !req.files.length) {
-        return res.status(400).json({
-          error: "لم يتم اختيار صورة."
-        });
+      if (
+        !req.files ||
+        !req.files.length
+      ) {
+
+        return res
+          .status(400)
+          .json({
+            error:
+              "لم يتم اختيار صورة."
+          });
       }
 
       const results = [];
 
-      for (const file of req.files) {
-        const result = await uploadToCloudinary(file.buffer);
+      for (
+        const file of req.files
+      ) {
+
+        const result =
+          await uploadToCloudinary(
+            file.buffer
+          );
 
         results.push({
-          url: result.secure_url,
-          public_id: result.public_id
+          url:
+            result.secure_url,
+
+          public_id:
+            result.public_id
         });
       }
 
       res.json({
         ok: true,
-        images: results,
-        image: results[0]?.url || ""
+
+        images:
+          results,
+
+        image:
+          results[0]
+            ? results[0].url
+            : ""
       });
 
     } catch (error) {
-      console.error("Cloudinary upload error:", error);
 
-      res.status(500).json({
-        error: "فشل رفع الصور إلى Cloudinary.",
-        details: error.message
-      });
+      console.error(
+        "Cloudinary upload error:",
+        error
+      );
+
+      res
+        .status(500)
+        .json({
+          error:
+            "فشل رفع الصور إلى Cloudinary.",
+
+          details:
+            error.message
+        });
     }
   }
 );
@@ -175,337 +328,619 @@ app.post(
    PRODUCTS
 ========================= */
 
-app.get("/api/products", (req, res) => {
-  res.json(
-    db.prepare(`
-      SELECT * FROM products
-      WHERE active=1
-      ORDER BY id DESC
-    `).all()
-  );
-});
+app.get(
+  "/api/products",
+  (req, res) => {
 
-app.get("/api/stats", (req, res) => {
-  res.json({
-    revenue:
+    const products =
       db.prepare(`
-        SELECT COALESCE(SUM(total),0) x
+        SELECT *
+        FROM products
+        WHERE active=1
+        ORDER BY id DESC
+      `).all();
+
+    res.json(products);
+  }
+);
+
+app.get(
+  "/api/stats",
+  (req, res) => {
+
+    const revenue =
+      db.prepare(`
+        SELECT
+          COALESCE(SUM(total),0) x
         FROM orders
         WHERE status!='CANCELLED'
-      `).get().x,
+      `).get().x;
 
-    orders:
+    const orders =
       db.prepare(`
-        SELECT COUNT(*) x FROM orders
-      `).get().x,
+        SELECT COUNT(*) x
+        FROM orders
+      `).get().x;
 
-    customers:
+    const customers =
       db.prepare(`
-        SELECT COUNT(DISTINCT phone) x FROM orders
-      `).get().x,
+        SELECT COUNT(DISTINCT phone) x
+        FROM orders
+      `).get().x;
 
-    products:
+    const products =
       db.prepare(`
         SELECT COUNT(*) x
         FROM products
         WHERE active=1
-      `).get().x,
+      `).get().x;
 
-    low:
+    const low =
       db.prepare(`
         SELECT COUNT(*) x
         FROM products
-        WHERE active=1 AND stock<=3
-      `).get().x
-  });
-});
+        WHERE active=1
+        AND stock<=3
+      `).get().x;
 
-app.post("/api/products", (req, res) => {
-  const p = req.body;
-
-  if (
-    !p.name_ar ||
-    !p.name_en ||
-    !p.category ||
-    Number(p.price) < 0
-  ) {
-    return res.status(400).json({
-      error: "بيانات المنتج ناقصة"
+    res.json({
+      revenue,
+      orders,
+      customers,
+      products,
+      low
     });
   }
+);
 
-  const r = db.prepare(`
-    INSERT INTO products
-    (name_ar,name_en,category,price,compare_price,stock,
-     description_ar,description_en,image)
-    VALUES(?,?,?,?,?,?,?,?,?)
-  `).run(
-    p.name_ar,
-    p.name_en,
-    p.category,
-    Number(p.price),
-    Number(p.compare_price) || 0,
-    Number(p.stock) || 0,
-    p.description_ar || "",
-    p.description_en || "",
-    p.image || ""
-  );
+app.post(
+  "/api/products",
+  (req, res) => {
 
-  res.json({
-    id: r.lastInsertRowid
-  });
-});
+    const p =
+      req.body;
 
-app.put("/api/products/:id", (req, res) => {
-  const p = req.body;
+    if (
+      !p.name_ar ||
+      !p.name_en ||
+      !p.category ||
+      Number(p.price) < 0
+    ) {
 
-  db.prepare(`
-    UPDATE products SET
-      name_ar=?,
-      name_en=?,
-      category=?,
-      price=?,
-      compare_price=?,
-      stock=?,
-      description_ar=?,
-      description_en=?,
-      image=?
-    WHERE id=?
-  `).run(
-    p.name_ar,
-    p.name_en,
-    p.category,
-    Number(p.price),
-    Number(p.compare_price) || 0,
-    Number(p.stock) || 0,
-    p.description_ar || "",
-    p.description_en || "",
-    p.image || "",
-    req.params.id
-  );
+      return res
+        .status(400)
+        .json({
+          error:
+            "بيانات المنتج ناقصة"
+        });
+    }
 
-  res.json({ ok: true });
-});
+    const result =
+      db.prepare(`
+        INSERT INTO products
+        (
+          name_ar,
+          name_en,
+          category,
+          price,
+          compare_price,
+          stock,
+          description_ar,
+          description_en,
+          image
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
 
-app.delete("/api/products/:id", (req, res) => {
-  db.prepare(`
-    UPDATE products SET active=0
-    WHERE id=?
-  `).run(req.params.id);
+        p.name_ar,
 
-  res.json({ ok: true });
-});
+        p.name_en,
+
+        p.category,
+
+        Number(p.price),
+
+        Number(
+          p.compare_price
+        ) || 0,
+
+        Number(
+          p.stock
+        ) || 0,
+
+        p.description_ar ||
+          "",
+
+        p.description_en ||
+          "",
+
+        p.image ||
+          ""
+      );
+
+    res.json({
+      id:
+        result.lastInsertRowid
+    });
+  }
+);
+
+app.put(
+  "/api/products/:id",
+  (req, res) => {
+
+    const p =
+      req.body;
+
+    db.prepare(`
+      UPDATE products SET
+        name_ar=?,
+        name_en=?,
+        category=?,
+        price=?,
+        compare_price=?,
+        stock=?,
+        description_ar=?,
+        description_en=?,
+        image=?
+      WHERE id=?
+    `).run(
+
+      p.name_ar,
+
+      p.name_en,
+
+      p.category,
+
+      Number(p.price),
+
+      Number(
+        p.compare_price
+      ) || 0,
+
+      Number(
+        p.stock
+      ) || 0,
+
+      p.description_ar ||
+        "",
+
+      p.description_en ||
+        "",
+
+      p.image ||
+        "",
+
+      req.params.id
+    );
+
+    res.json({
+      ok: true
+    });
+  }
+);
+
+app.delete(
+  "/api/products/:id",
+  (req, res) => {
+
+    db.prepare(`
+      UPDATE products
+      SET active=0
+      WHERE id=?
+    `).run(
+      req.params.id
+    );
+
+    res.json({
+      ok: true
+    });
+  }
+);
 
 /* =========================
    ORDERS
 ========================= */
 
-app.get("/api/orders", (req, res) => {
-  res.json(
-    db.prepare(`
-      SELECT * FROM orders
-      ORDER BY id DESC
-    `).all()
-  );
-});
+app.get(
+  "/api/orders",
+  (req, res) => {
 
-app.post("/api/orders", (req, res) => {
-  const {
-    customer_name,
-    phone,
-    city,
-    notes,
-    items,
-    total
-  } = req.body;
-
-  if (!customer_name || !phone || !items?.length) {
-    return res.status(400).json({
-      error: "البيانات ناقصة"
-    });
-  }
-
-  const no = "ZM-" + Date.now().toString().slice(-9);
-
-  const tx = db.transaction(() => {
-
-    for (const i of items) {
-      const p = db.prepare(`
-        SELECT stock
-        FROM products
-        WHERE id=? AND active=1
-      `).get(i.id);
-
-      if (!p || p.stock < i.qty) {
-        throw Error("المخزون غير كاف");
-      }
-    }
-
-    for (const i of items) {
+    const orders =
       db.prepare(`
-        UPDATE products
-        SET stock=stock-?
-        WHERE id=?
-      `).run(i.qty, i.id);
-    }
+        SELECT *
+        FROM orders
+        ORDER BY id DESC
+      `).all();
 
-    return db.prepare(`
-      INSERT INTO orders
-      (order_no,customer_name,phone,city,notes,items_json,total)
-      VALUES(?,?,?,?,?,?,?)
-    `).run(
-      no,
+    res.json(orders);
+  }
+);
+
+app.post(
+  "/api/orders",
+  (req, res) => {
+
+    const {
       customer_name,
       phone,
-      city || "",
-      notes || "",
-      JSON.stringify(items),
-      Number(total) || 0
-    );
-  });
+      city,
+      notes,
+      items,
+      total
+    } = req.body;
 
-  try {
-    tx();
+    if (
+      !customer_name ||
+      !phone ||
+      !Array.isArray(items) ||
+      !items.length
+    ) {
+
+      return res
+        .status(400)
+        .json({
+          error:
+            "البيانات ناقصة"
+        });
+    }
+
+    const orderNo =
+      "ZM-" +
+      Date.now()
+        .toString()
+        .slice(-9);
+
+    const transaction =
+      db.transaction(() => {
+
+        for (
+          const item of items
+        ) {
+
+          const product =
+            db.prepare(`
+              SELECT stock
+              FROM products
+              WHERE id=?
+              AND active=1
+            `).get(
+              item.id
+            );
+
+          if (
+            !product ||
+            product.stock <
+              Number(item.qty)
+          ) {
+
+            throw new Error(
+              "المخزون غير كاف"
+            );
+          }
+        }
+
+        for (
+          const item of items
+        ) {
+
+          db.prepare(`
+            UPDATE products
+            SET stock=stock-?
+            WHERE id=?
+          `).run(
+            Number(item.qty),
+            item.id
+          );
+        }
+
+        db.prepare(`
+          INSERT INTO orders
+          (
+            order_no,
+            customer_name,
+            phone,
+            city,
+            notes,
+            items_json,
+            total
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(
+
+          orderNo,
+
+          customer_name,
+
+          phone,
+
+          city || "",
+
+          notes || "",
+
+          JSON.stringify(
+            items
+          ),
+
+          Number(total) || 0
+        );
+      });
+
+    try {
+
+      transaction();
+
+      res.json({
+        order_no:
+          orderNo
+      });
+
+    } catch (error) {
+
+      res
+        .status(400)
+        .json({
+          error:
+            error.message
+        });
+    }
+  }
+);
+
+app.patch(
+  "/api/orders/:id",
+  (req, res) => {
+
+    const allowed = [
+      "NEW",
+      "CONFIRMED",
+      "PROCESSING",
+      "READY",
+      "SHIPPED",
+      "DELIVERED",
+      "CANCELLED"
+    ];
+
+    if (
+      !allowed.includes(
+        req.body.status
+      )
+    ) {
+
+      return res
+        .status(400)
+        .json({
+          error:
+            "invalid status"
+        });
+    }
+
+    db.prepare(`
+      UPDATE orders
+      SET status=?
+      WHERE id=?
+    `).run(
+      req.body.status,
+      req.params.id
+    );
 
     res.json({
-      order_no: no
-    });
-
-  } catch (e) {
-    res.status(400).json({
-      error: e.message
+      ok: true
     });
   }
-});
-
-app.patch("/api/orders/:id", (req, res) => {
-  const allowed = [
-    "NEW",
-    "CONFIRMED",
-    "PROCESSING",
-    "READY",
-    "SHIPPED",
-    "DELIVERED",
-    "CANCELLED"
-  ];
-
-  if (!allowed.includes(req.body.status)) {
-    return res.status(400).json({
-      error: "invalid status"
-    });
-  }
-
-  db.prepare(`
-    UPDATE orders
-    SET status=?
-    WHERE id=?
-  `).run(
-    req.body.status,
-    req.params.id
-  );
-
-  res.json({ ok: true });
-});
+);
 
 /* =========================
    PDF INVOICE
 ========================= */
 
-app.get("/api/invoice/:id", (req, res) => {
-  const o = db.prepare(`
-    SELECT * FROM orders
-    WHERE id=?
-  `).get(req.params.id);
+app.get(
+  "/api/invoice/:id",
+  (req, res) => {
 
-  if (!o) {
-    return res.status(404).send("Not found");
-  }
+    const order =
+      db.prepare(`
+        SELECT *
+        FROM orders
+        WHERE id=?
+      `).get(
+        req.params.id
+      );
 
-  const d = new PDFDocument({
-    size: "A4",
-    margin: 45
-  });
+    if (!order) {
 
-  res.setHeader(
-    "Content-Type",
-    "application/pdf"
-  );
+      return res
+        .status(404)
+        .send("Not found");
+    }
 
-  res.setHeader(
-    "Content-Disposition",
-    `inline; filename="${o.order_no}.pdf"`
-  );
+    const pdf =
+      new PDFDocument({
+        size: "A4",
+        margin: 45
+      });
 
-  d.pipe(res);
+    res.setHeader(
+      "Content-Type",
+      "application/pdf"
+    );
 
-  d.fontSize(25).text("ZOMURUD");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${order.order_no}.pdf"`
+    );
 
-  d.fontSize(11)
-    .fillColor("#555")
-    .text("الزمرد | Sales Invoice");
+    pdf.pipe(res);
 
-  d.fillColor("#111")
-    .text(`Invoice: ${o.order_no}`)
-    .text(
-      `Date: ${new Date(o.created_at).toLocaleDateString("en-GB")}`
-    )
-    .moveDown();
+    pdf
+      .fontSize(25)
+      .text("ZOMURUD");
 
-  d.text(`Customer: ${o.customer_name}`)
-    .text(`Phone: ${o.phone}`)
-    .text(`City: ${o.city || ""}`)
-    .moveDown();
-
-  let y = d.y + 15;
-
-  d.text("Product", 55, y)
-    .text("Qty", 350, y)
-    .text("Unit", 405, y)
-    .text("Total", 480, y);
-
-  y += 25;
-
-  for (const i of JSON.parse(o.items_json)) {
-    d.text(String(i.name).slice(0, 38), 55, y)
-      .text(String(i.qty), 350, y)
-      .text(`AED ${Number(i.price).toFixed(2)}`, 405, y)
+    pdf
+      .fontSize(11)
+      .fillColor("#555")
       .text(
-        `AED ${(Number(i.price) * i.qty).toFixed(2)}`,
+        "الزمرد | Sales Invoice"
+      );
+
+    pdf
+      .fillColor("#111")
+      .text(
+        `Invoice: ${order.order_no}`
+      )
+      .text(
+        `Date: ${new Date(
+          order.created_at
+        ).toLocaleDateString("en-GB")}`
+      )
+      .moveDown();
+
+    pdf
+      .text(
+        `Customer: ${order.customer_name}`
+      )
+      .text(
+        `Phone: ${order.phone}`
+      )
+      .text(
+        `City: ${order.city || ""}`
+      )
+      .moveDown();
+
+    let y =
+      pdf.y + 15;
+
+    pdf
+      .text(
+        "Product",
+        55,
+        y
+      )
+      .text(
+        "Qty",
+        350,
+        y
+      )
+      .text(
+        "Unit",
+        405,
+        y
+      )
+      .text(
+        "Total",
         480,
         y
       );
 
     y += 25;
+
+    const items =
+      JSON.parse(
+        order.items_json
+      );
+
+    for (
+      const item of items
+    ) {
+
+      const lineTotal =
+        Number(item.price) *
+        Number(item.qty);
+
+      pdf
+        .text(
+          String(
+            item.name || ""
+          ).slice(0, 38),
+          55,
+          y
+        )
+        .text(
+          String(item.qty),
+          350,
+          y
+        )
+        .text(
+          `AED ${Number(
+            item.price
+          ).toFixed(2)}`,
+          405,
+          y
+        )
+        .text(
+          `AED ${lineTotal.toFixed(2)}`,
+          480,
+          y
+        );
+
+      y += 25;
+    }
+
+    pdf
+      .moveDown(2)
+      .fontSize(15)
+      .text(
+        `TOTAL: AED ${Number(
+          order.total
+        ).toFixed(2)}`,
+        370,
+        pdf.y,
+        {
+          align:
+            "right"
+        }
+      );
+
+    pdf.end();
   }
-
-  d.moveDown(2)
-    .fontSize(15)
-    .text(
-      `TOTAL: AED ${Number(o.total).toFixed(2)}`,
-      370,
-      d.y,
-      { align: "right" }
-    );
-
-  d.end();
-});
+);
 
 /* =========================
    ADMIN
 ========================= */
 
-app.get("/admin", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public/admin.html")
-  );
-});
+app.get(
+  "/admin",
+  (req, res) => {
 
-app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public/index.html")
-  );
-});
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "admin.html"
+      )
+    );
+  }
+);
 
-app.listen(PORT, () => {
-  console.log(`ZOMURUD Store running on port ${PORT}`);
-});
+/* =========================
+   STORE
+========================= */
+
+app.get(
+  "*",
+  (req, res) => {
+
+    res.sendFile(
+      path.join(
+        __dirname,
+        "public",
+        "index.html"
+      )
+    );
+  }
+);
+
+/* =========================
+   START
+========================= */
+
+app.listen(
+  PORT,
+  () => {
+
+    console.log(
+      `ZOMURUD Store running on port ${PORT}`
+    );
+  }
+);
