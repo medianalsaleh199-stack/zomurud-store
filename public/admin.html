@@ -1,1986 +1,693 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 
 <head>
-  <meta charset="UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<title>ZOMURUD Admin</title>
 
-  <title>ZOMURUD Admin</title>
+<style>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+body{
+font-family:Arial;
+margin:0;
+background:#f5f4ef;
+color:#14211b
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f6f8;
-      color: #222;
-    }
+.wrap{
+max-width:1200px;
+margin:auto;
+padding:22px
+}
 
-    header {
-      background: #111;
-      color: white;
-      padding: 18px 25px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+.head{
+display:flex;
+justify-content:space-between;
+align-items:center
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+.brand{
+font:700 25px Georgia
+}
 
-    button {
-      border: 0;
-      border-radius: 10px;
-      padding: 11px 16px;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.btn{
+background:#173128;
+color:#fff;
+border:0;
+padding:10px 14px;
+border-radius:5px;
+cursor:pointer
+}
 
-    .logout {
-      background: #dc3545;
-      color: white;
-    }
+.danger{
+background:#933
+}
 
-    .container {
-      max-width: 1250px;
-      margin: auto;
-      padding: 25px;
-    }
+.stats{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
+margin:20px 0
+}
 
-    .stats {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
+.stat,
+.panel{
+background:#fff;
+border:1px solid #e3dfd6;
+padding:16px
+}
 
-    .stat {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.06);
-    }
+.stat b{
+display:block;
+font-size:24px;
+margin-top:8px
+}
 
-    .stat small {
-      color: #777;
-    }
+.panel{
+margin-top:15px
+}
 
-    .stat strong {
-      display: block;
-      font-size: 28px;
-      margin-top: 8px;
-    }
+.form{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:9px
+}
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 25px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.06);
-    }
+.form input,
+.form textarea{
+padding:11px;
+border:1px solid #ddd;
+border-radius:5px
+}
 
-    .card h2 {
-      margin-top: 0;
-    }
+.form textarea{
+min-height:65px
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fit, minmax(240px, 1fr));
-      gap: 15px;
-    }
+.upload{
+border:2px dashed #bbb;
+padding:20px;
+margin-bottom:15px;
+text-align:center;
+border-radius:8px;
+background:#fafafa
+}
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 7px;
-    }
+.preview{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-top:12px
+}
 
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 14px;
-      background: white;
-    }
+.preview img{
+width:110px;
+height:90px;
+object-fit:cover;
+border-radius:6px;
+border:1px solid #ddd
+}
 
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+.status{
+margin-top:10px;
+font-size:14px
+}
 
-    .field {
-      margin-bottom: 15px;
-    }
+table{
+width:100%;
+border-collapse:collapse
+}
 
-    .primary {
-      background: #111;
-      color: white;
-    }
+td,
+th{
+padding:9px;
+border-bottom:1px solid #eee;
+text-align:right;
+font-size:12px
+}
 
-    .secondary {
-      background: #eee;
-      color: #222;
-    }
+.table{
+overflow:auto
+}
 
-    .danger {
-      background: #dc3545;
-      color: white;
-    }
+.mini{
+padding:6px 9px;
+font-size:10px
+}
 
-    .success {
-      background: #198754;
-      color: white;
-    }
+@media(max-width:800px){
 
-    .images-box {
-      border: 2px dashed #ccc;
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      margin-top: 10px;
-    }
+.stats{
+grid-template-columns:repeat(2,1fr)
+}
 
-    .images-grid {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fill, minmax(130px, 1fr));
-      gap: 12px;
-      margin-top: 20px;
-    }
+.form{
+grid-template-columns:1fr
+}
 
-    .image-item {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 8px;
-      background: #fafafa;
-    }
+.head{
+display:block
+}
 
-    .image-item img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 9px;
-    }
+}
 
-    .image-actions {
-      display: flex;
-      gap: 5px;
-      margin-top: 7px;
-    }
-
-    .image-actions button {
-      flex: 1;
-      padding: 7px;
-      font-size: 12px;
-    }
-
-    .main-image {
-      border: 3px solid #111;
-    }
-
-    .option {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 15px;
-      background: #fafafa;
-    }
-
-    .value-row {
-      display: grid;
-      grid-template-columns:
-        1fr 1fr 120px 50px;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-    }
-
-    .product {
-      border: 1px solid #ddd;
-      border-radius: 15px;
-      overflow: hidden;
-      background: white;
-    }
-
-    .product img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .product-content {
-      padding: 15px;
-    }
-
-    .product-actions {
-      display: flex;
-      gap: 7px;
-      margin-top: 12px;
-    }
-
-    .product-actions button {
-      flex: 1;
-    }
-
-    .orders {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 800px;
-    }
-
-    th,
-    td {
-      border-bottom: 1px solid #eee;
-      padding: 12px;
-      text-align: right;
-    }
-
-    th {
-      background: #f7f7f7;
-    }
-
-    .status {
-      padding: 5px 9px;
-      border-radius: 20px;
-      background: #eee;
-      display: inline-block;
-    }
-
-    .notice {
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    .notice.success {
-      display: block;
-    }
-
-    .notice.error {
-      background: #ffe1e1;
-      color: #9d0000;
-      display: block;
-    }
-
-    .uploading {
-      opacity: .5;
-    }
-
-    .empty {
-      color: #777;
-      padding: 25px;
-      text-align: center;
-    }
-
-    @media(max-width:700px) {
-      .container {
-        padding: 12px;
-      }
-
-      header {
-        padding: 14px;
-      }
-
-      .value-row {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>لوحة تحكم ZOMURUD</h1>
+<div class="wrap">
 
-  <button
-    class="logout"
-    onclick="logout()"
-  >
-    تسجيل الخروج
-  </button>
-</header>
+<div class="head">
 
-<div class="container">
+<div>
+<div class="brand">ZOMURUD | الزمرد</div>
+<small>لوحة التحكم</small>
+</div>
 
-  <div id="notice" class="notice"></div>
-
-  <!-- STATS -->
-
-  <div class="stats">
-
-    <div class="stat">
-      <small>إجمالي المنتجات</small>
-      <strong id="statProducts">0</strong>
-    </div>
-
-    <div class="stat">
-      <small>المنتجات النشطة</small>
-      <strong id="statActive">0</strong>
-    </div>
-
-    <div class="stat">
-      <small>الطلبات</small>
-      <strong id="statOrders">0</strong>
-    </div>
-
-    <div class="stat">
-      <small>طلبات جديدة</small>
-      <strong id="statPending">0</strong>
-    </div>
-
-    <div class="stat">
-      <small>الإيرادات</small>
-      <strong id="statRevenue">0 AED</strong>
-    </div>
-
-  </div>
-
-  <!-- PRODUCT FORM -->
-
-  <div class="card">
-
-    <h2 id="formTitle">
-      إضافة منتج جديد
-    </h2>
-
-    <input
-      type="hidden"
-      id="productId"
-    >
-
-    <div class="grid">
-
-      <div class="field">
-        <label>اسم المنتج بالعربي</label>
-
-        <input
-          id="name_ar"
-          placeholder="مثال: عربة آيس كريم"
-        >
-      </div>
-
-      <div class="field">
-        <label>Product Name English</label>
-
-        <input
-          id="name_en"
-          placeholder="Example: Ice Cream Cart"
-        >
-      </div>
-
-      <div class="field">
-        <label>التصنيف</label>
-
-        <input
-          id="category"
-          placeholder="طاولات / عربات / أكشاك"
-        >
-      </div>
-
-      <div class="field">
-        <label>السعر AED</label>
-
-        <input
-          type="number"
-          id="price"
-          value="0"
-        >
-      </div>
-
-      <div class="field">
-        <label>السعر قبل الخصم</label>
-
-        <input
-          type="number"
-          id="compare_price"
-          value="0"
-        >
-      </div>
-
-      <div class="field">
-        <label>المخزون</label>
-
-        <input
-          type="number"
-          id="stock"
-          value="0"
-        >
-      </div>
-
-    </div>
-
-    <div class="grid">
-
-      <div class="field">
-
-        <label>
-          الوصف بالعربي
-        </label>
-
-        <textarea
-          id="description_ar"
-        ></textarea>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Description English
-        </label>
-
-        <textarea
-          id="description_en"
-        ></textarea>
-
-      </div>
-
-    </div>
-
-    <!-- IMAGES -->
-
-    <h3>صور المنتج</h3>
-
-    <div class="images-box">
-
-      <input
-        type="file"
-        id="imageInput"
-        accept="image/*"
-        multiple
-      >
-
-      <p>
-        اختر عدة صور من الهاتف.
-        سيتم رفعها تلقائيًا إلى Cloudinary.
-      </p>
-
-    </div>
-
-    <div
-      id="imagesGrid"
-      class="images-grid"
-    ></div>
-
-    <!-- OPTIONS -->
-
-    <h3 style="margin-top:30px;">
-      خيارات المنتج
-    </h3>
-
-    <div id="optionsContainer"></div>
-
-    <button
-      class="secondary"
-      onclick="addOption()"
-      style="margin-top:10px;"
-    >
-      + إضافة خيار
-    </button>
-
-    <div style="margin-top:25px;">
-
-      <button
-        class="primary"
-        onclick="saveProduct()"
-      >
-        حفظ المنتج
-      </button>
-
-      <button
-        class="secondary"
-        onclick="resetForm()"
-      >
-        منتج جديد
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- PRODUCTS -->
-
-  <div class="card">
-
-    <h2>المنتجات</h2>
-
-    <div
-      id="products"
-      class="products"
-    ></div>
-
-  </div>
-
-  <!-- ORDERS -->
-
-  <div class="card">
-
-    <h2>الطلبات</h2>
-
-    <div class="orders">
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>رقم الطلب</th>
-            <th>العميل</th>
-            <th>الهاتف</th>
-            <th>المدينة</th>
-            <th>الإجمالي</th>
-            <th>الحالة</th>
-            <th>الإجراء</th>
-          </tr>
-
-        </thead>
-
-        <tbody id="orders"></tbody>
-
-      </table>
-
-    </div>
-
-  </div>
+<a class="btn" href="/">المتجر</a>
 
 </div>
 
+<div id="stats" class="stats"></div>
+
+
+<div class="panel">
+
+<h2>إضافة منتج</h2>
+
+<form id="add" class="form">
+
+<input
+name="name_ar"
+required
+placeholder="اسم المنتج بالعربي">
+
+<input
+name="name_en"
+required
+placeholder="Product name">
+
+<input
+name="category"
+required
+placeholder="التصنيف">
+
+<input
+name="price"
+type="number"
+required
+placeholder="السعر AED">
+
+<input
+name="compare_price"
+type="number"
+placeholder="قبل الخصم">
+
+<input
+name="stock"
+type="number"
+placeholder="المخزون">
+
+
+<!-- رفع الصور -->
+
+<div class="upload" style="grid-column:1/-1">
+
+<strong>صور المنتج</strong>
+
+<p>
+اختر صورة أو عدة صور من الكمبيوتر أو الهاتف
+وسيتم رفعها تلقائياً إلى Cloudinary.
+</p>
+
+<input
+id="images"
+type="file"
+accept="image/*"
+multiple>
+
+<div id="preview" class="preview"></div>
+
+<div id="uploadStatus" class="status"></div>
+
+</div>
+
+
+<input
+type="hidden"
+name="image"
+id="imageUrl">
+
+<textarea
+name="description_ar"
+placeholder="الوصف بالعربي">
+</textarea>
+
+<textarea
+name="description_en"
+placeholder="Description">
+</textarea>
+
+<button
+class="btn"
+type="submit">
+
+إضافة المنتج
+
+</button>
+
+</form>
+
+</div>
+
+
+<div class="panel table">
+
+<h2>المنتجات</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>المنتج</th>
+<th>الفئة</th>
+<th>السعر</th>
+<th>المخزون</th>
+<th>إجراء</th>
+</tr>
+
+</thead>
+
+<tbody id="products"></tbody>
+
+</table>
+
+</div>
+
+
+<div class="panel table">
+
+<h2>الطلبات والفواتير</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>الطلب</th>
+<th>العميل</th>
+<th>الهاتف</th>
+<th>الإجمالي</th>
+<th>الحالة</th>
+<th>PDF</th>
+</tr>
+
+</thead>
+
+<tbody id="orders"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
 <script>
 
+const $ = s => document.querySelector(s);
+
+const money = n =>
+"AED " + Number(n).toLocaleString();
+
+
+/* =====================
+   IMAGE UPLOAD
+===================== */
+
 let uploadedImages = [];
-let productsData = [];
-let optionsData = [];
 
-/* =====================================================
-   API
-===================================================== */
+$("#images").addEventListener("change", async function(){
 
-async function api(url, options = {}) {
+const files = Array.from(this.files);
 
-  const response = await fetch(url, {
-    credentials: "include",
-    ...options
-  });
+$("#preview").innerHTML = "";
 
-  if (
-    response.status === 401 ||
-    response.status === 403
-  ) {
-    window.location.href = "/admin-login";
-    return null;
-  }
+$("#uploadStatus").textContent = "";
 
-  let data;
+uploadedImages = [];
 
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
+if(!files.length){
 
-  if (!response.ok) {
-    throw new Error(
-      data.error || "حدث خطأ في الطلب"
-    );
-  }
+$("#uploadStatus").textContent =
+"لم يتم اختيار ملف";
 
-  return data;
-}
-
-/* =====================================================
-   INIT
-===================================================== */
-
-async function init() {
-
-  try {
-
-    await api("/api/admin/me");
-
-    await Promise.all([
-      loadStats(),
-      loadProducts(),
-      loadOrders()
-    ]);
-
-  } catch (err) {
-
-    showError(err.message);
-
-  }
+return;
 
 }
 
-/* =====================================================
-   STATS
-===================================================== */
 
-async function loadStats() {
+/* Preview */
 
-  const data =
-    await api("/api/stats");
+files.forEach(file => {
 
-  if (!data) return;
+const img = document.createElement("img");
 
-  document.getElementById(
-    "statProducts"
-  ).textContent =
-    data.products || 0;
+img.src = URL.createObjectURL(file);
 
-  document.getElementById(
-    "statActive"
-  ).textContent =
-    data.activeProducts || 0;
+$("#preview").appendChild(img);
 
-  document.getElementById(
-    "statOrders"
-  ).textContent =
-    data.orders || 0;
+});
 
-  document.getElementById(
-    "statPending"
-  ).textContent =
-    data.pendingOrders || 0;
 
-  document.getElementById(
-    "statRevenue"
-  ).textContent =
-    Number(data.revenue || 0)
-      .toFixed(2) + " AED";
-}
+$("#uploadStatus").textContent =
+"جاري رفع الصور...";
 
-/* =====================================================
-   LOAD PRODUCTS
-===================================================== */
 
-async function loadProducts() {
+try{
 
-  const data =
-    await api("/api/admin/products");
+const form = new FormData();
 
-  if (!data) return;
+files.forEach(file => {
 
-  productsData = data;
+form.append("images", file);
 
-  const container =
-    document.getElementById("products");
+});
 
-  if (!data.length) {
 
-    container.innerHTML =
-      `<div class="empty">
-        لا توجد منتجات حتى الآن.
-      </div>`;
+const response =
+await fetch("/api/admin/upload-image", {
 
-    return;
-  }
+method:"POST",
 
-  container.innerHTML =
-    data.map(product => {
+body:form
 
-      const image =
-        product.image ||
-        product.images?.[0]?.url ||
-        "https://via.placeholder.com/500";
+});
 
-      return `
-        <div class="product">
 
-          <img
-            src="${escapeAttr(image)}"
-            alt=""
-          >
+const data = await response.json();
 
-          <div class="product-content">
 
-            <strong>
-              ${escapeHtml(
-                product.name_ar ||
-                product.name_en ||
-                ""
-              )}
-            </strong>
+if(!response.ok){
 
-            <p>
-              ${escapeHtml(
-                product.name_en || ""
-              )}
-            </p>
-
-            <b>
-              ${Number(
-                product.price || 0
-              ).toFixed(2)} AED
-            </b>
-
-            <div class="product-actions">
-
-              <button
-                class="secondary"
-                onclick="editProduct(${product.id})"
-              >
-                تعديل
-              </button>
-
-              <button
-                class="danger"
-                onclick="deleteProduct(${product.id})"
-              >
-                حذف
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-}
-
-/* =====================================================
-   IMAGE SELECT
-===================================================== */
-
-document
-  .getElementById("imageInput")
-  .addEventListener(
-    "change",
-    async function() {
-
-      const files =
-        Array.from(this.files || []);
-
-      for (const file of files) {
-
-        await uploadImage(file);
-
-      }
-
-      this.value = "";
-
-      renderImages();
-    }
-  );
-
-/* =====================================================
-   UPLOAD IMAGE
-===================================================== */
-
-async function uploadImage(file) {
-
-  const tempId =
-    "temp_" +
-    Date.now() +
-    "_" +
-    Math.random();
-
-  uploadedImages.push({
-    tempId,
-    name: file.name,
-    uploading: true,
-    url: "",
-    public_id: ""
-  });
-
-  renderImages();
-
-  try {
-
-    const formData =
-      new FormData();
-
-    formData.append(
-      "image",
-      file
-    );
-
-    const response =
-      await fetch(
-        "/api/admin/upload-image",
-        {
-          method: "POST",
-          body: formData,
-          credentials: "include"
-        }
-      );
-
-    let data = {};
-
-    try {
-      data =
-        await response.json();
-    } catch {}
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "فشل رفع الصورة"
-      );
-
-    }
-
-    const item =
-      uploadedImages.find(
-        x => x.tempId === tempId
-      );
-
-    if (item) {
-
-      item.url =
-        data.secure_url;
-
-      item.public_id =
-        data.public_id;
-
-      item.uploading =
-        false;
-    }
-
-  } catch (err) {
-
-    uploadedImages =
-      uploadedImages.filter(
-        x => x.tempId !== tempId
-      );
-
-    showError(
-      "فشل رفع الصورة: " +
-      err.message
-    );
-
-  }
-
-  renderImages();
-}
-
-/* =====================================================
-   RENDER IMAGES
-===================================================== */
-
-function renderImages() {
-
-  const container =
-    document.getElementById(
-      "imagesGrid"
-    );
-
-  if (!uploadedImages.length) {
-
-    container.innerHTML = "";
-
-    return;
-  }
-
-  container.innerHTML =
-    uploadedImages.map(
-      (img, index) => {
-
-        if (img.uploading) {
-
-          return `
-            <div
-              class="image-item uploading"
-            >
-              <div
-                style="
-                  height:120px;
-                  display:flex;
-                  align-items:center;
-                  justify-content:center;
-                "
-              >
-                جاري الرفع...
-              </div>
-            </div>
-          `;
-        }
-
-        return `
-          <div
-            class="image-item ${
-              index === 0
-                ? "main-image"
-                : ""
-            }"
-          >
-
-            <img
-              src="${escapeAttr(img.url)}"
-              alt=""
-            >
-
-            <div
-              class="image-actions"
-            >
-
-              ${
-                index !== 0
-                  ? `
-                    <button
-                      class="secondary"
-                      onclick="makeMain(${index})"
-                    >
-                      رئيسية
-                    </button>
-                  `
-                  : `
-                    <button
-                      class="success"
-                      disabled
-                    >
-                      الرئيسية
-                    </button>
-                  `
-              }
-
-              <button
-                class="danger"
-                onclick="removeImage(${index})"
-              >
-                حذف
-              </button>
-
-            </div>
-
-          </div>
-        `;
-
-      }
-    ).join("");
-}
-
-/* =====================================================
-   IMAGE ACTIONS
-===================================================== */
-
-function makeMain(index) {
-
-  const item =
-    uploadedImages[index];
-
-  uploadedImages.splice(
-    index,
-    1
-  );
-
-  uploadedImages.unshift(
-    item
-  );
-
-  renderImages();
-}
-
-function removeImage(index) {
-
-  uploadedImages.splice(
-    index,
-    1
-  );
-
-  renderImages();
-}
-
-/* =====================================================
-   OPTIONS
-===================================================== */
-
-function addOption(data = null) {
-
-  const option = {
-
-    name_ar:
-      data?.name_ar || "",
-
-    name_en:
-      data?.name_en || "",
-
-    required:
-      !!data?.required,
-
-    values:
-      data?.values?.map(v => ({
-        label_ar:
-          v.label_ar || "",
-
-        label_en:
-          v.label_en || "",
-
-        price_delta:
-          Number(
-            v.price_delta || 0
-          )
-      })) || []
-
-  };
-
-  if (!option.values.length) {
-
-    option.values.push({
-      label_ar: "",
-      label_en: "",
-      price_delta: 0
-    });
-
-  }
-
-  optionsData.push(option);
-
-  renderOptions();
-}
-
-function renderOptions() {
-
-  const container =
-    document.getElementById(
-      "optionsContainer"
-    );
-
-  container.innerHTML =
-    optionsData.map(
-      (option, optionIndex) => {
-
-        return `
-          <div
-            class="option"
-          >
-
-            <div class="grid">
-
-              <div>
-
-                <label>
-                  اسم الخيار عربي
-                </label>
-
-                <input
-                  value="${escapeAttr(
-                    option.name_ar
-                  )}"
-                  oninput="
-                    updateOption(
-                      ${optionIndex},
-                      'name_ar',
-                      this.value
-                    )
-                  "
-                >
-
-              </div>
-
-              <div>
-
-                <label>
-                  Option Name English
-                </label>
-
-                <input
-                  value="${escapeAttr(
-                    option.name_en
-                  )}"
-                  oninput="
-                    updateOption(
-                      ${optionIndex},
-                      'name_en',
-                      this.value
-                    )
-                  "
-                >
-
-              </div>
-
-            </div>
-
-            <label
-              style="
-                margin-top:12px;
-              "
-            >
-
-              <input
-                type="checkbox"
-                ${
-                  option.required
-                    ? "checked"
-                    : ""
-                }
-                onchange="
-                  optionsData[
-                    ${optionIndex}
-                  ].required =
-                    this.checked
-                "
-                style="
-                  width:auto;
-                "
-              >
-
-              مطلوب من العميل
-
-            </label>
-
-            <h4>
-              القيم
-            </h4>
-
-            ${
-              option.values.map(
-                (value, valueIndex) => `
-
-                  <div
-                    class="value-row"
-                  >
-
-                    <input
-                      placeholder="القيمة عربي"
-                      value="${escapeAttr(
-                        value.label_ar
-                      )}"
-                      oninput="
-                        updateValue(
-                          ${optionIndex},
-                          ${valueIndex},
-                          'label_ar',
-                          this.value
-                        )
-                      "
-                    >
-
-                    <input
-                      placeholder="Value English"
-                      value="${escapeAttr(
-                        value.label_en
-                      )}"
-                      oninput="
-                        updateValue(
-                          ${optionIndex},
-                          ${valueIndex},
-                          'label_en',
-                          this.value
-                        )
-                      "
-                    >
-
-                    <input
-                      type="number"
-                      placeholder="زيادة السعر"
-                      value="${
-                        value.price_delta || 0
-                      }"
-                      oninput="
-                        updateValue(
-                          ${optionIndex},
-                          ${valueIndex},
-                          'price_delta',
-                          this.value
-                        )
-                      "
-                    >
-
-                    <button
-                      class="danger"
-                      onclick="
-                        removeValue(
-                          ${optionIndex},
-                          ${valueIndex}
-                        )
-                      "
-                    >
-                      ×
-                    </button>
-
-                  </div>
-                `
-              ).join("")
-            }
-
-            <div
-              style="
-                margin-top:10px;
-              "
-            >
-
-              <button
-                class="secondary"
-                onclick="
-                  addValue(${optionIndex})
-                "
-              >
-                + إضافة قيمة
-              </button>
-
-              <button
-                class="danger"
-                onclick="
-                  removeOption(${optionIndex})
-                "
-              >
-                حذف الخيار
-              </button>
-
-            </div>
-
-          </div>
-        `;
-
-      }
-    ).join("");
-}
-
-function updateOption(
-  index,
-  key,
-  value
-) {
-
-  optionsData[index][key] =
-    value;
-}
-
-function updateValue(
-  optionIndex,
-  valueIndex,
-  key,
-  value
-) {
-
-  if (
-    key === "price_delta"
-  ) {
-
-    value =
-      Number(value || 0);
-
-  }
-
-  optionsData[
-    optionIndex
-  ].values[
-    valueIndex
-  ][key] = value;
-}
-
-function addValue(optionIndex) {
-
-  optionsData[
-    optionIndex
-  ].values.push({
-
-    label_ar: "",
-    label_en: "",
-    price_delta: 0
-
-  });
-
-  renderOptions();
-}
-
-function removeValue(
-  optionIndex,
-  valueIndex
-) {
-
-  optionsData[
-    optionIndex
-  ].values.splice(
-    valueIndex,
-    1
-  );
-
-  renderOptions();
-}
-
-function removeOption(index) {
-
-  optionsData.splice(
-    index,
-    1
-  );
-
-  renderOptions();
-}
-
-/* =====================================================
-   SAVE PRODUCT
-===================================================== */
-
-async function saveProduct() {
-
-  try {
-
-    const id =
-      document.getElementById(
-        "productId"
-      ).value;
-
-    const images =
-      uploadedImages
-        .filter(x =>
-          x.url &&
-          !x.uploading
-        )
-        .map(x => ({
-          url: x.url,
-          public_id: x.public_id
-        }));
-
-    if (
-      uploadedImages.some(
-        x => x.uploading
-      )
-    ) {
-
-      showError(
-        "انتظر حتى تنتهي عملية رفع الصور."
-      );
-
-      return;
-    }
-
-    const payload = {
-
-      name_ar:
-        document.getElementById(
-          "name_ar"
-        ).value.trim(),
-
-      name_en:
-        document.getElementById(
-          "name_en"
-        ).value.trim(),
-
-      category:
-        document.getElementById(
-          "category"
-        ).value.trim(),
-
-      price:
-        Number(
-          document.getElementById(
-            "price"
-          ).value || 0
-        ),
-
-      compare_price:
-        Number(
-          document.getElementById(
-            "compare_price"
-          ).value || 0
-        ),
-
-      stock:
-        Number(
-          document.getElementById(
-            "stock"
-          ).value || 0
-        ),
-
-      description_ar:
-        document.getElementById(
-          "description_ar"
-        ).value,
-
-      description_en:
-        document.getElementById(
-          "description_en"
-        ).value,
-
-      image:
-        images[0]?.url || "",
-
-      images,
-
-      options:
-        optionsData
-
-    };
-
-    if (
-      !payload.name_ar &&
-      !payload.name_en
-    ) {
-
-      showError(
-        "اكتب اسم المنتج."
-      );
-
-      return;
-    }
-
-    const method =
-      id ? "PUT" : "POST";
-
-    const url =
-      id
-        ? `/api/admin/products/${id}`
-        : "/api/admin/products";
-
-    await api(url, {
-
-      method,
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body:
-        JSON.stringify(payload)
-
-    });
-
-    showSuccess(
-      id
-        ? "تم تحديث المنتج بنجاح"
-        : "تم إضافة المنتج بنجاح"
-    );
-
-    resetForm();
-
-    await loadProducts();
-
-    await loadStats();
-
-  } catch (err) {
-
-    showError(err.message);
-
-  }
-}
-
-/* =====================================================
-   EDIT PRODUCT
-===================================================== */
-
-async function editProduct(id) {
-
-  try {
-
-    const product =
-      await api(
-        `/api/admin/products/${id}`
-      );
-
-    if (!product) return;
-
-    document.getElementById(
-      "productId"
-    ).value = product.id;
-
-    document.getElementById(
-      "name_ar"
-    ).value =
-      product.name_ar || "";
-
-    document.getElementById(
-      "name_en"
-    ).value =
-      product.name_en || "";
-
-    document.getElementById(
-      "category"
-    ).value =
-      product.category || "";
-
-    document.getElementById(
-      "price"
-    ).value =
-      product.price || 0;
-
-    document.getElementById(
-      "compare_price"
-    ).value =
-      product.compare_price || 0;
-
-    document.getElementById(
-      "stock"
-    ).value =
-      product.stock || 0;
-
-    document.getElementById(
-      "description_ar"
-    ).value =
-      product.description_ar || "";
-
-    document.getElementById(
-      "description_en"
-    ).value =
-      product.description_en || "";
-
-    uploadedImages =
-      Array.isArray(product.images)
-        ? product.images.map(
-            image => ({
-              url: image.url,
-              public_id:
-                image.public_id || "",
-              uploading: false
-            })
-          )
-        : [];
-
-    if (
-      !uploadedImages.length &&
-      product.image
-    ) {
-
-      uploadedImages = [
-        {
-          url: product.image,
-          public_id: "",
-          uploading: false
-        }
-      ];
-
-    }
-
-    optionsData =
-      Array.isArray(product.options)
-        ? product.options.map(
-            option => ({
-              name_ar:
-                option.name_ar || "",
-
-              name_en:
-                option.name_en || "",
-
-              required:
-                !!option.required,
-
-              values:
-                Array.isArray(
-                  option.values
-                )
-                  ? option.values.map(
-                      value => ({
-                        label_ar:
-                          value.label_ar || "",
-
-                        label_en:
-                          value.label_en || "",
-
-                        price_delta:
-                          Number(
-                            value.price_delta || 0
-                          )
-                      })
-                    )
-                  : []
-            })
-          )
-        : [];
-
-    document.getElementById(
-      "formTitle"
-    ).textContent =
-      "تعديل المنتج";
-
-    renderImages();
-
-    renderOptions();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  } catch (err) {
-
-    showError(err.message);
-
-  }
-}
-
-/* =====================================================
-   DELETE PRODUCT
-===================================================== */
-
-async function deleteProduct(id) {
-
-  if (
-    !confirm(
-      "هل أنت متأكد من حذف هذا المنتج؟"
-    )
-  ) {
-    return;
-  }
-
-  try {
-
-    await api(
-      `/api/admin/products/${id}`,
-      {
-        method: "DELETE"
-      }
-    );
-
-    showSuccess(
-      "تم حذف المنتج."
-    );
-
-    await loadProducts();
-    await loadStats();
-
-  } catch (err) {
-
-    showError(err.message);
-
-  }
-}
-
-/* =====================================================
-   RESET
-===================================================== */
-
-function resetForm() {
-
-  document.getElementById(
-    "productId"
-  ).value = "";
-
-  document.getElementById(
-    "name_ar"
-  ).value = "";
-
-  document.getElementById(
-    "name_en"
-  ).value = "";
-
-  document.getElementById(
-    "category"
-  ).value = "";
-
-  document.getElementById(
-    "price"
-  ).value = 0;
-
-  document.getElementById(
-    "compare_price"
-  ).value = 0;
-
-  document.getElementById(
-    "stock"
-  ).value = 0;
-
-  document.getElementById(
-    "description_ar"
-  ).value = "";
-
-  document.getElementById(
-    "description_en"
-  ).value = "";
-
-  uploadedImages = [];
-
-  optionsData = [];
-
-  document.getElementById(
-    "formTitle"
-  ).textContent =
-    "إضافة منتج جديد";
-
-  renderImages();
-
-  renderOptions();
-}
-
-/* =====================================================
-   ORDERS
-===================================================== */
-
-async function loadOrders() {
-
-  const orders =
-    await api("/api/orders");
-
-  if (!orders) return;
-
-  const tbody =
-    document.getElementById(
-      "orders"
-    );
-
-  if (!orders.length) {
-
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7">
-          لا توجد طلبات.
-        </td>
-      </tr>
-    `;
-
-    return;
-  }
-
-  tbody.innerHTML =
-    orders.map(
-      order => `
-
-        <tr>
-
-          <td>
-            ${escapeHtml(
-              order.order_no || ""
-            )}
-          </td>
-
-          <td>
-            ${escapeHtml(
-              order.customer_name || ""
-            )}
-          </td>
-
-          <td>
-            ${escapeHtml(
-              order.phone || ""
-            )}
-          </td>
-
-          <td>
-            ${escapeHtml(
-              order.city || ""
-            )}
-          </td>
-
-          <td>
-            ${Number(
-              order.total || 0
-            ).toFixed(2)}
-            AED
-          </td>
-
-          <td>
-
-            <select
-              onchange="
-                updateOrderStatus(
-                  ${order.id},
-                  this.value
-                )
-              "
-            >
-
-              ${statusOptions(
-                order.status
-              )}
-
-            </select>
-
-          </td>
-
-          <td>
-
-            <button
-              class="secondary"
-              onclick="
-                openInvoice(
-                  ${order.id}
-                )
-              "
-            >
-              فاتورة
-            </button>
-
-          </td>
-
-        </tr>
-
-      `
-    ).join("");
-}
-
-function statusOptions(current) {
-
-  const statuses = [
-
-    ["new", "جديد"],
-    ["pending", "معلق"],
-    ["processing", "قيد التنفيذ"],
-    ["ready", "جاهز"],
-    ["delivered", "تم التسليم"],
-    ["cancelled", "ملغي"]
-
-  ];
-
-  return statuses.map(
-    ([value, label]) => `
-      <option
-        value="${value}"
-        ${
-          current === value
-            ? "selected"
-            : ""
-        }
-      >
-        ${label}
-      </option>
-    `
-  ).join("");
-}
-
-async function updateOrderStatus(
-  id,
-  status
-) {
-
-  try {
-
-    await api(
-      `/api/orders/${id}`,
-      {
-        method: "PATCH",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-            status
-          })
-      }
-    );
-
-    showSuccess(
-      "تم تحديث حالة الطلب."
-    );
-
-    await loadStats();
-
-  } catch (err) {
-
-    showError(err.message);
-
-  }
-}
-
-function openInvoice(id) {
-
-  window.open(
-    `/api/orders/${id}/invoice`,
-    "_blank"
-  );
-}
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-async function logout() {
-
-  try {
-
-    await api(
-      "/api/admin/logout",
-      {
-        method: "POST"
-      }
-    );
-
-  } catch {}
-
-  window.location.href =
-    "/admin-login";
-}
-
-/* =====================================================
-   NOTICES
-===================================================== */
-
-function showSuccess(message) {
-
-  const el =
-    document.getElementById(
-      "notice"
-    );
-
-  el.className =
-    "notice success";
-
-  el.textContent =
-    message;
-
-  setTimeout(() => {
-
-    el.className =
-      "notice";
-
-  }, 3500);
-}
-
-function showError(message) {
-
-  const el =
-    document.getElementById(
-      "notice"
-    );
-
-  el.className =
-    "notice error";
-
-  el.textContent =
-    message;
+throw new Error(
+data.error || "فشل رفع الصور"
+);
 
 }
 
-/* =====================================================
-   ESCAPE
-===================================================== */
 
-function escapeHtml(value) {
+uploadedImages = data.images || [];
 
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 
-function escapeAttr(value) {
+/* أول صورة هي صورة المنتج الرئيسية */
 
-  return escapeHtml(value);
+if(uploadedImages.length){
+
+$("#imageUrl").value =
+uploadedImages[0].url;
 
 }
 
-/* =====================================================
-   START
-===================================================== */
 
-init();
+$("#uploadStatus").textContent =
+`تم رفع ${uploadedImages.length} صورة بنجاح ✓`;
+
+
+}catch(error){
+
+console.error(error);
+
+$("#uploadStatus").textContent =
+"❌ " + error.message;
+
+}
+
+});
+
+
+/* =====================
+   REFRESH
+===================== */
+
+async function refresh(){
+
+const [s,p,o] = await Promise.all([
+
+fetch("/api/stats").then(x=>x.json()),
+
+fetch("/api/products").then(x=>x.json()),
+
+fetch("/api/orders").then(x=>x.json())
+
+]);
+
+
+$("#stats").innerHTML = [
+
+["المبيعات",money(s.revenue)],
+
+["الطلبات",s.orders],
+
+["العملاء",s.customers],
+
+["المنتجات",s.products],
+
+["مخزون منخفض",s.low]
+
+].map(a =>
+
+`<div class="stat">
+${a[0]}
+<b>${a[1]}</b>
+</div>`
+
+).join("");
+
+
+$("#products").innerHTML =
+
+p.map(x => `
+
+<tr>
+
+<td>
+
+${x.image
+?
+`<img src="${x.image}"
+style="width:50px;height:40px;object-fit:cover;vertical-align:middle;border-radius:4px">
+`
+:""}
+
+${x.name_ar}
+
+</td>
+
+<td>${x.category}</td>
+
+<td>${money(x.price)}</td>
+
+<td>${x.stock}</td>
+
+<td>
+
+<button
+class="btn danger mini"
+onclick="del(${x.id})">
+
+حذف
+
+</button>
+
+</td>
+
+</tr>
+
+`).join("");
+
+
+$("#orders").innerHTML =
+
+o.map(x => `
+
+<tr>
+
+<td>${x.order_no}</td>
+
+<td>${x.customer_name}</td>
+
+<td>${x.phone}</td>
+
+<td>${money(x.total)}</td>
+
+<td>
+
+<select
+onchange="st(${x.id},this.value)">
+
+${[
+"NEW",
+"CONFIRMED",
+"PROCESSING",
+"READY",
+"SHIPPED",
+"DELIVERED",
+"CANCELLED"
+
+].map(z =>
+
+`<option
+${z == x.status ? "selected":""}>
+${z}
+</option>`
+
+).join("")}
+
+</select>
+
+</td>
+
+<td>
+
+<a
+class="btn mini"
+href="/api/invoice/${x.id}"
+target="_blank">
+
+PDF
+
+</a>
+
+</td>
+
+</tr>
+
+`).join("");
+
+}
+
+
+/* =====================
+   ADD PRODUCT
+===================== */
+
+$("#add").onsubmit = async e => {
+
+e.preventDefault();
+
+
+if(!$("#imageUrl").value){
+
+if(!confirm(
+"لم يتم رفع صورة. هل تريد إضافة المنتج بدون صورة؟"
+)) return;
+
+}
+
+
+const data =
+Object.fromEntries(
+new FormData(e.target)
+);
+
+
+const response =
+await fetch("/api/products",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(data)
+
+});
+
+
+const result =
+await response.json();
+
+
+if(!response.ok){
+
+alert(result.error || "حدث خطأ");
+
+return;
+
+}
+
+
+alert("تم إضافة المنتج بنجاح ✓");
+
+e.target.reset();
+
+$("#preview").innerHTML = "";
+
+$("#uploadStatus").textContent = "";
+
+$("#imageUrl").value = "";
+
+uploadedImages = [];
+
+refresh();
+
+};
+
+
+/* =====================
+   DELETE
+===================== */
+
+async function del(id){
+
+if(confirm("حذف المنتج؟")){
+
+await fetch(
+"/api/products/"+id,
+{
+method:"DELETE"
+}
+);
+
+refresh();
+
+}
+
+}
+
+
+/* =====================
+   STATUS
+===================== */
+
+async function st(id,status){
+
+await fetch(
+"/api/orders/"+id,
+{
+
+method:"PATCH",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({status})
+
+});
+
+refresh();
+
+}
+
+
+refresh();
 
 </script>
 
