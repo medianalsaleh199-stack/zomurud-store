@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>ZOMURUD Admin</title>
 
@@ -13,105 +18,94 @@
 
     body {
       margin: 0;
-      font-family: Arial, Tahoma, sans-serif;
+      font-family: Arial, sans-serif;
       background: #f5f6f8;
-      color: #171717;
+      color: #222;
     }
 
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .topbar {
-      background: #111827;
+    header {
+      background: #111;
       color: white;
-      padding: 18px 20px;
+      padding: 18px 25px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 10;
     }
 
-    .brand {
+    header h1 {
+      margin: 0;
       font-size: 22px;
-      font-weight: 800;
     }
 
-    .top-actions {
-      display: flex;
-      gap: 8px;
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .logout {
+      background: #dc3545;
+      color: white;
     }
 
     .container {
-      width: min(1200px, 94%);
-      margin: 25px auto 60px;
+      max-width: 1250px;
+      margin: auto;
+      padding: 25px;
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
+      grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
     }
 
     .stat {
       background: white;
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.06);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.06);
     }
 
     .stat small {
       color: #777;
-      display: block;
-      margin-bottom: 8px;
     }
 
     .stat strong {
-      font-size: 25px;
+      display: block;
+      font-size: 28px;
+      margin-top: 8px;
     }
 
     .card {
       background: white;
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 22px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.06);
+      margin-bottom: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.06);
     }
 
-    h1,
-    h2,
-    h3 {
+    .card h2 {
       margin-top: 0;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
       gap: 15px;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
     }
 
     label {
       display: block;
-      font-weight: 700;
+      font-weight: bold;
       margin-bottom: 7px;
     }
 
@@ -119,203 +113,136 @@
     textarea,
     select {
       width: 100%;
-      border: 1px solid #d7d9df;
-      border-radius: 11px;
       padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
       background: white;
-      outline: none;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #111827;
     }
 
     textarea {
-      min-height: 110px;
+      min-height: 100px;
       resize: vertical;
     }
 
-    .btn {
-      border: 0;
-      border-radius: 11px;
-      padding: 11px 17px;
-      background: #111827;
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .primary {
+      background: #111;
       color: white;
-      font-weight: 700;
     }
 
-    .btn:hover {
-      opacity: .9;
+    .secondary {
+      background: #eee;
+      color: #222;
     }
 
-    .btn.secondary {
-      background: #e5e7eb;
-      color: #111827;
+    .danger {
+      background: #dc3545;
+      color: white;
     }
 
-    .btn.danger {
-      background: #dc2626;
+    .success {
+      background: #198754;
+      color: white;
     }
 
-    .btn.green {
-      background: #15803d;
-    }
-
-    .btn.small {
-      padding: 8px 11px;
-      font-size: 13px;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .message {
-      margin: 12px 0;
-      padding: 12px;
-      border-radius: 10px;
-      display: none;
-    }
-
-    .message.show {
-      display: block;
-    }
-
-    .message.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .message.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .upload-box {
-      border: 2px dashed #c9ccd4;
-      border-radius: 18px;
-      padding: 25px;
+    .images-box {
+      border: 2px dashed #ccc;
+      border-radius: 15px;
+      padding: 20px;
       text-align: center;
-      background: #fafafa;
+      margin-top: 10px;
     }
 
-    .upload-box strong {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-
-    .upload-box p {
-      color: #777;
-      margin: 8px 0 18px;
-    }
-
-    #imageFiles {
-      display: none;
-    }
-
-    .image-list {
-      display: flex;
-      flex-wrap: wrap;
+    .images-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fill, minmax(130px, 1fr));
       gap: 12px;
-      margin-top: 18px;
+      margin-top: 20px;
     }
 
     .image-item {
-      width: 145px;
-      background: white;
       border: 1px solid #ddd;
-      border-radius: 14px;
-      overflow: hidden;
-      position: relative;
+      border-radius: 12px;
+      padding: 8px;
+      background: #fafafa;
     }
 
     .image-item img {
       width: 100%;
       height: 120px;
       object-fit: cover;
-      display: block;
+      border-radius: 9px;
     }
 
-    .image-item-info {
+    .image-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 7px;
+    }
+
+    .image-actions button {
+      flex: 1;
       padding: 7px;
       font-size: 12px;
-      text-align: center;
     }
 
-    .main-badge {
-      background: #111827;
-      color: white;
-      padding: 5px;
-      font-size: 11px;
-      text-align: center;
+    .main-image {
+      border: 3px solid #111;
     }
 
-    .option-box {
+    .option {
       border: 1px solid #ddd;
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 15px;
-      margin-bottom: 12px;
+      margin-top: 15px;
       background: #fafafa;
-    }
-
-    .option-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
     }
 
     .value-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 120px auto;
+      grid-template-columns:
+        1fr 1fr 120px 50px;
       gap: 8px;
-      margin-bottom: 8px;
-      align-items: center;
+      margin-top: 8px;
     }
 
     .products {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns:
+        repeat(auto-fill, minmax(250px, 1fr));
       gap: 15px;
     }
 
-    .product-card {
-      border: 1px solid #e1e1e1;
+    .product {
+      border: 1px solid #ddd;
       border-radius: 15px;
       overflow: hidden;
       background: white;
     }
 
-    .product-card img {
+    .product img {
       width: 100%;
-      height: 190px;
+      height: 180px;
       object-fit: cover;
-      background: #eee;
     }
 
-    .product-body {
+    .product-content {
       padding: 15px;
     }
 
-    .product-body h3 {
-      margin-bottom: 7px;
+    .product-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
     }
 
-    .price {
-      font-weight: 800;
-      font-size: 19px;
-    }
-
-    .muted {
-      color: #777;
-      font-size: 13px;
+    .product-actions button {
+      flex: 1;
     }
 
     .orders {
@@ -325,60 +252,65 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 750px;
+      min-width: 800px;
     }
 
     th,
     td {
-      padding: 11px;
       border-bottom: 1px solid #eee;
+      padding: 12px;
       text-align: right;
-      vertical-align: top;
     }
 
     th {
       background: #f7f7f7;
     }
 
-    .hidden {
-      display: none !important;
+    .status {
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: #eee;
+      display: inline-block;
     }
 
-    @media (max-width: 900px) {
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .products {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .notice {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: none;
     }
 
-    @media (max-width: 650px) {
-      .topbar {
-        padding: 14px;
-      }
+    .notice.success {
+      display: block;
+    }
 
+    .notice.error {
+      background: #ffe1e1;
+      color: #9d0000;
+      display: block;
+    }
+
+    .uploading {
+      opacity: .5;
+    }
+
+    .empty {
+      color: #777;
+      padding: 25px;
+      text-align: center;
+    }
+
+    @media(max-width:700px) {
       .container {
-        width: 95%;
+        padding: 12px;
       }
 
-      .stats,
-      .grid,
-      .products {
-        grid-template-columns: 1fr;
-      }
-
-      .field.full {
-        grid-column: auto;
+      header {
+        padding: 14px;
       }
 
       .value-row {
         grid-template-columns: 1fr;
-      }
-
-      .image-item {
-        width: 125px;
       }
     }
   </style>
@@ -386,29 +318,33 @@
 
 <body>
 
-<header class="topbar">
-  <div class="brand">ZOMURUD | لوحة الإدارة</div>
+<header>
+  <h1>لوحة تحكم ZOMURUD</h1>
 
-  <div class="top-actions">
-    <button class="btn secondary" onclick="loadAll()">
-      تحديث
-    </button>
-
-    <button class="btn danger" onclick="logout()">
-      تسجيل الخروج
-    </button>
-  </div>
+  <button
+    class="logout"
+    onclick="logout()"
+  >
+    تسجيل الخروج
+  </button>
 </header>
 
-<main class="container">
+<div class="container">
+
+  <div id="notice" class="notice"></div>
 
   <!-- STATS -->
 
-  <section class="stats">
+  <div class="stats">
 
     <div class="stat">
-      <small>المنتجات</small>
+      <small>إجمالي المنتجات</small>
       <strong id="statProducts">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>المنتجات النشطة</small>
+      <strong id="statActive">0</strong>
     </div>
 
     <div class="stat">
@@ -417,317 +353,475 @@
     </div>
 
     <div class="stat">
-      <small>العملاء</small>
-      <strong id="statCustomers">0</strong>
+      <small>طلبات جديدة</small>
+      <strong id="statPending">0</strong>
     </div>
 
     <div class="stat">
-      <small>المبيعات</small>
-      <strong id="statRevenue">AED 0</strong>
+      <small>الإيرادات</small>
+      <strong id="statRevenue">0 AED</strong>
     </div>
 
-    <div class="stat">
-      <small>مخزون منخفض</small>
-      <strong id="statLow">0</strong>
-    </div>
-
-  </section>
-
-  <!-- MESSAGE -->
-
-  <div id="message" class="message"></div>
+  </div>
 
   <!-- PRODUCT FORM -->
 
-  <section class="card">
+  <div class="card">
 
-    <h2 id="formTitle">➕ إضافة منتج جديد</h2>
+    <h2 id="formTitle">
+      إضافة منتج جديد
+    </h2>
 
-    <input type="hidden" id="productId">
+    <input
+      type="hidden"
+      id="productId"
+    >
 
     <div class="grid">
 
       <div class="field">
         <label>اسم المنتج بالعربي</label>
-        <input id="nameAr" placeholder="مثال: طاولة عرض">
+
+        <input
+          id="name_ar"
+          placeholder="مثال: عربة آيس كريم"
+        >
       </div>
 
       <div class="field">
-        <label>اسم المنتج بالإنجليزي</label>
-        <input id="nameEn" placeholder="Display Table">
+        <label>Product Name English</label>
+
+        <input
+          id="name_en"
+          placeholder="Example: Ice Cream Cart"
+        >
       </div>
 
       <div class="field">
         <label>التصنيف</label>
-        <input id="category" placeholder="Tables">
-      </div>
 
-      <div class="field">
-        <label>المخزون</label>
-        <input id="stock" type="number" min="0" value="1">
+        <input
+          id="category"
+          placeholder="طاولات / عربات / أكشاك"
+        >
       </div>
 
       <div class="field">
         <label>السعر AED</label>
-        <input id="price" type="number" min="0" step="0.01" value="0">
+
+        <input
+          type="number"
+          id="price"
+          value="0"
+        >
       </div>
 
       <div class="field">
-        <label>السعر قبل الخصم AED</label>
-        <input id="comparePrice" type="number" min="0" step="0.01" value="0">
+        <label>السعر قبل الخصم</label>
+
+        <input
+          type="number"
+          id="compare_price"
+          value="0"
+        >
       </div>
 
-      <div class="field full">
-        <label>الوصف بالعربي</label>
-        <textarea id="descriptionAr"></textarea>
+      <div class="field">
+        <label>المخزون</label>
+
+        <input
+          type="number"
+          id="stock"
+          value="0"
+        >
       </div>
 
-      <div class="field full">
-        <label>الوصف بالإنجليزي</label>
-        <textarea id="descriptionEn"></textarea>
+    </div>
+
+    <div class="grid">
+
+      <div class="field">
+
+        <label>
+          الوصف بالعربي
+        </label>
+
+        <textarea
+          id="description_ar"
+        ></textarea>
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Description English
+        </label>
+
+        <textarea
+          id="description_en"
+        ></textarea>
+
       </div>
 
     </div>
 
     <!-- IMAGES -->
 
-    <hr>
+    <h3>صور المنتج</h3>
 
-    <h2>📸 صور المنتج</h2>
-
-    <div class="upload-box">
-
-      <strong>اختر عدة صور من الهاتف</strong>
-
-      <p>
-        يمكنك اختيار عدة صور دفعة واحدة.
-        الصور سترفع تلقائيًا إلى Cloudinary.
-      </p>
+    <div class="images-box">
 
       <input
-        id="imageFiles"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        id="imageInput"
+        accept="image/*"
         multiple
       >
 
-      <label
-        for="imageFiles"
-        class="btn"
-        style="display:inline-block"
-      >
-        📷 اختيار الصور
-      </label>
-
-      <div id="imageStatus" style="margin-top:15px;font-weight:bold;"></div>
+      <p>
+        اختر عدة صور من الهاتف.
+        سيتم رفعها تلقائيًا إلى Cloudinary.
+      </p>
 
     </div>
 
-    <div id="uploadedImages" class="image-list"></div>
+    <div
+      id="imagesGrid"
+      class="images-grid"
+    ></div>
 
     <!-- OPTIONS -->
 
-    <hr>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <h2>⚙️ خيارات المنتج</h2>
-
-      <button
-        type="button"
-        class="btn secondary"
-        onclick="addOption()"
-      >
-        + إضافة خيار
-      </button>
-    </div>
+    <h3 style="margin-top:30px;">
+      خيارات المنتج
+    </h3>
 
     <div id="optionsContainer"></div>
 
-    <!-- SAVE -->
+    <button
+      class="secondary"
+      onclick="addOption()"
+      style="margin-top:10px;"
+    >
+      + إضافة خيار
+    </button>
 
-    <div class="actions">
+    <div style="margin-top:25px;">
 
       <button
-        class="btn green"
+        class="primary"
         onclick="saveProduct()"
       >
-        💾 حفظ المنتج
+        حفظ المنتج
       </button>
 
       <button
-        class="btn secondary"
+        class="secondary"
         onclick="resetForm()"
       >
-        إلغاء / منتج جديد
+        منتج جديد
       </button>
 
     </div>
 
-  </section>
+  </div>
 
   <!-- PRODUCTS -->
 
-  <section class="card">
+  <div class="card">
 
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <h2>📦 المنتجات</h2>
+    <h2>المنتجات</h2>
 
-      <button
-        class="btn secondary"
-        onclick="loadProducts()"
-      >
-        تحديث
-      </button>
-    </div>
+    <div
+      id="products"
+      class="products"
+    ></div>
 
-    <div id="productsList" class="products"></div>
-
-  </section>
+  </div>
 
   <!-- ORDERS -->
 
-  <section class="card">
+  <div class="card">
 
-    <h2>🛒 الطلبات</h2>
+    <h2>الطلبات</h2>
 
     <div class="orders">
 
       <table>
 
         <thead>
+
           <tr>
-            <th>الطلب</th>
+            <th>رقم الطلب</th>
             <th>العميل</th>
+            <th>الهاتف</th>
             <th>المدينة</th>
-            <th>المبلغ</th>
+            <th>الإجمالي</th>
             <th>الحالة</th>
-            <th>التاريخ</th>
-            <th>الفاتورة</th>
+            <th>الإجراء</th>
           </tr>
+
         </thead>
 
-        <tbody id="ordersBody"></tbody>
+        <tbody id="orders"></tbody>
 
       </table>
 
     </div>
 
-  </section>
+  </div>
 
-</main>
+</div>
 
 <script>
 
-  /* =========================================
-     GLOBAL DATA
-  ========================================= */
+let uploadedImages = [];
+let productsData = [];
+let optionsData = [];
 
-  let products = [];
-  let orders = [];
-  let uploadedImages = [];
-  let optionsData = [];
+/* =====================================================
+   API
+===================================================== */
 
-  /* =========================================
-     HELPERS
-  ========================================= */
+async function api(url, options = {}) {
 
-  function $(id) {
-    return document.getElementById(id);
+  const response = await fetch(url, {
+    credentials: "include",
+    ...options
+  });
+
+  if (
+    response.status === 401 ||
+    response.status === 403
+  ) {
+    window.location.href = "/admin-login";
+    return null;
   }
 
-  function showMessage(text, type = "success") {
+  let data;
 
-    const box = $("message");
-
-    box.textContent = text;
-
-    box.className =
-      "message show " + type;
-
-    setTimeout(() => {
-      box.className = "message";
-    }, 5000);
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
   }
 
-  async function api(url, options = {}) {
+  if (!response.ok) {
+    throw new Error(
+      data.error || "حدث خطأ في الطلب"
+    );
+  }
 
-    const response =
-      await fetch(url, {
-        credentials: "include",
-        ...options
-      });
+  return data;
+}
 
-    let data = {};
+/* =====================================================
+   INIT
+===================================================== */
 
-    try {
-      data = await response.json();
-    } catch {}
+async function init() {
 
-    if (!response.ok) {
+  try {
 
-      if (response.status === 401) {
-        location.href =
-          "/admin-login.html";
+    await api("/api/admin/me");
+
+    await Promise.all([
+      loadStats(),
+      loadProducts(),
+      loadOrders()
+    ]);
+
+  } catch (err) {
+
+    showError(err.message);
+
+  }
+
+}
+
+/* =====================================================
+   STATS
+===================================================== */
+
+async function loadStats() {
+
+  const data =
+    await api("/api/stats");
+
+  if (!data) return;
+
+  document.getElementById(
+    "statProducts"
+  ).textContent =
+    data.products || 0;
+
+  document.getElementById(
+    "statActive"
+  ).textContent =
+    data.activeProducts || 0;
+
+  document.getElementById(
+    "statOrders"
+  ).textContent =
+    data.orders || 0;
+
+  document.getElementById(
+    "statPending"
+  ).textContent =
+    data.pendingOrders || 0;
+
+  document.getElementById(
+    "statRevenue"
+  ).textContent =
+    Number(data.revenue || 0)
+      .toFixed(2) + " AED";
+}
+
+/* =====================================================
+   LOAD PRODUCTS
+===================================================== */
+
+async function loadProducts() {
+
+  const data =
+    await api("/api/admin/products");
+
+  if (!data) return;
+
+  productsData = data;
+
+  const container =
+    document.getElementById("products");
+
+  if (!data.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        لا توجد منتجات حتى الآن.
+      </div>`;
+
+    return;
+  }
+
+  container.innerHTML =
+    data.map(product => {
+
+      const image =
+        product.image ||
+        product.images?.[0]?.url ||
+        "https://via.placeholder.com/500";
+
+      return `
+        <div class="product">
+
+          <img
+            src="${escapeAttr(image)}"
+            alt=""
+          >
+
+          <div class="product-content">
+
+            <strong>
+              ${escapeHtml(
+                product.name_ar ||
+                product.name_en ||
+                ""
+              )}
+            </strong>
+
+            <p>
+              ${escapeHtml(
+                product.name_en || ""
+              )}
+            </p>
+
+            <b>
+              ${Number(
+                product.price || 0
+              ).toFixed(2)} AED
+            </b>
+
+            <div class="product-actions">
+
+              <button
+                class="secondary"
+                onclick="editProduct(${product.id})"
+              >
+                تعديل
+              </button>
+
+              <button
+                class="danger"
+                onclick="deleteProduct(${product.id})"
+              >
+                حذف
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+/* =====================================================
+   IMAGE SELECT
+===================================================== */
+
+document
+  .getElementById("imageInput")
+  .addEventListener(
+    "change",
+    async function() {
+
+      const files =
+        Array.from(this.files || []);
+
+      for (const file of files) {
+
+        await uploadImage(file);
+
       }
 
-      throw new Error(
-        data.error ||
-        "حدث خطأ في الطلب"
-      );
+      this.value = "";
+
+      renderImages();
     }
+  );
 
-    return data;
-  }
+/* =====================================================
+   UPLOAD IMAGE
+===================================================== */
 
-  /* =========================================
-     AUTH
-  ========================================= */
+async function uploadImage(file) {
 
-  async function checkAuth() {
+  const tempId =
+    "temp_" +
+    Date.now() +
+    "_" +
+    Math.random();
 
-    try {
+  uploadedImages.push({
+    tempId,
+    name: file.name,
+    uploading: true,
+    url: "",
+    public_id: ""
+  });
 
-      const data =
-        await api("/api/admin/me");
+  renderImages();
 
-      if (!data.authenticated) {
-        location.href =
-          "/admin-login.html";
-      }
-
-    } catch {
-
-      location.href =
-        "/admin-login.html";
-    }
-  }
-
-  async function logout() {
-
-    try {
-      await api(
-        "/api/admin/logout",
-        {
-          method: "POST"
-        }
-      );
-    } catch {}
-
-    location.href =
-      "/admin-login.html";
-  }
-
-  /* =========================================
-     CLOUDINARY UPLOAD
-  ========================================= */
-
-  async function uploadImage(file) {
+  try {
 
     const formData =
       new FormData();
 
     formData.append(
-      "file",
+      "image",
       file
     );
 
@@ -736,8 +830,8 @@
         "/api/admin/upload-image",
         {
           method: "POST",
-          credentials: "include",
-          body: formData
+          body: formData,
+          credentials: "include"
         }
       );
 
@@ -754,552 +848,521 @@
         data.error ||
         "فشل رفع الصورة"
       );
+
     }
 
-    return {
-      url:
-        data.secure_url ||
-        data.url,
-      secure_url:
-        data.secure_url ||
-        data.url,
-      public_id:
-        data.public_id || ""
-    };
-  }
+    const item =
+      uploadedImages.find(
+        x => x.tempId === tempId
+      );
 
-  /* =========================================
-     IMAGE SELECT
-  ========================================= */
+    if (item) {
 
-  $("imageFiles")
-    .addEventListener(
-      "change",
-      async function () {
+      item.url =
+        data.secure_url;
 
-        const files =
-          Array.from(
-            this.files || []
-          );
+      item.public_id =
+        data.public_id;
 
-        if (!files.length) {
-          return;
-        }
+      item.uploading =
+        false;
+    }
 
-        const status =
-          $("imageStatus");
+  } catch (err) {
 
-        status.textContent =
-          "⏳ جاري رفع الصور...";
+    uploadedImages =
+      uploadedImages.filter(
+        x => x.tempId !== tempId
+      );
 
-        try {
-
-          for (
-            let i = 0;
-            i < files.length;
-            i++
-          ) {
-
-            const file =
-              files[i];
-
-            if (
-              file.size >
-              10 * 1024 * 1024
-            ) {
-              throw new Error(
-                "حجم الصورة يجب ألا يتجاوز 10MB"
-              );
-            }
-
-            status.textContent =
-              `⏳ جاري رفع الصورة ${i + 1} من ${files.length}...`;
-
-            const image =
-              await uploadImage(
-                file
-              );
-
-            uploadedImages.push(
-              image
-            );
-
-            renderImages();
-          }
-
-          status.textContent =
-            `✅ تم رفع ${files.length} صورة بنجاح`;
-
-        } catch (error) {
-
-          console.error(error);
-
-          status.textContent =
-            "❌ " +
-            error.message;
-
-          showMessage(
-            error.message,
-            "error"
-          );
-        }
-
-        this.value = "";
-      }
+    showError(
+      "فشل رفع الصورة: " +
+      err.message
     );
 
-  /* =========================================
-     RENDER IMAGES
-  ========================================= */
+  }
 
-  function renderImages() {
+  renderImages();
+}
 
-    const container =
-      $("uploadedImages");
+/* =====================================================
+   RENDER IMAGES
+===================================================== */
+
+function renderImages() {
+
+  const container =
+    document.getElementById(
+      "imagesGrid"
+    );
+
+  if (!uploadedImages.length) {
 
     container.innerHTML = "";
 
-    if (!uploadedImages.length) {
+    return;
+  }
 
-      container.innerHTML = `
-        <div class="muted">
-          لم تتم إضافة صور بعد
-        </div>
-      `;
+  container.innerHTML =
+    uploadedImages.map(
+      (img, index) => {
 
-      return;
-    }
+        if (img.uploading) {
 
-    uploadedImages.forEach(
-      (image, index) => {
+          return `
+            <div
+              class="image-item uploading"
+            >
+              <div
+                style="
+                  height:120px;
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                "
+              >
+                جاري الرفع...
+              </div>
+            </div>
+          `;
+        }
 
-        const item =
-          document.createElement(
-            "div"
-          );
-
-        item.className =
-          "image-item";
-
-        item.innerHTML = `
-
-          <img
-            src="${escapeHtml(image.url)}"
-            alt="Product image"
+        return `
+          <div
+            class="image-item ${
+              index === 0
+                ? "main-image"
+                : ""
+            }"
           >
 
-          ${
-            index === 0
-              ? `
-                <div class="main-badge">
-                  ⭐ الصورة الرئيسية
-                </div>
-              `
-              : ""
-          }
-
-          <div class="image-item-info">
-
-            ${
-              index !== 0
-                ? `
-                  <button
-                    class="btn small"
-                    onclick="makeMainImage(${index})"
-                    style="width:100%;margin-bottom:5px;"
-                  >
-                    جعلها رئيسية
-                  </button>
-                `
-                : ""
-            }
-
-            <button
-              class="btn small danger"
-              onclick="removeImage(${index})"
-              style="width:100%;"
+            <img
+              src="${escapeAttr(img.url)}"
+              alt=""
             >
-              حذف
-            </button>
+
+            <div
+              class="image-actions"
+            >
+
+              ${
+                index !== 0
+                  ? `
+                    <button
+                      class="secondary"
+                      onclick="makeMain(${index})"
+                    >
+                      رئيسية
+                    </button>
+                  `
+                  : `
+                    <button
+                      class="success"
+                      disabled
+                    >
+                      الرئيسية
+                    </button>
+                  `
+              }
+
+              <button
+                class="danger"
+                onclick="removeImage(${index})"
+              >
+                حذف
+              </button>
+
+            </div>
 
           </div>
         `;
 
-        container.appendChild(
-          item
-        );
       }
-    );
-  }
+    ).join("");
+}
 
-  function removeImage(index) {
+/* =====================================================
+   IMAGE ACTIONS
+===================================================== */
 
-    uploadedImages.splice(
-      index,
-      1
-    );
+function makeMain(index) {
 
-    renderImages();
-  }
+  const item =
+    uploadedImages[index];
 
-  function makeMainImage(index) {
+  uploadedImages.splice(
+    index,
+    1
+  );
 
-    if (
-      index < 0 ||
-      index >= uploadedImages.length
-    ) {
-      return;
-    }
+  uploadedImages.unshift(
+    item
+  );
 
-    const image =
-      uploadedImages.splice(
-        index,
-        1
-      )[0];
+  renderImages();
+}
 
-    uploadedImages.unshift(
-      image
-    );
+function removeImage(index) {
 
-    renderImages();
-  }
+  uploadedImages.splice(
+    index,
+    1
+  );
 
-  /* =========================================
-     OPTIONS
-  ========================================= */
+  renderImages();
+}
 
-  function addOption(data = null) {
+/* =====================================================
+   OPTIONS
+===================================================== */
 
-    const option = {
+function addOption(data = null) {
 
-      name_ar:
-        data?.name_ar || "",
+  const option = {
 
-      name_en:
-        data?.name_en || "",
+    name_ar:
+      data?.name_ar || "",
 
-      type:
-        data?.type || "select",
+    name_en:
+      data?.name_en || "",
 
-      required:
-        Boolean(
-          data?.required
-        ),
+    required:
+      !!data?.required,
 
-      values:
-        Array.isArray(
-          data?.values
-        )
-          ? data.values.map(v => ({
-              label_ar:
-                v.label_ar || "",
-              label_en:
-                v.label_en || "",
-              value:
-                v.value || "",
-              price_delta:
-                Number(
-                  v.price_delta
-                ) || 0
-            }))
-          : []
+    values:
+      data?.values?.map(v => ({
+        label_ar:
+          v.label_ar || "",
 
-    };
+        label_en:
+          v.label_en || "",
 
-    if (!option.values.length) {
+        price_delta:
+          Number(
+            v.price_delta || 0
+          )
+      })) || []
 
-      option.values.push({
-        label_ar: "",
-        label_en: "",
-        value: "",
-        price_delta: 0
-      });
-    }
+  };
 
-    optionsData.push(
-      option
-    );
+  if (!option.values.length) {
 
-    renderOptions();
-  }
-
-  function removeOption(index) {
-
-    optionsData.splice(
-      index,
-      1
-    );
-
-    renderOptions();
-  }
-
-  function addOptionValue(optionIndex) {
-
-    optionsData[
-      optionIndex
-    ].values.push({
+    option.values.push({
       label_ar: "",
       label_en: "",
-      value: "",
       price_delta: 0
     });
 
-    renderOptions();
   }
 
-  function removeOptionValue(
-    optionIndex,
-    valueIndex
-  ) {
+  optionsData.push(option);
 
-    optionsData[
-      optionIndex
-    ].values.splice(
-      valueIndex,
-      1
+  renderOptions();
+}
+
+function renderOptions() {
+
+  const container =
+    document.getElementById(
+      "optionsContainer"
     );
 
-    renderOptions();
-  }
+  container.innerHTML =
+    optionsData.map(
+      (option, optionIndex) => {
 
-  function updateOption(
-    optionIndex,
-    field,
-    value
-  ) {
-
-    optionsData[
-      optionIndex
-    ][field] = value;
-  }
-
-  function updateValue(
-    optionIndex,
-    valueIndex,
-    field,
-    value
-  ) {
-
-    optionsData[
-      optionIndex
-    ].values[
-      valueIndex
-    ][field] = value;
-  }
-
-  function renderOptions() {
-
-    const container =
-      $("optionsContainer");
-
-    container.innerHTML = "";
-
-    if (!optionsData.length) {
-
-      container.innerHTML = `
-        <div class="muted">
-          لا توجد خيارات لهذا المنتج.
-        </div>
-      `;
-
-      return;
-    }
-
-    optionsData.forEach(
-      (option, oi) => {
-
-        const box =
-          document.createElement(
-            "div"
-          );
-
-        box.className =
-          "option-box";
-
-        box.innerHTML = `
-
-          <div class="option-header">
-
-            <strong>
-              الخيار ${oi + 1}
-            </strong>
-
-            <button
-              type="button"
-              class="btn small danger"
-              onclick="removeOption(${oi})"
-            >
-              حذف الخيار
-            </button>
-
-          </div>
-
-          <div class="grid">
-
-            <div class="field">
-              <label>اسم الخيار بالعربي</label>
-
-              <input
-                value="${escapeAttr(option.name_ar)}"
-                oninput="updateOption(${oi}, 'name_ar', this.value)"
-              >
-            </div>
-
-            <div class="field">
-              <label>اسم الخيار بالإنجليزي</label>
-
-              <input
-                value="${escapeAttr(option.name_en)}"
-                oninput="updateOption(${oi}, 'name_en', this.value)"
-              >
-            </div>
-
-            <div class="field">
-              <label>نوع الخيار</label>
-
-              <select
-                onchange="updateOption(${oi}, 'type', this.value)"
-              >
-                <option
-                  value="select"
-                  ${option.type === "select" ? "selected" : ""}
-                >
-                  قائمة اختيار
-                </option>
-
-                <option
-                  value="text"
-                  ${option.type === "text" ? "selected" : ""}
-                >
-                  نص
-                </option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label>إجباري؟</label>
-
-              <select
-                onchange="updateOption(${oi}, 'required', this.value === 'true')"
-              >
-                <option
-                  value="false"
-                  ${!option.required ? "selected" : ""}
-                >
-                  لا
-                </option>
-
-                <option
-                  value="true"
-                  ${option.required ? "selected" : ""}
-                >
-                  نعم
-                </option>
-              </select>
-            </div>
-
-          </div>
-
-          <h3>قيم الخيار</h3>
-
-          <div id="values-${oi}"></div>
-
-          <button
-            type="button"
-            class="btn secondary small"
-            onclick="addOptionValue(${oi})"
+        return `
+          <div
+            class="option"
           >
-            + إضافة قيمة
-          </button>
-        `;
 
-        container.appendChild(
-          box
-        );
+            <div class="grid">
 
-        const valuesBox =
-          box.querySelector(
-            `#values-${oi}`
-          );
+              <div>
 
-        option.values.forEach(
-          (value, vi) => {
+                <label>
+                  اسم الخيار عربي
+                </label>
 
-            const row =
-              document.createElement(
-                "div"
-              );
+                <input
+                  value="${escapeAttr(
+                    option.name_ar
+                  )}"
+                  oninput="
+                    updateOption(
+                      ${optionIndex},
+                      'name_ar',
+                      this.value
+                    )
+                  "
+                >
 
-            row.className =
-              "value-row";
+              </div>
 
-            row.innerHTML = `
+              <div>
+
+                <label>
+                  Option Name English
+                </label>
+
+                <input
+                  value="${escapeAttr(
+                    option.name_en
+                  )}"
+                  oninput="
+                    updateOption(
+                      ${optionIndex},
+                      'name_en',
+                      this.value
+                    )
+                  "
+                >
+
+              </div>
+
+            </div>
+
+            <label
+              style="
+                margin-top:12px;
+              "
+            >
 
               <input
-                placeholder="العربي"
-                value="${escapeAttr(value.label_ar)}"
-                oninput="updateValue(${oi}, ${vi}, 'label_ar', this.value)"
+                type="checkbox"
+                ${
+                  option.required
+                    ? "checked"
+                    : ""
+                }
+                onchange="
+                  optionsData[
+                    ${optionIndex}
+                  ].required =
+                    this.checked
+                "
+                style="
+                  width:auto;
+                "
               >
 
-              <input
-                placeholder="English"
-                value="${escapeAttr(value.label_en)}"
-                oninput="updateValue(${oi}, ${vi}, 'label_en', this.value)"
-              >
+              مطلوب من العميل
 
-              <input
-                type="number"
-                step="0.01"
-                placeholder="فرق السعر"
-                value="${Number(value.price_delta) || 0}"
-                oninput="updateValue(${oi}, ${vi}, 'price_delta', Number(this.value) || 0)"
-              >
+            </label>
+
+            <h4>
+              القيم
+            </h4>
+
+            ${
+              option.values.map(
+                (value, valueIndex) => `
+
+                  <div
+                    class="value-row"
+                  >
+
+                    <input
+                      placeholder="القيمة عربي"
+                      value="${escapeAttr(
+                        value.label_ar
+                      )}"
+                      oninput="
+                        updateValue(
+                          ${optionIndex},
+                          ${valueIndex},
+                          'label_ar',
+                          this.value
+                        )
+                      "
+                    >
+
+                    <input
+                      placeholder="Value English"
+                      value="${escapeAttr(
+                        value.label_en
+                      )}"
+                      oninput="
+                        updateValue(
+                          ${optionIndex},
+                          ${valueIndex},
+                          'label_en',
+                          this.value
+                        )
+                      "
+                    >
+
+                    <input
+                      type="number"
+                      placeholder="زيادة السعر"
+                      value="${
+                        value.price_delta || 0
+                      }"
+                      oninput="
+                        updateValue(
+                          ${optionIndex},
+                          ${valueIndex},
+                          'price_delta',
+                          this.value
+                        )
+                      "
+                    >
+
+                    <button
+                      class="danger"
+                      onclick="
+                        removeValue(
+                          ${optionIndex},
+                          ${valueIndex}
+                        )
+                      "
+                    >
+                      ×
+                    </button>
+
+                  </div>
+                `
+              ).join("")
+            }
+
+            <div
+              style="
+                margin-top:10px;
+              "
+            >
 
               <button
-                type="button"
-                class="btn danger small"
-                onclick="removeOptionValue(${oi}, ${vi})"
+                class="secondary"
+                onclick="
+                  addValue(${optionIndex})
+                "
               >
-                ×
+                + إضافة قيمة
               </button>
-            `;
 
-            valuesBox.appendChild(
-              row
-            );
-          }
-        );
+              <button
+                class="danger"
+                onclick="
+                  removeOption(${optionIndex})
+                "
+              >
+                حذف الخيار
+              </button>
+
+            </div>
+
+          </div>
+        `;
+
       }
-    );
+    ).join("");
+}
+
+function updateOption(
+  index,
+  key,
+  value
+) {
+
+  optionsData[index][key] =
+    value;
+}
+
+function updateValue(
+  optionIndex,
+  valueIndex,
+  key,
+  value
+) {
+
+  if (
+    key === "price_delta"
+  ) {
+
+    value =
+      Number(value || 0);
+
   }
 
-  /* =========================================
-     SAVE PRODUCT
-  ========================================= */
+  optionsData[
+    optionIndex
+  ].values[
+    valueIndex
+  ][key] = value;
+}
 
-  async function saveProduct() {
+function addValue(optionIndex) {
+
+  optionsData[
+    optionIndex
+  ].values.push({
+
+    label_ar: "",
+    label_en: "",
+    price_delta: 0
+
+  });
+
+  renderOptions();
+}
+
+function removeValue(
+  optionIndex,
+  valueIndex
+) {
+
+  optionsData[
+    optionIndex
+  ].values.splice(
+    valueIndex,
+    1
+  );
+
+  renderOptions();
+}
+
+function removeOption(index) {
+
+  optionsData.splice(
+    index,
+    1
+  );
+
+  renderOptions();
+}
+
+/* =====================================================
+   SAVE PRODUCT
+===================================================== */
+
+async function saveProduct() {
+
+  try {
 
     const id =
-      $("productId").value.trim();
+      document.getElementById(
+        "productId"
+      ).value;
 
-    const nameAr =
-      $("nameAr").value.trim();
-
-    const nameEn =
-      $("nameEn").value.trim();
-
-    const category =
-      $("category").value.trim();
+    const images =
+      uploadedImages
+        .filter(x =>
+          x.url &&
+          !x.uploading
+        )
+        .map(x => ({
+          url: x.url,
+          public_id: x.public_id
+        }));
 
     if (
-      !nameAr ||
-      !nameEn ||
-      !category
+      uploadedImages.some(
+        x => x.uploading
+      )
     ) {
 
-      showMessage(
-        "يرجى إدخال اسم المنتج والتصنيف",
-        "error"
+      showError(
+        "انتظر حتى تنتهي عملية رفع الصور."
       );
 
       return;
@@ -1308,287 +1371,183 @@
     const payload = {
 
       name_ar:
-        nameAr,
+        document.getElementById(
+          "name_ar"
+        ).value.trim(),
 
       name_en:
-        nameEn,
+        document.getElementById(
+          "name_en"
+        ).value.trim(),
 
       category:
-        category,
+        document.getElementById(
+          "category"
+        ).value.trim(),
 
       price:
         Number(
-          $("price").value
-        ) || 0,
+          document.getElementById(
+            "price"
+          ).value || 0
+        ),
 
       compare_price:
         Number(
-          $("comparePrice").value
-        ) || 0,
+          document.getElementById(
+            "compare_price"
+          ).value || 0
+        ),
 
       stock:
         Number(
-          $("stock").value
-        ) || 0,
+          document.getElementById(
+            "stock"
+          ).value || 0
+        ),
 
       description_ar:
-        $("descriptionAr").value,
+        document.getElementById(
+          "description_ar"
+        ).value,
 
       description_en:
-        $("descriptionEn").value,
+        document.getElementById(
+          "description_en"
+        ).value,
 
       image:
-        uploadedImages[0]?.url || "",
+        images[0]?.url || "",
 
-      images:
-        uploadedImages,
+      images,
 
       options:
         optionsData
 
     };
 
-    try {
+    if (
+      !payload.name_ar &&
+      !payload.name_en
+    ) {
 
-      const data =
-        await api(
-          id
-            ? `/api/products/${id}`
-            : "/api/products",
-          {
-            method:
-              id ? "PUT" : "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body:
-              JSON.stringify(
-                payload
-              )
-          }
-        );
-
-      showMessage(
-        id
-          ? "✅ تم تحديث المنتج بنجاح"
-          : "✅ تم إضافة المنتج بنجاح",
-        "success"
+      showError(
+        "اكتب اسم المنتج."
       );
-
-      resetForm();
-
-      await loadAll();
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        error.message,
-        "error"
-      );
-    }
-  }
-
-  /* =========================================
-     LOAD PRODUCTS
-  ========================================= */
-
-  async function loadProducts() {
-
-    try {
-
-      products =
-        await api(
-          "/api/admin/products"
-        );
-
-      renderProducts();
-
-    } catch (error) {
-
-      showMessage(
-        error.message,
-        "error"
-      );
-    }
-  }
-
-  function renderProducts() {
-
-    const container =
-      $("productsList");
-
-    container.innerHTML = "";
-
-    if (!products.length) {
-
-      container.innerHTML = `
-        <div class="muted">
-          لا توجد منتجات.
-        </div>
-      `;
 
       return;
     }
 
-    products.forEach(
-      product => {
+    const method =
+      id ? "PUT" : "POST";
 
-        const card =
-          document.createElement(
-            "div"
-          );
+    const url =
+      id
+        ? `/api/admin/products/${id}`
+        : "/api/admin/products";
 
-        card.className =
-          "product-card";
+    await api(url, {
 
-        const mainImage =
-          product.image ||
-          product.images?.[0]?.image_url ||
-          "";
+      method,
 
-        card.innerHTML = `
+      headers: {
+        "Content-Type":
+          "application/json"
+      },
 
-          ${
-            mainImage
-              ? `
-                <img
-                  src="${escapeHtml(mainImage)}"
-                  alt="${escapeAttr(product.name_en)}"
-                >
-              `
-              : `
-                <div
-                  style="
-                    height:190px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    background:#eee;
-                    color:#777;
-                  "
-                >
-                  لا توجد صورة
-                </div>
-              `
-          }
+      body:
+        JSON.stringify(payload)
 
-          <div class="product-body">
+    });
 
-            <h3>
-              ${escapeHtml(product.name_ar)}
-            </h3>
-
-            <div class="muted">
-              ${escapeHtml(product.name_en)}
-            </div>
-
-            <p class="muted">
-              ${escapeHtml(product.category)}
-            </p>
-
-            <div class="price">
-              AED
-              ${Number(product.price || 0).toFixed(2)}
-            </div>
-
-            <p class="muted">
-              المخزون:
-              ${Number(product.stock || 0)}
-            </p>
-
-            <p class="muted">
-              الصور:
-              ${product.images?.length || 0}
-            </p>
-
-            <div class="actions">
-
-              <button
-                class="btn small"
-                onclick="editProduct(${product.id})"
-              >
-                ✏️ تعديل
-              </button>
-
-              <button
-                class="btn danger small"
-                onclick="deleteProduct(${product.id})"
-              >
-                🗑 حذف
-              </button>
-
-            </div>
-
-          </div>
-        `;
-
-        container.appendChild(
-          card
-        );
-      }
+    showSuccess(
+      id
+        ? "تم تحديث المنتج بنجاح"
+        : "تم إضافة المنتج بنجاح"
     );
+
+    resetForm();
+
+    await loadProducts();
+
+    await loadStats();
+
+  } catch (err) {
+
+    showError(err.message);
+
   }
+}
 
-  /* =========================================
-     EDIT PRODUCT
-  ========================================= */
+/* =====================================================
+   EDIT PRODUCT
+===================================================== */
 
-  function editProduct(id) {
+async function editProduct(id) {
+
+  try {
 
     const product =
-      products.find(
-        p =>
-          Number(p.id) ===
-          Number(id)
+      await api(
+        `/api/admin/products/${id}`
       );
 
     if (!product) return;
 
-    $("productId").value =
-      product.id;
+    document.getElementById(
+      "productId"
+    ).value = product.id;
 
-    $("nameAr").value =
+    document.getElementById(
+      "name_ar"
+    ).value =
       product.name_ar || "";
 
-    $("nameEn").value =
+    document.getElementById(
+      "name_en"
+    ).value =
       product.name_en || "";
 
-    $("category").value =
+    document.getElementById(
+      "category"
+    ).value =
       product.category || "";
 
-    $("price").value =
+    document.getElementById(
+      "price"
+    ).value =
       product.price || 0;
 
-    $("comparePrice").value =
+    document.getElementById(
+      "compare_price"
+    ).value =
       product.compare_price || 0;
 
-    $("stock").value =
+    document.getElementById(
+      "stock"
+    ).value =
       product.stock || 0;
 
-    $("descriptionAr").value =
+    document.getElementById(
+      "description_ar"
+    ).value =
       product.description_ar || "";
 
-    $("descriptionEn").value =
+    document.getElementById(
+      "description_en"
+    ).value =
       product.description_en || "";
 
     uploadedImages =
-      Array.isArray(
-        product.images
-      )
-        ? product.images
-            .map(image => ({
-              url:
-                image.image_url,
-              secure_url:
-                image.image_url,
+      Array.isArray(product.images)
+        ? product.images.map(
+            image => ({
+              url: image.url,
               public_id:
-                ""
-            }))
+                image.public_id || "",
+              uploading: false
+            })
+          )
         : [];
 
     if (
@@ -1596,401 +1555,432 @@
       product.image
     ) {
 
-      uploadedImages = [{
-        url:
-          product.image,
-        secure_url:
-          product.image,
-        public_id:
-          ""
-      }];
+      uploadedImages = [
+        {
+          url: product.image,
+          public_id: "",
+          uploading: false
+        }
+      ];
+
     }
 
     optionsData =
-      Array.isArray(
-        product.options
-      )
-        ? JSON.parse(
-            JSON.stringify(
-              product.options
-            )
+      Array.isArray(product.options)
+        ? product.options.map(
+            option => ({
+              name_ar:
+                option.name_ar || "",
+
+              name_en:
+                option.name_en || "",
+
+              required:
+                !!option.required,
+
+              values:
+                Array.isArray(
+                  option.values
+                )
+                  ? option.values.map(
+                      value => ({
+                        label_ar:
+                          value.label_ar || "",
+
+                        label_en:
+                          value.label_en || "",
+
+                        price_delta:
+                          Number(
+                            value.price_delta || 0
+                          )
+                      })
+                    )
+                  : []
+            })
           )
         : [];
 
-    $("formTitle").textContent =
-      "✏️ تعديل المنتج";
+    document.getElementById(
+      "formTitle"
+    ).textContent =
+      "تعديل المنتج";
 
     renderImages();
+
     renderOptions();
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
+
+  } catch (err) {
+
+    showError(err.message);
+
+  }
+}
+
+/* =====================================================
+   DELETE PRODUCT
+===================================================== */
+
+async function deleteProduct(id) {
+
+  if (
+    !confirm(
+      "هل أنت متأكد من حذف هذا المنتج؟"
+    )
+  ) {
+    return;
   }
 
-  /* =========================================
-     DELETE PRODUCT
-  ========================================= */
+  try {
 
-  async function deleteProduct(id) {
-
-    if (
-      !confirm(
-        "هل أنت متأكد من حذف هذا المنتج؟"
-      )
-    ) {
-      return;
-    }
-
-    try {
-
-      await api(
-        `/api/products/${id}`,
-        {
-          method: "DELETE"
-        }
-      );
-
-      showMessage(
-        "✅ تم حذف المنتج",
-        "success"
-      );
-
-      await loadAll();
-
-    } catch (error) {
-
-      showMessage(
-        error.message,
-        "error"
-      );
-    }
-  }
-
-  /* =========================================
-     RESET
-  ========================================= */
-
-  function resetForm() {
-
-    $("productId").value = "";
-
-    $("nameAr").value = "";
-    $("nameEn").value = "";
-    $("category").value = "";
-
-    $("price").value = 0;
-    $("comparePrice").value = 0;
-    $("stock").value = 1;
-
-    $("descriptionAr").value = "";
-    $("descriptionEn").value = "";
-
-    uploadedImages = [];
-    optionsData = [];
-
-    $("formTitle").textContent =
-      "➕ إضافة منتج جديد";
-
-    $("imageStatus").textContent =
-      "";
-
-    renderImages();
-    renderOptions();
-  }
-
-  /* =========================================
-     LOAD ORDERS
-  ========================================= */
-
-  async function loadOrders() {
-
-    try {
-
-      orders =
-        await api(
-          "/api/orders"
-        );
-
-      renderOrders();
-
-    } catch (error) {
-
-      showMessage(
-        error.message,
-        "error"
-      );
-    }
-  }
-
-  function renderOrders() {
-
-    const body =
-      $("ordersBody");
-
-    body.innerHTML = "";
-
-    if (!orders.length) {
-
-      body.innerHTML = `
-        <tr>
-          <td colspan="7">
-            لا توجد طلبات.
-          </td>
-        </tr>
-      `;
-
-      return;
-    }
-
-    orders.forEach(
-      order => {
-
-        const row =
-          document.createElement(
-            "tr"
-          );
-
-        row.innerHTML = `
-
-          <td>
-            <strong>
-              ${escapeHtml(order.order_no || "")}
-            </strong>
-          </td>
-
-          <td>
-            ${escapeHtml(order.customer_name || "")}
-            <br>
-            <span class="muted">
-              ${escapeHtml(order.phone || "")}
-            </span>
-          </td>
-
-          <td>
-            ${escapeHtml(order.city || "")}
-          </td>
-
-          <td>
-            <strong>
-              AED
-              ${Number(order.total || 0).toFixed(2)}
-            </strong>
-          </td>
-
-          <td>
-            <select
-              onchange="changeOrderStatus(${order.id}, this.value)"
-            >
-
-              ${statusOptions(order.status)}
-
-            </select>
-          </td>
-
-          <td>
-            ${formatDate(order.created_at)}
-          </td>
-
-          <td>
-            <button
-              class="btn small"
-              onclick="openInvoice(${order.id})"
-            >
-              PDF
-            </button>
-          </td>
-        `;
-
-        body.appendChild(
-          row
-        );
+    await api(
+      `/api/admin/products/${id}`,
+      {
+        method: "DELETE"
       }
     );
+
+    showSuccess(
+      "تم حذف المنتج."
+    );
+
+    await loadProducts();
+    await loadStats();
+
+  } catch (err) {
+
+    showError(err.message);
+
+  }
+}
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetForm() {
+
+  document.getElementById(
+    "productId"
+  ).value = "";
+
+  document.getElementById(
+    "name_ar"
+  ).value = "";
+
+  document.getElementById(
+    "name_en"
+  ).value = "";
+
+  document.getElementById(
+    "category"
+  ).value = "";
+
+  document.getElementById(
+    "price"
+  ).value = 0;
+
+  document.getElementById(
+    "compare_price"
+  ).value = 0;
+
+  document.getElementById(
+    "stock"
+  ).value = 0;
+
+  document.getElementById(
+    "description_ar"
+  ).value = "";
+
+  document.getElementById(
+    "description_en"
+  ).value = "";
+
+  uploadedImages = [];
+
+  optionsData = [];
+
+  document.getElementById(
+    "formTitle"
+  ).textContent =
+    "إضافة منتج جديد";
+
+  renderImages();
+
+  renderOptions();
+}
+
+/* =====================================================
+   ORDERS
+===================================================== */
+
+async function loadOrders() {
+
+  const orders =
+    await api("/api/orders");
+
+  if (!orders) return;
+
+  const tbody =
+    document.getElementById(
+      "orders"
+    );
+
+  if (!orders.length) {
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7">
+          لا توجد طلبات.
+        </td>
+      </tr>
+    `;
+
+    return;
   }
 
-  function statusOptions(status) {
+  tbody.innerHTML =
+    orders.map(
+      order => `
 
-    const statuses = [
-      ["NEW", "جديد"],
-      ["CONFIRMED", "مؤكد"],
-      ["PROCESSING", "قيد التجهيز"],
-      ["READY", "جاهز"],
-      ["SHIPPED", "تم الشحن"],
-      ["DELIVERED", "تم التسليم"],
-      ["CANCELLED", "ملغي"]
-    ];
+        <tr>
 
-    return statuses.map(
-      s => `
-        <option
-          value="${s[0]}"
-          ${status === s[0] ? "selected" : ""}
-        >
-          ${s[1]}
-        </option>
+          <td>
+            ${escapeHtml(
+              order.order_no || ""
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              order.customer_name || ""
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              order.phone || ""
+            )}
+          </td>
+
+          <td>
+            ${escapeHtml(
+              order.city || ""
+            )}
+          </td>
+
+          <td>
+            ${Number(
+              order.total || 0
+            ).toFixed(2)}
+            AED
+          </td>
+
+          <td>
+
+            <select
+              onchange="
+                updateOrderStatus(
+                  ${order.id},
+                  this.value
+                )
+              "
+            >
+
+              ${statusOptions(
+                order.status
+              )}
+
+            </select>
+
+          </td>
+
+          <td>
+
+            <button
+              class="secondary"
+              onclick="
+                openInvoice(
+                  ${order.id}
+                )
+              "
+            >
+              فاتورة
+            </button>
+
+          </td>
+
+        </tr>
+
       `
     ).join("");
-  }
+}
 
-  async function changeOrderStatus(
-    id,
-    status
-  ) {
+function statusOptions(current) {
 
-    try {
+  const statuses = [
 
-      await api(
-        `/api/orders/${id}`,
-        {
-          method: "PATCH",
+    ["new", "جديد"],
+    ["pending", "معلق"],
+    ["processing", "قيد التنفيذ"],
+    ["ready", "جاهز"],
+    ["delivered", "تم التسليم"],
+    ["cancelled", "ملغي"]
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+  ];
 
-          body:
-            JSON.stringify({
-              status
-            })
+  return statuses.map(
+    ([value, label]) => `
+      <option
+        value="${value}"
+        ${
+          current === value
+            ? "selected"
+            : ""
         }
-      );
+      >
+        ${label}
+      </option>
+    `
+  ).join("");
+}
 
-      showMessage(
-        "✅ تم تحديث حالة الطلب",
-        "success"
-      );
+async function updateOrderStatus(
+  id,
+  status
+) {
 
-    } catch (error) {
+  try {
 
-      showMessage(
-        error.message,
-        "error"
-      );
+    await api(
+      `/api/orders/${id}`,
+      {
+        method: "PATCH",
 
-      await loadOrders();
-    }
-  }
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
 
-  function openInvoice(id) {
-
-    window.open(
-      `/api/invoice/${id}`,
-      "_blank"
+        body:
+          JSON.stringify({
+            status
+          })
+      }
     );
-  }
 
-  /* =========================================
-     STATS
-  ========================================= */
-
-  async function loadStats() {
-
-    try {
-
-      const stats =
-        await api(
-          "/api/stats"
-        );
-
-      $("statProducts")
-        .textContent =
-        stats.products || 0;
-
-      $("statOrders")
-        .textContent =
-        stats.orders || 0;
-
-      $("statCustomers")
-        .textContent =
-        stats.customers || 0;
-
-      $("statRevenue")
-        .textContent =
-        "AED " +
-        Number(
-          stats.revenue || 0
-        ).toFixed(2);
-
-      $("statLow")
-        .textContent =
-        stats.low || 0;
-
-    } catch (error) {
-
-      console.error(
-        error
-      );
-    }
-  }
-
-  /* =========================================
-     LOAD ALL
-  ========================================= */
-
-  async function loadAll() {
-
-    await checkAuth();
-
-    await Promise.all([
-      loadStats(),
-      loadProducts(),
-      loadOrders()
-    ]);
-
-    renderImages();
-    renderOptions();
-  }
-
-  /* =========================================
-     ESCAPE
-  ========================================= */
-
-  function escapeHtml(value) {
-
-    return String(
-      value ?? ""
-    )
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function escapeAttr(value) {
-    return escapeHtml(value);
-  }
-
-  function formatDate(value) {
-
-    if (!value) return "";
-
-    const date =
-      new Date(
-        value.replace(" ", "T") + "Z"
-      );
-
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return value;
-    }
-
-    return date.toLocaleString(
-      "ar-AE"
+    showSuccess(
+      "تم تحديث حالة الطلب."
     );
+
+    await loadStats();
+
+  } catch (err) {
+
+    showError(err.message);
+
   }
+}
 
-  /* =========================================
-     START
-  ========================================= */
+function openInvoice(id) {
 
-  loadAll();
+  window.open(
+    `/api/orders/${id}/invoice`,
+    "_blank"
+  );
+}
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logout() {
+
+  try {
+
+    await api(
+      "/api/admin/logout",
+      {
+        method: "POST"
+      }
+    );
+
+  } catch {}
+
+  window.location.href =
+    "/admin-login";
+}
+
+/* =====================================================
+   NOTICES
+===================================================== */
+
+function showSuccess(message) {
+
+  const el =
+    document.getElementById(
+      "notice"
+    );
+
+  el.className =
+    "notice success";
+
+  el.textContent =
+    message;
+
+  setTimeout(() => {
+
+    el.className =
+      "notice";
+
+  }, 3500);
+}
+
+function showError(message) {
+
+  const el =
+    document.getElementById(
+      "notice"
+    );
+
+  el.className =
+    "notice error";
+
+  el.textContent =
+    message;
+
+}
+
+/* =====================================================
+   ESCAPE
+===================================================== */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(value) {
+
+  return escapeHtml(value);
+
+}
+
+/* =====================================================
+   START
+===================================================== */
+
+init();
 
 </script>
 
