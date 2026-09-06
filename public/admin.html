@@ -2,8 +2,13 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
 <title>ZOMURUD Admin</title>
 
@@ -38,7 +43,13 @@ color:#fff;
 border:0;
 padding:10px 14px;
 border-radius:5px;
-cursor:pointer
+cursor:pointer;
+text-decoration:none
+}
+
+.btn:disabled{
+opacity:.6;
+cursor:not-allowed
 }
 
 .danger{
@@ -79,7 +90,8 @@ gap:9px
 .form textarea{
 padding:11px;
 border:1px solid #ddd;
-border-radius:5px
+border-radius:5px;
+box-sizing:border-box
 }
 
 .form textarea{
@@ -113,6 +125,14 @@ border:1px solid #ddd
 .status{
 margin-top:10px;
 font-size:14px
+}
+
+.success{
+color:#16753b
+}
+
+.error{
+color:#b00020
 }
 
 table{
@@ -154,6 +174,7 @@ display:block
 }
 
 </style>
+
 </head>
 
 <body>
@@ -163,75 +184,113 @@ display:block
 <div class="head">
 
 <div>
-<div class="brand">ZOMURUD | الزمرد</div>
-<small>لوحة التحكم</small>
+
+<div class="brand">
+ZOMURUD | الزمرد
 </div>
 
-<a class="btn" href="/">المتجر</a>
+<small>
+لوحة التحكم
+</small>
 
 </div>
 
-<div id="stats" class="stats"></div>
+<a
+class="btn"
+href="/"
+>
+المتجر
+</a>
+
+</div>
+
+<div
+id="stats"
+class="stats"
+></div>
 
 
 <div class="panel">
 
-<h2>إضافة منتج</h2>
+<h2>
+إضافة منتج
+</h2>
 
-<form id="add" class="form">
+<form
+id="add"
+class="form"
+>
 
 <input
 name="name_ar"
 required
-placeholder="اسم المنتج بالعربي">
+placeholder="اسم المنتج بالعربي"
+>
 
 <input
 name="name_en"
 required
-placeholder="Product name">
+placeholder="Product name"
+>
 
 <input
 name="category"
 required
-placeholder="التصنيف">
+placeholder="التصنيف"
+>
 
 <input
 name="price"
 type="number"
+min="0"
 required
-placeholder="السعر AED">
+placeholder="السعر AED"
+>
 
 <input
 name="compare_price"
 type="number"
-placeholder="قبل الخصم">
+min="0"
+placeholder="قبل الخصم"
+>
 
 <input
 name="stock"
 type="number"
-placeholder="المخزون">
+min="0"
+placeholder="المخزون"
+>
 
 
-<!-- رفع الصور -->
+<div
+class="upload"
+style="grid-column:1/-1"
+>
 
-<div class="upload" style="grid-column:1/-1">
-
-<strong>صور المنتج</strong>
+<strong>
+صور المنتج
+</strong>
 
 <p>
-اختر صورة أو عدة صور من الكمبيوتر أو الهاتف
-وسيتم رفعها تلقائياً إلى Cloudinary.
+اختر صورة أو عدة صور من الهاتف أو الكمبيوتر.
 </p>
 
 <input
 id="images"
 type="file"
 accept="image/*"
-multiple>
+multiple
+>
 
-<div id="preview" class="preview"></div>
+<div
+id="preview"
+class="preview"
+></div>
 
-<div id="uploadStatus" class="status"></div>
+<div
+id="uploadStatus"
+class="status"
+></div>
 
 </div>
 
@@ -239,24 +298,25 @@ multiple>
 <input
 type="hidden"
 name="image"
-id="imageUrl">
+id="imageUrl"
+>
 
 <textarea
 name="description_ar"
-placeholder="الوصف بالعربي">
-</textarea>
+placeholder="الوصف بالعربي"
+></textarea>
 
 <textarea
 name="description_en"
-placeholder="Description">
-</textarea>
+placeholder="Description"
+></textarea>
 
 <button
+id="addBtn"
 class="btn"
-type="submit">
-
+type="submit"
+>
 إضافة المنتج
-
 </button>
 
 </form>
@@ -266,23 +326,43 @@ type="submit">
 
 <div class="panel table">
 
-<h2>المنتجات</h2>
+<h2>
+المنتجات
+</h2>
 
 <table>
 
 <thead>
 
 <tr>
-<th>المنتج</th>
-<th>الفئة</th>
-<th>السعر</th>
-<th>المخزون</th>
-<th>إجراء</th>
+
+<th>
+المنتج
+</th>
+
+<th>
+الفئة
+</th>
+
+<th>
+السعر
+</th>
+
+<th>
+المخزون
+</th>
+
+<th>
+إجراء
+</th>
+
 </tr>
 
 </thead>
 
-<tbody id="products"></tbody>
+<tbody
+id="products"
+></tbody>
 
 </table>
 
@@ -291,24 +371,47 @@ type="submit">
 
 <div class="panel table">
 
-<h2>الطلبات والفواتير</h2>
+<h2>
+الطلبات والفواتير
+</h2>
 
 <table>
 
 <thead>
 
 <tr>
-<th>الطلب</th>
-<th>العميل</th>
-<th>الهاتف</th>
-<th>الإجمالي</th>
-<th>الحالة</th>
-<th>PDF</th>
+
+<th>
+الطلب
+</th>
+
+<th>
+العميل
+</th>
+
+<th>
+الهاتف
+</th>
+
+<th>
+الإجمالي
+</th>
+
+<th>
+الحالة
+</th>
+
+<th>
+PDF
+</th>
+
 </tr>
 
 </thead>
 
-<tbody id="orders"></tbody>
+<tbody
+id="orders"
+></tbody>
 
 </table>
 
@@ -319,218 +422,339 @@ type="submit">
 
 <script>
 
-const $ = s => document.querySelector(s);
+const $ =
+s => document.querySelector(s);
 
-const money = n =>
-"AED " + Number(n).toLocaleString();
-
-
-/* =====================
-   IMAGE UPLOAD
-===================== */
+const money =
+n =>
+"AED " +
+Number(n).toLocaleString();
 
 let uploadedImages = [];
 
-$("#images").addEventListener("change", async function(){
 
-const files = Array.from(this.files);
+/* =========================
+   IMAGE UPLOAD
+========================= */
 
-$("#preview").innerHTML = "";
+$("#images")
+.addEventListener(
+"change",
+async function(){
 
-$("#uploadStatus").textContent = "";
+const files =
+Array.from(
+this.files || []
+);
+
+$("#preview")
+.innerHTML = "";
+
+$("#uploadStatus")
+.textContent = "";
+
+$("#uploadStatus")
+.className = "status";
 
 uploadedImages = [];
 
-if(!files.length){
+$("#imageUrl")
+.value = "";
 
-$("#uploadStatus").textContent =
-"لم يتم اختيار ملف";
+if(!files.length){
 
 return;
 
 }
 
 
-/* Preview */
+/* PREVIEW */
 
-files.forEach(file => {
+files.forEach(
+file => {
 
-const img = document.createElement("img");
+const img =
+document.createElement(
+"img"
+);
 
-img.src = URL.createObjectURL(file);
+img.src =
+URL.createObjectURL(
+file
+);
 
-$("#preview").appendChild(img);
+$("#preview")
+.appendChild(
+img
+);
 
 });
 
 
-$("#uploadStatus").textContent =
+$("#uploadStatus")
+.textContent =
 "جاري رفع الصور...";
 
 
 try{
 
-const form = new FormData();
+const form =
+new FormData();
 
-files.forEach(file => {
+files.forEach(
+file => {
 
-form.append("images", file);
+form.append(
+"images",
+file
+);
 
 });
 
 
 const response =
-await fetch("/api/admin/upload-image", {
-
+await fetch(
+"/api/admin/upload-image",
+{
 method:"POST",
-
 body:form
+}
+);
 
-});
 
-
-const data = await response.json();
+const data =
+await response.json();
 
 
 if(!response.ok){
 
 throw new Error(
-data.error || "فشل رفع الصور"
+data.error ||
+"فشل رفع الصور"
 );
 
 }
 
 
-uploadedImages = data.images || [];
+uploadedImages =
+data.images || [];
 
 
-/* أول صورة هي صورة المنتج الرئيسية */
+if(
+uploadedImages.length
+){
 
-if(uploadedImages.length){
-
-$("#imageUrl").value =
+$("#imageUrl")
+.value =
 uploadedImages[0].url;
 
 }
 
 
-$("#uploadStatus").textContent =
-`تم رفع ${uploadedImages.length} صورة بنجاح ✓`;
+$("#uploadStatus")
+.textContent =
+"تم رفع " +
+uploadedImages.length +
+" صورة بنجاح ✓";
+
+$("#uploadStatus")
+.className =
+"status success";
 
 
 }catch(error){
 
-console.error(error);
+console.error(
+error
+);
 
-$("#uploadStatus").textContent =
-"❌ " + error.message;
+$("#uploadStatus")
+.textContent =
+"❌ " +
+error.message;
+
+$("#uploadStatus")
+.className =
+"status error";
 
 }
 
 });
 
 
-/* =====================
+/* =========================
    REFRESH
-===================== */
+========================= */
 
 async function refresh(){
 
-const [s,p,o] = await Promise.all([
+try{
 
-fetch("/api/stats").then(x=>x.json()),
+const [
+statsResponse,
+productsResponse,
+ordersResponse
+] = await Promise.all([
 
-fetch("/api/products").then(x=>x.json()),
+fetch(
+"/api/stats"
+),
 
-fetch("/api/orders").then(x=>x.json())
+fetch(
+"/api/products"
+),
+
+fetch(
+"/api/orders"
+)
 
 ]);
 
 
-$("#stats").innerHTML = [
+const stats =
+await statsResponse.json();
 
-["المبيعات",money(s.revenue)],
+const products =
+await productsResponse.json();
 
-["الطلبات",s.orders],
+const orders =
+await ordersResponse.json();
 
-["العملاء",s.customers],
 
-["المنتجات",s.products],
+$("#stats")
+.innerHTML = [
 
-["مخزون منخفض",s.low]
+[
+"المبيعات",
+money(stats.revenue)
+],
 
-].map(a =>
+[
+"الطلبات",
+stats.orders
+],
+
+[
+"العملاء",
+stats.customers
+],
+
+[
+"المنتجات",
+stats.products
+],
+
+[
+"مخزون منخفض",
+stats.low
+]
+
+].map(
+item =>
 
 `<div class="stat">
-${a[0]}
-<b>${a[1]}</b>
+${item[0]}
+<b>${item[1]}</b>
 </div>`
 
 ).join("");
 
 
-$("#products").innerHTML =
-
-p.map(x => `
+$("#products")
+.innerHTML =
+products.map(
+product => `
 
 <tr>
 
 <td>
 
-${x.image
+${
+product.image
 ?
-`<img src="${x.image}"
-style="width:50px;height:40px;object-fit:cover;vertical-align:middle;border-radius:4px">
 `
-:""}
+<img
+src="${product.image}"
+style="
+width:50px;
+height:40px;
+object-fit:cover;
+vertical-align:middle;
+border-radius:4px
+"
+>
+`
+:
+""
+}
 
-${x.name_ar}
+${product.name_ar}
 
 </td>
 
-<td>${x.category}</td>
+<td>
+${product.category}
+</td>
 
-<td>${money(x.price)}</td>
+<td>
+${money(product.price)}
+</td>
 
-<td>${x.stock}</td>
+<td>
+${product.stock}
+</td>
 
 <td>
 
 <button
 class="btn danger mini"
-onclick="del(${x.id})">
-
+onclick="del(${product.id})"
+>
 حذف
-
 </button>
 
 </td>
 
 </tr>
 
-`).join("");
+`
+).join("");
 
 
-$("#orders").innerHTML =
-
-o.map(x => `
+$("#orders")
+.innerHTML =
+orders.map(
+order => `
 
 <tr>
 
-<td>${x.order_no}</td>
+<td>
+${order.order_no}
+</td>
 
-<td>${x.customer_name}</td>
+<td>
+${order.customer_name}
+</td>
 
-<td>${x.phone}</td>
+<td>
+${order.phone}
+</td>
 
-<td>${money(x.total)}</td>
+<td>
+${money(order.total)}
+</td>
 
 <td>
 
 <select
-onchange="st(${x.id},this.value)">
+onchange="st(
+${order.id},
+this.value
+)"
+>
 
-${[
+${
+[
 "NEW",
 "CONFIRMED",
 "PROCESSING",
@@ -538,15 +762,28 @@ ${[
 "SHIPPED",
 "DELIVERED",
 "CANCELLED"
+]
 
-].map(z =>
+.map(
+status => `
 
-`<option
-${z == x.status ? "selected":""}>
-${z}
-</option>`
+<option
+value="${status}"
+${
+status === order.status
+?
+"selected"
+:
+""
+}
+>
+${status}
+</option>
 
-).join("")}
+`
+)
+.join("")
+}
 
 </select>
 
@@ -556,56 +793,95 @@ ${z}
 
 <a
 class="btn mini"
-href="/api/invoice/${x.id}"
-target="_blank">
-
+href="/api/invoice/${order.id}"
+target="_blank"
+>
 PDF
-
 </a>
 
 </td>
 
 </tr>
 
-`).join("");
+`
+).join("");
+
+
+}catch(error){
+
+console.error(
+"Refresh error:",
+error
+);
+
+}
 
 }
 
 
-/* =====================
+/* =========================
    ADD PRODUCT
-===================== */
+========================= */
 
-$("#add").onsubmit = async e => {
+$("#add")
+.addEventListener(
+"submit",
+async function(e){
 
 e.preventDefault();
 
 
-if(!$("#imageUrl").value){
+if(
+!$("#imageUrl").value
+){
 
-if(!confirm(
+const confirmAdd =
+confirm(
 "لم يتم رفع صورة. هل تريد إضافة المنتج بدون صورة؟"
-)) return;
+);
+
+if(!confirmAdd){
+
+return;
+
+}
 
 }
 
 
 const data =
 Object.fromEntries(
-new FormData(e.target)
+new FormData(this)
 );
 
 
+const button =
+$("#addBtn");
+
+
+button.disabled =
+true;
+
+button.textContent =
+"جاري الحفظ...";
+
+
+try{
+
 const response =
-await fetch("/api/products",{
+await fetch(
+"/api/products",
+{
 
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":
+"application/json"
 },
 
-body:JSON.stringify(data)
+body:
+JSON.stringify(data)
 
 });
 
@@ -616,80 +892,128 @@ await response.json();
 
 if(!response.ok){
 
-alert(result.error || "حدث خطأ");
-
-return;
+throw new Error(
+result.error ||
+"حدث خطأ"
+);
 
 }
 
 
-alert("تم إضافة المنتج بنجاح ✓");
+alert(
+"تم إضافة المنتج بنجاح ✓"
+);
 
-e.target.reset();
 
-$("#preview").innerHTML = "";
+this.reset();
 
-$("#uploadStatus").textContent = "";
+$("#preview")
+.innerHTML = "";
 
-$("#imageUrl").value = "";
+$("#uploadStatus")
+.textContent = "";
+
+$("#uploadStatus")
+.className =
+"status";
+
+$("#imageUrl")
+.value = "";
 
 uploadedImages = [];
 
-refresh();
 
-};
+await refresh();
 
 
-/* =====================
+}catch(error){
+
+alert(
+error.message
+);
+
+}finally{
+
+button.disabled =
+false;
+
+button.textContent =
+"إضافة المنتج";
+
+}
+
+});
+
+
+/* =========================
    DELETE
-===================== */
+========================= */
 
 async function del(id){
 
-if(confirm("حذف المنتج؟")){
+if(
+confirm(
+"هل تريد حذف المنتج؟"
+)
+){
 
 await fetch(
-"/api/products/"+id,
+"/api/products/" +
+id,
 {
 method:"DELETE"
 }
 );
 
-refresh();
+await refresh();
 
 }
 
 }
 
 
-/* =====================
-   STATUS
-===================== */
+/* =========================
+   ORDER STATUS
+========================= */
 
-async function st(id,status){
+async function st(
+id,
+status
+){
 
 await fetch(
-"/api/orders/"+id,
+"/api/orders/" +
+id,
 {
 
 method:"PATCH",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":
+"application/json"
 },
 
-body:JSON.stringify({status})
+body:
+JSON.stringify({
+status
+})
 
-});
+}
+);
 
-refresh();
+await refresh();
 
 }
 
+
+/* =========================
+   START
+========================= */
 
 refresh();
 
 </script>
 
 </body>
+
 </html>
